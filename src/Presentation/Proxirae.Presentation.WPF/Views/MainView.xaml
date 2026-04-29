@@ -1,4 +1,4 @@
-﻿<controls:TitleBarWindow x:Class="Proxirae.Presentation.WPF.MainWindow"
+﻿<controls:TitleBarWindow x:Class="Proxirae.Presentation.WPF.MainView"
                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,22 +6,38 @@
                          xmlns:svg="https://github.com/dotnetprojects/SVGImage"
                          xmlns:local="clr-namespace:Proxirae.Presentation.WPF"
                          xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
+                         xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels"
                          mc:Ignorable="d"
                          Title="Proxirae"
                          Background="Transparent"
-                         ShowCenteredTitle="True">
+                         ShowCenteredTitle="True"
+                         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
     <controls:TitleBarWindow.TitleBarMenuContent>
         <Menu Background="WhiteSmoke" 
               Margin="0 5 0 5">
             <MenuItem Header="File">
+                <MenuItem Header="Export Traffic History..."/>
+                <MenuItem Header="Export Logs History..."/>
+                <Separator/>
+                <MenuItem Header="Exit" 
+                          Command="{Binding ExitCommand}"/>
             </MenuItem>
             <MenuItem Header="Proxy">
+                <MenuItem Header="Proxy Servers"
+                          Command="{Binding OpenProxyServersCommand}"/>
+                <MenuItem Header="Proxy Rules"/>
             </MenuItem>
             <MenuItem Header="View">
+                <MenuItem Header="Reset Layout"/>
             </MenuItem>
-            <MenuItem Header="Settings">
+            <MenuItem Header="Tools">
+                <MenuItem Header="Proxy Checker"/>
+                <Separator/>
+                <MenuItem Header="Options"/>
             </MenuItem>
-            <MenuItem Header="About">
+            <MenuItem Header="Help">
+                <MenuItem Header="Check for Updates"/>
+                <MenuItem Header="About Proxirae"/>
             </MenuItem>
         </Menu>
     </controls:TitleBarWindow.TitleBarMenuContent>
@@ -67,8 +83,7 @@
 
         <TabControl Grid.Row="2"
                     Margin="0 -25 0 0"
-                    HorizontalContentAlignment="Stretch"
-                    VerticalAlignment="Stretch">
+                    Style="{StaticResource LogPanel}">
             <TabItem Header="Connections"
                      IsSelected="True">
                 <ListBox Style="{StaticResource LogBox}"/>

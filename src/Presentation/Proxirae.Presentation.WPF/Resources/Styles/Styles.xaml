@@ -8,51 +8,6 @@
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
-    <Style x:Key="ProcessButton" TargetType="Button">
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Width" Value="30"/>
-        <Setter Property="Height" Value="30"/>
-        <Setter Property="Margin" Value="2 0 2 0"/>
-        <Setter Property="Focusable" Value="False"/>
-        <Setter Property="Background" Value="Transparent"/>
-
-        <Style.Triggers>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="0.4"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style x:Key="ProcessPanel" TargetType="DockPanel">
-        <Setter Property="Margin" Value="0 0 0 25"/>
-        <Setter Property="Background" Value="WhiteSmoke"/>
-    </Style>
-
-    <Style x:Key="ProcessTable" TargetType="DataGrid">
-        <Setter Property="BorderThickness" Value="1 1 1 1"/>
-        <Setter Property="Margin" Value="0 0 3 0"/>
-        <Setter Property="BorderBrush" Value="LightGray"/>
-        <Setter Property="Background" Value="White"/>
-        <Setter Property="AutoGenerateColumns" Value="False"/>
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-    </Style>
-
-    <Style x:Key="LogBox" TargetType="ListBox">
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-        <Setter Property="Cursor" Value="IBeam"/>
-    </Style>
-
-    <Style x:Key="ProcessLogsSplitter" TargetType="GridSplitter">
-        <Setter Property="Height" Value="5"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="ResizeDirection" Value="Rows"/>
-        <Setter Property="ResizeBehavior" Value="PreviousAndNext"/>
-        <Setter Property="Focusable" Value="False"/>
-    </Style>
-
     <Style x:Key="TitleBarButtonStyle" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="#202124" />
@@ -123,5 +78,56 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="ProcessButton" TargetType="Button">
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Width" Value="25"/>
+        <Setter Property="Height" Value="25"/>
+        <Setter Property="Margin" Value="2 0 2 0"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Background" Value="Transparent"/>
+
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.4"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="ProcessPanel" TargetType="DockPanel">
+        <Setter Property="Margin" Value="0 0 0 25"/>
+        <Setter Property="Background" Value="WhiteSmoke"/>
+    </Style>
+
+    <Style x:Key="ProcessTable" TargetType="DataGrid">
+        <Setter Property="BorderThickness" Value="1 1 1 1"/>
+        <Setter Property="Margin" Value="0 0 5 0"/>
+        <Setter Property="BorderBrush" Value="LightGray"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+    </Style>
+
+    <Style x:Key="LogBox" TargetType="ListBox">
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="Cursor" Value="IBeam"/>
+    </Style>
+
+    <Style x:Key="ProcessLogsSplitter" TargetType="GridSplitter">
+        <Setter Property="Height" Value="5"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="ResizeDirection" Value="Rows"/>
+        <Setter Property="ResizeBehavior" Value="PreviousAndNext"/>
+        <Setter Property="Focusable" Value="False"/>
+    </Style>
+
+    <Style x:Key="LogPanel" TargetType="TabControl">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="BorderThickness" Value="0 1"/>
     </Style>
 </ResourceDictionary>

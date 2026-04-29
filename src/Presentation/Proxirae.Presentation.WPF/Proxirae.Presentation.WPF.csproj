@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+	<NoWarn>IDE0290</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,12 +15,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="DotNetProjects.SVGImage" Version="5.2.13" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-    <PackageReference Include="DotNetProjects.SVGImage" Version="5.2.13" />
+    <ProjectReference Include="..\..\Application\Proxirae.Application\Proxirae.Application.csproj" />
   </ItemGroup>
 
 </Project>

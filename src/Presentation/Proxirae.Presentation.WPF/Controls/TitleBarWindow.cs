@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 using System.Windows.Shell;
 using ApplicationEnt = System.Windows.Application;
@@ -30,6 +31,7 @@ namespace Proxirae.Presentation.WPF.Controls
         private Button maximizeRestoreButton;
         private Path maximizeRestoreIcon;
         private Grid titleBar;
+        private Border windowBorder;
         private WindowChrome windowChrome;
 
         /// <summary>
@@ -165,7 +167,7 @@ namespace Proxirae.Presentation.WPF.Controls
             windowChrome = new WindowChrome
             {
                 CornerRadius = new CornerRadius(0),
-                GlassFrameThickness = new Thickness(0),
+                GlassFrameThickness = new Thickness(0.1),
                 NonClientFrameEdges = NonClientFrameEdges.None,
                 ResizeBorderThickness = new Thickness(5),
                 UseAeroCaptionButtons = false
@@ -188,9 +190,17 @@ namespace Proxirae.Presentation.WPF.Controls
 
         private void InitializeComponents()
         {
+            windowBorder = new Border
+            {
+                BorderBrush = Brushes.DimGray,
+                BorderThickness = new Thickness(1),
+                Effect = CreateWindowShadow()
+            };
+            Content = windowBorder;
+
             // Main container
             var dockPanel = new DockPanel();
-            Content = dockPanel;
+            windowBorder.Child = dockPanel;
 
             // Create title bar
             CreateTitleBar(dockPanel);
@@ -255,7 +265,8 @@ namespace Proxirae.Presentation.WPF.Controls
             var dockPanelInner = new DockPanel
             {
                 Focusable = false,
-                HorizontalAlignment = HorizontalAlignment.Stretch
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                LastChildFill = false
             };
             Grid.SetColumn(dockPanelInner, 1);
             titleBar.Children.Add(dockPanelInner);
@@ -265,6 +276,7 @@ namespace Proxirae.Presentation.WPF.Controls
             var menuPresenter = new ContentPresenter
             {
                 Focusable = false,
+                HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Center
             };
             menuPresenter.SetBinding(ContentPresenter.ContentProperty,
@@ -303,6 +315,7 @@ namespace Proxirae.Presentation.WPF.Controls
             Grid.SetColumn(titleTextBlock, 0);
             Grid.SetColumnSpan(titleTextBlock, 5);
             Panel.SetZIndex(titleTextBlock, 2);
+            WindowChrome.SetIsHitTestVisibleInChrome(titleTextBlock, false);
         }
 
         private void CreateMinimizeButton()
@@ -489,11 +502,15 @@ namespace Proxirae.Presentation.WPF.Controls
 
             if (WindowState == WindowState.Maximized)
             {
+                windowBorder.BorderThickness = new Thickness(0);
+                windowBorder.Effect = null;
                 titleBar.Margin = new Thickness(6, 6, 6, 0);
                 content?.SetValue(FrameworkElement.MarginProperty, new Thickness(6, 0, 6, 6));
             }
             else
             {
+                windowBorder.BorderThickness = new Thickness(1);
+                windowBorder.Effect = CreateWindowShadow();
                 titleBar.Margin = new Thickness(0);
                 content?.SetValue(FrameworkElement.MarginProperty, new Thickness(0));
             }
@@ -555,6 +572,18 @@ namespace Proxirae.Presentation.WPF.Controls
         {
             maximizeRestoreButton.Background = background;
             maximizeRestoreButton.Foreground = TitleBarButtonForegroundBrush;
+        }
+
+        private static DropShadowEffect CreateWindowShadow()
+        {
+            return new DropShadowEffect
+            {
+                BlurRadius = 14,
+                Direction = 270,
+                Opacity = 0.28,
+                ShadowDepth = 0,
+                Color = Colors.Black
+            };
         }
 
         private static void OnTitleBarMenuContentChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
