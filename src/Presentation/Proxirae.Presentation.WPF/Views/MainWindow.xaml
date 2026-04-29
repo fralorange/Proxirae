@@ -8,7 +8,8 @@
                          xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
                          mc:Ignorable="d"
                          Title="Proxirae"
-                         Background="Transparent">
+                         Background="Transparent"
+                         ShowCenteredTitle="True">
     <controls:TitleBarWindow.TitleBarMenuContent>
         <Menu Background="WhiteSmoke" 
               Margin="0 5 0 5">

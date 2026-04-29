@@ -246,6 +246,7 @@ namespace Proxirae.Presentation.WPF.Controls
             icon.MouseDown += OnIconMouseDown;
             titleBar.Children.Add(icon);
             Grid.SetColumn(icon, 0);
+            Panel.SetZIndex(icon, 1);
             WindowChrome.SetIsHitTestVisibleInChrome(icon, true);
         }
 
@@ -258,6 +259,7 @@ namespace Proxirae.Presentation.WPF.Controls
             };
             Grid.SetColumn(dockPanelInner, 1);
             titleBar.Children.Add(dockPanelInner);
+            Panel.SetZIndex(dockPanelInner, 1);
 
             // Menu presenter
             var menuPresenter = new ContentPresenter
@@ -275,9 +277,12 @@ namespace Proxirae.Presentation.WPF.Controls
             var titleTextBlock = new TextBlock
             {
                 Focusable = false,
-                Margin = new Thickness(10, 0, 10, 0),
-                HorizontalAlignment = HorizontalAlignment.Center,
+                IsHitTestVisible = false,
+                Foreground = TitleBarButtonForegroundBrush,
+                Margin = new Thickness(0),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Center,
+                TextAlignment = TextAlignment.Center,
                 TextTrimming = TextTrimming.CharacterEllipsis,
                 TextWrapping = TextWrapping.NoWrap
             };
@@ -294,7 +299,10 @@ namespace Proxirae.Presentation.WPF.Controls
                     Converter = new BooleanToVisibilityConverter()
                 });
 
-            dockPanelInner.Children.Add(titleTextBlock);
+            titleBar.Children.Add(titleTextBlock);
+            Grid.SetColumn(titleTextBlock, 0);
+            Grid.SetColumnSpan(titleTextBlock, 5);
+            Panel.SetZIndex(titleTextBlock, 2);
         }
 
         private void CreateMinimizeButton()
@@ -329,6 +337,7 @@ namespace Proxirae.Presentation.WPF.Controls
 
             titleBar.Children.Add(button);
             Grid.SetColumn(button, 2);
+            Panel.SetZIndex(button, 1);
         }
 
         private void CreateMaximizeButton()
@@ -364,6 +373,7 @@ namespace Proxirae.Presentation.WPF.Controls
             maximizeRestoreButton.Content = maximizeRestoreIcon;
             titleBar.Children.Add(maximizeRestoreButton);
             Grid.SetColumn(maximizeRestoreButton, 3);
+            Panel.SetZIndex(maximizeRestoreButton, 1);
         }
 
         private void CreateCloseButton()
@@ -390,6 +400,7 @@ namespace Proxirae.Presentation.WPF.Controls
 
             titleBar.Children.Add(button);
             Grid.SetColumn(button, 4);
+            Panel.SetZIndex(button, 1);
         }
 
         private static T GetResource<T>(string key)
