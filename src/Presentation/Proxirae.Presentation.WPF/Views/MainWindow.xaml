@@ -1,0 +1,84 @@
+﻿<controls:TitleBarWindow x:Class="Proxirae.Presentation.WPF.MainWindow"
+                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:svg="https://github.com/dotnetprojects/SVGImage"
+                         xmlns:local="clr-namespace:Proxirae.Presentation.WPF"
+                         xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
+                         mc:Ignorable="d"
+                         Title="Proxirae"
+                         Background="Transparent">
+    <controls:TitleBarWindow.TitleBarMenuContent>
+        <Menu Background="WhiteSmoke" 
+              Margin="0 5 0 5">
+            <MenuItem Header="File">
+            </MenuItem>
+            <MenuItem Header="Proxy">
+            </MenuItem>
+            <MenuItem Header="View">
+            </MenuItem>
+            <MenuItem Header="Settings">
+            </MenuItem>
+            <MenuItem Header="About">
+            </MenuItem>
+        </Menu>
+    </controls:TitleBarWindow.TitleBarMenuContent>
+
+    <Grid Background="WhiteSmoke">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" MinHeight="200" MaxHeight="700"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" 
+                   Style="{StaticResource ProcessPanel}">
+            <StackPanel DockPanel.Dock="Left">
+                <Button Style="{StaticResource ProcessButton}" IsEnabled="False">
+                    <svg:SVGImage Source="/Resources/Vectors/disconnect.svg" 
+                                  RenderTransformOrigin="0.5,0.5" 
+                                  VerticalContentAlignment="Center" 
+                                  HorizontalContentAlignment="Center"
+                                  SizeType="SizeToContent" />
+                </Button>
+                <Button Style="{StaticResource ProcessButton}" IsEnabled="False">
+                    <svg:SVGImage Source="/Resources/Vectors/stop.svg" 
+                                  RenderTransformOrigin="0.5,0.5" 
+                                  VerticalContentAlignment="Center" 
+                                  HorizontalContentAlignment="Center"
+                                  SizeType="SizeToContent" />
+                </Button>
+            </StackPanel>
+
+            <DataGrid DockPanel.Dock="Right" 
+                      Style="{StaticResource ProcessTable}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Application" Width="*" />
+                    <DataGridTextColumn Header="Target" Width="*"  />
+                    <DataGridTextColumn Header="Time" Width="*" />
+                    <DataGridTextColumn Header="Action" Width="*" />
+                    <DataGridTextColumn Header="Sent" Width="*" />
+                    <DataGridTextColumn Header="Received" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+
+        <TabControl Grid.Row="2"
+                    Margin="0 -25 0 0"
+                    HorizontalContentAlignment="Stretch"
+                    VerticalAlignment="Stretch">
+            <TabItem Header="Connections"
+                     IsSelected="True">
+                <ListBox Style="{StaticResource LogBox}"/>
+            </TabItem>
+            <TabItem Header="Logs">
+                <ListBox Style="{StaticResource LogBox}"/>
+            </TabItem>
+        </TabControl>
+
+        <!--GridSplitter MUST be the last element for correct rendering-->
+        <GridSplitter Grid.Row="1"
+                      Style="{StaticResource ProcessLogsSplitter}"/>
+    </Grid>
+</controls:TitleBarWindow>
