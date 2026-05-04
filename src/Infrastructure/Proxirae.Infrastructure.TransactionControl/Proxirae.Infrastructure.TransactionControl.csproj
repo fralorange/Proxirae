@@ -8,8 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Contracts\Proxirae.Contracts\Proxirae.Contracts.csproj" />
-    <ProjectReference Include="..\..\Domain\Proxirae.Domain\Proxirae.Domain.csproj" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Application\Proxirae.Application\Proxirae.Application.csproj" />
   </ItemGroup>
 
 </Project>

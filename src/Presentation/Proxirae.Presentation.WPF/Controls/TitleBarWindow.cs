@@ -29,6 +29,10 @@ namespace Proxirae.Presentation.WPF.Controls
         private static readonly Geometry RestoreIconGeometry = Geometry.Parse("M 13.5,12.5 H 20.5 V 19.5 H 13.5 Z M 15.5,12.5 V 10.5 H 22.5 V 17.5 H 20.5");
 
         private Button maximizeRestoreButton;
+        private ContentPresenter titleBarMenuPresenter;
+        private TextBlock sideTitleTextBlock;
+        private TextBlock centeredTitleTextBlock;
+        private Image windowIcon;
         private Path maximizeRestoreIcon;
         private Grid titleBar;
         private Border windowBorder;
@@ -58,7 +62,7 @@ namespace Proxirae.Presentation.WPF.Controls
                 nameof(ShowCenteredTitle),
                 typeof(bool),
                 typeof(TitleBarWindow),
-                new PropertyMetadata(false));
+                new PropertyMetadata(false, OnTitleLayoutPropertyChanged));
 
         /// <summary>
         /// A minimize button parameter dependency property.
@@ -247,17 +251,18 @@ namespace Proxirae.Presentation.WPF.Controls
 
         private void CreateIcon()
         {
-            var icon = new Image
+            windowIcon = new Image
             {
                 Focusable = false,
                 Style = GetResource<Style>("IconImage"),
             };
-            icon.SetBinding(Image.SourceProperty, new Binding(nameof(Icon)) { Source = this });
-            icon.MouseDown += OnIconMouseDown;
-            titleBar.Children.Add(icon);
-            Grid.SetColumn(icon, 0);
-            Panel.SetZIndex(icon, 1);
-            WindowChrome.SetIsHitTestVisibleInChrome(icon, true);
+            windowIcon.SetBinding(Image.SourceProperty, new Binding(nameof(Icon)) { Source = this });
+            windowIcon.MouseDown += OnIconMouseDown;
+            titleBar.Children.Add(windowIcon);
+            Grid.SetColumn(windowIcon, 0);
+            Panel.SetZIndex(windowIcon, 1);
+            WindowChrome.SetIsHitTestVisibleInChrome(windowIcon, true);
+            UpdateIconVisibility();
         }
 
         private void CreateMenuSection()
@@ -273,49 +278,92 @@ namespace Proxirae.Presentation.WPF.Controls
             Panel.SetZIndex(dockPanelInner, 1);
 
             // Menu presenter
-            var menuPresenter = new ContentPresenter
+            titleBarMenuPresenter = new ContentPresenter
             {
                 Focusable = false,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Center
             };
-            menuPresenter.SetBinding(ContentPresenter.ContentProperty,
+            titleBarMenuPresenter.SetBinding(ContentPresenter.ContentProperty,
                 new Binding("TitleBarMenuContent") { Source = this });
-            DockPanel.SetDock(menuPresenter, Dock.Left);
-            WindowChrome.SetIsHitTestVisibleInChrome(menuPresenter, true);
-            dockPanelInner.Children.Add(menuPresenter);
+            DockPanel.SetDock(titleBarMenuPresenter, Dock.Left);
+            WindowChrome.SetIsHitTestVisibleInChrome(titleBarMenuPresenter, true);
+            dockPanelInner.Children.Add(titleBarMenuPresenter);
+
+            sideTitleTextBlock = CreateTitleTextBlock();
+            sideTitleTextBlock.Margin = new Thickness(8, 0, 8, 0);
+            sideTitleTextBlock.HorizontalAlignment = HorizontalAlignment.Left;
+            sideTitleTextBlock.TextAlignment = TextAlignment.Left;
+            sideTitleTextBlock.SetBinding(TextBlock.TextProperty,
+                new Binding(nameof(Title)) { Source = this });
+            DockPanel.SetDock(sideTitleTextBlock, Dock.Left);
+            WindowChrome.SetIsHitTestVisibleInChrome(sideTitleTextBlock, false);
+            dockPanelInner.Children.Add(sideTitleTextBlock);
 
             // Centered Title (hidden by default)
-            var titleTextBlock = new TextBlock
+            centeredTitleTextBlock = CreateTitleTextBlock();
+            centeredTitleTextBlock.HorizontalAlignment = HorizontalAlignment.Stretch;
+            centeredTitleTextBlock.TextAlignment = TextAlignment.Center;
+
+            // Bind Text to Window.Title
+            centeredTitleTextBlock.SetBinding(TextBlock.TextProperty,
+                new Binding(nameof(Title)) { Source = this });
+
+            titleBar.Children.Add(centeredTitleTextBlock);
+            Grid.SetColumn(centeredTitleTextBlock, 0);
+            Grid.SetColumnSpan(centeredTitleTextBlock, 5);
+            Panel.SetZIndex(centeredTitleTextBlock, 2);
+            WindowChrome.SetIsHitTestVisibleInChrome(centeredTitleTextBlock, false);
+
+            UpdateTitleLayout();
+        }
+
+        private static TextBlock CreateTitleTextBlock()
+        {
+            return new TextBlock
             {
                 Focusable = false,
                 IsHitTestVisible = false,
                 Foreground = TitleBarButtonForegroundBrush,
                 Margin = new Thickness(0),
-                HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Center,
-                TextAlignment = TextAlignment.Center,
                 TextTrimming = TextTrimming.CharacterEllipsis,
                 TextWrapping = TextWrapping.NoWrap
             };
+        }
 
-            // Bind Text to Window.Title
-            titleTextBlock.SetBinding(TextBlock.TextProperty,
-                new Binding("Title") { Source = this });
+        private void UpdateTitleLayout()
+        {
+            if (titleBarMenuPresenter is null || sideTitleTextBlock is null || centeredTitleTextBlock is null)
+            {
+                return;
+            }
 
-            // Bind Visibility to ShowCenteredTitle with converter
-            titleTextBlock.SetBinding(TextBlock.VisibilityProperty,
-                new Binding(nameof(ShowCenteredTitle))
-                {
-                    Source = this,
-                    Converter = new BooleanToVisibilityConverter()
-                });
+            var hasMenu = TitleBarMenuContent is not null;
 
-            titleBar.Children.Add(titleTextBlock);
-            Grid.SetColumn(titleTextBlock, 0);
-            Grid.SetColumnSpan(titleTextBlock, 5);
-            Panel.SetZIndex(titleTextBlock, 2);
-            WindowChrome.SetIsHitTestVisibleInChrome(titleTextBlock, false);
+            titleBarMenuPresenter.Visibility = hasMenu
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            sideTitleTextBlock.Visibility = !ShowCenteredTitle && !hasMenu
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            centeredTitleTextBlock.Visibility = ShowCenteredTitle
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        private void UpdateIconVisibility()
+        {
+            if (windowIcon is null)
+            {
+                return;
+            }
+
+            windowIcon.Visibility = Icon is null
+                ? Visibility.Collapsed
+                : Visibility.Visible;
         }
 
         private void CreateMinimizeButton()
@@ -443,6 +491,10 @@ namespace Proxirae.Presentation.WPF.Controls
             if (e.Property == BorderThicknessProperty)
             {
                 UpdateCaptionHeight();
+            }
+            else if (e.Property == IconProperty)
+            {
+                UpdateIconVisibility();
             }
         }
 
@@ -589,6 +641,19 @@ namespace Proxirae.Presentation.WPF.Controls
         private static void OnTitleBarMenuContentChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             DisableTitleBarContentFocus(e.NewValue);
+
+            if (dependencyObject is TitleBarWindow window)
+            {
+                window.UpdateTitleLayout();
+            }
+        }
+
+        private static void OnTitleLayoutPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            if (dependencyObject is TitleBarWindow window)
+            {
+                window.UpdateTitleLayout();
+            }
         }
 
         private static void DisableTitleBarContentFocus(object content)

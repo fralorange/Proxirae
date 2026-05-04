@@ -1,0 +1,1 @@
+﻿global using ProxyServer = Proxirae.Domain.Proxy.Proxy;

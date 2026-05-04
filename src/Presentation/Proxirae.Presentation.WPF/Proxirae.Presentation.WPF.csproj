@@ -18,10 +18,20 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="DotNetProjects.SVGImage" Version="5.2.13" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
+    <PackageReference Include="MvvmDialogs" Version="9.1.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Application\Proxirae.Application\Proxirae.Application.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Proxirae.Infrastructure.TransactionControl\Proxirae.Infrastructure.TransactionControl.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Proxirae.Infrastructure\Proxirae.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\EditProxyServerView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
 </Project>

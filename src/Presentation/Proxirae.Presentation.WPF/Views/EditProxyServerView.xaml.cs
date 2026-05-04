@@ -2,9 +2,9 @@
 
 namespace Proxirae.Presentation.WPF.Views
 {
-    public partial class ProxyServersView : TitleBarWindow
+    public partial class EditProxyServerView : TitleBarWindow
     {
-        public ProxyServersView()
+        public EditProxyServerView()
         {
             InitializeComponent();
         }

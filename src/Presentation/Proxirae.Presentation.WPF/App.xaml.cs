@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Proxirae.Infrastructure;
+using Proxirae.Infrastructure.TransactionControl;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace Proxirae.Presentation.WPF
 {
@@ -16,20 +17,16 @@ namespace Proxirae.Presentation.WPF
             ServiceProvider = new ServiceCollection()
                 .AddStartupServices()
                 .AddServices()
+                .AddRepositories()
+                .AddUnitsOfWork()
+                .AddMappers()
+                .AddFacades()
+                .AddViewModels()
                 .BuildServiceProvider();
-        }
-
-        private static void DisableTabStop()
-        {
-            Control.IsTabStopProperty.OverrideMetadata(
-                typeof(Control),
-                new FrameworkPropertyMetadata(false));
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            DisableTabStop();
-
             var mainView = ServiceProvider.GetRequiredService<MainView>();
             mainView.Show();
             Current.MainWindow = mainView;

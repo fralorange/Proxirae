@@ -95,6 +95,12 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="ControlButton" TargetType="Button">
+        <Setter Property="Margin" Value="10"/>
+        <Setter Property="Width" Value="70"/>
+        <Setter Property="BorderBrush" Value="LightGray"/>
+    </Style>
+
     <Style x:Key="ProcessPanel" TargetType="DockPanel">
         <Setter Property="Margin" Value="0 0 0 25"/>
         <Setter Property="Background" Value="WhiteSmoke"/>
@@ -107,6 +113,20 @@
         <Setter Property="Background" Value="White"/>
         <Setter Property="AutoGenerateColumns" Value="False"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+    </Style>
+
+    <Style x:Key="ControlTable" TargetType="DataGrid">
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="BorderBrush" Value="LightGray"/>
+        <Setter Property="Margin" Value="10"/>
+        <Setter Property="CellStyle">
+            <Setter.Value>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="BorderThickness" Value="0"/>
+                </Style>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style x:Key="LogBox" TargetType="ListBox">

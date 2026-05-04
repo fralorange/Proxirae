@@ -3,12 +3,16 @@
                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
                          xmlns:svg="https://github.com/dotnetprojects/SVGImage"
                          xmlns:local="clr-namespace:Proxirae.Presentation.WPF"
                          xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
                          xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels"
+                         md:DialogServiceViews.IsRegistered="True"
                          mc:Ignorable="d"
                          Title="Proxirae"
+                         MinWidth="750"
+                         MinHeight="500"
                          Background="Transparent"
                          ShowCenteredTitle="True"
                          d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
@@ -23,28 +27,30 @@
                           Command="{Binding ExitCommand}"/>
             </MenuItem>
             <MenuItem Header="Proxy">
-                <MenuItem Header="Proxy Servers"
+                <MenuItem Header="Proxy Servers..."
                           Command="{Binding OpenProxyServersCommand}"/>
-                <MenuItem Header="Proxy Rules"/>
+                <MenuItem Header="Proxy Rules..."
+                          Command="{Binding OpenProxyRulesCommand}"/>
             </MenuItem>
             <MenuItem Header="View">
                 <MenuItem Header="Reset Layout"/>
             </MenuItem>
             <MenuItem Header="Tools">
-                <MenuItem Header="Proxy Checker"/>
+                <MenuItem Header="Proxy Checker..."/>
                 <Separator/>
-                <MenuItem Header="Options"/>
+                <MenuItem Header="Options..."/>
             </MenuItem>
             <MenuItem Header="Help">
-                <MenuItem Header="Check for Updates"/>
-                <MenuItem Header="About Proxirae"/>
+                <MenuItem Header="Check for Updates..."/>
+                <Separator/>
+                <MenuItem Header="About Proxirae..."/>
             </MenuItem>
         </Menu>
     </controls:TitleBarWindow.TitleBarMenuContent>
 
     <Grid Background="WhiteSmoke">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" MinHeight="200" MaxHeight="700"/>
+            <RowDefinition Height="3*" MinHeight="200" MaxHeight="650"/>
             <RowDefinition Height="5"/>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
