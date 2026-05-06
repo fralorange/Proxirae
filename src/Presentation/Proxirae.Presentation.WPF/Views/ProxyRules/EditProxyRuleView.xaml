@@ -1,0 +1,183 @@
+﻿<controls:TitleBarWindow x:Class="Proxirae.Presentation.WPF.Views.ProxyRules.EditProxyRuleView"
+                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:sdl="http://schemas.sdl.com/xaml"
+                         xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
+                         xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels.ProxyRules"
+                         d:DataContext="{d:DesignInstance Type=viewmodels:EditProxyRuleViewModel}"
+                         mc:Ignorable="d"
+                         Title="Proxy Rule"
+                         Width="700"
+                         Height="500"
+                         MinWidth="700"
+                         MinHeight="500"
+                         Background="Transparent"
+                         WindowStartupLocation="CenterOwner"
+                         ShowInTaskbar="False">
+    <controls:TitleBarWindow.Resources>
+        <Style TargetType="Label">
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+    </controls:TitleBarWindow.Resources>
+
+    <Grid Background="WhiteSmoke">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="15">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <GroupBox Header="Rule" Margin="0 0 0 10">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Content="_Remarks"
+                           Target="{Binding ElementName=RemarksBox}"
+                           VerticalAlignment="Center"/>
+
+                    <TextBox x:Name="RemarksBox"
+                             Grid.Column="1"
+                             Margin="0 0 10 0"
+                             VerticalAlignment="Center"
+                             Text="{Binding Remarks, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <CheckBox x:Name="EnabledBox"
+                              Grid.Column="2"
+                              VerticalAlignment="Center"
+                              Margin="0 0 5 0"
+                              IsChecked="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <Label Content="_Enabled"
+                           Grid.Column="3"
+                           VerticalAlignment="Center"
+                           Target="{Binding ElementName=EnabledBox}"/>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Header="Matching" Grid.Row="1" Margin="0 0 0 10">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Content="_Processes"
+                           Target="{Binding ElementName=ProcessesBox}"/>
+                    <TextBox x:Name="ProcessesBox"
+                             Grid.Column="1"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             MinHeight="60"
+                             VerticalAlignment="Top"
+                             Text="{Binding Processes, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <Label Content="_Hosts"
+                           Grid.Row="1"
+                           Margin="0 8 0 0"
+                           Target="{Binding ElementName=HostsBox}"/>
+                    <TextBox x:Name="HostsBox"
+                             Grid.Row="1"
+                             Grid.Column="1"
+                             Margin="0 8 0 0"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             MinHeight="60"
+                             VerticalAlignment="Top"
+                             Text="{Binding Hosts, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <Label Content="_Ports"
+                           Grid.Row="2"
+                           Margin="0 8 0 0"
+                           Target="{Binding ElementName=PortsBox}"/>
+                    <TextBox x:Name="PortsBox"
+                             Grid.Row="2"
+                             Grid.Column="1"
+                             Margin="0 8 0 0"
+                             VerticalAlignment="Top"
+                             Text="{Binding Ports, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Header="Transport" Grid.Row="2">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Content="_Protocol"
+                           Grid.Row="0"
+                           Target="{Binding ElementName=ProtocolList}"/>
+
+                    <sdl:MultiSelectComboBox x:Name="ProtocolList"
+                                             ItemsSource="{Binding Protocols, Mode=OneWay}"
+                                             SelectedItems="{Binding SelectedProtocols, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Grid.Row="0"
+                                             Grid.Column="1"
+                                             IsEditable="False"/>
+
+                    <Label Grid.Row="1"
+                           Content="_Action"
+                           Margin="0 8 0 0"
+                           Target="{Binding ElementName=ActionBox}"/>
+                    <ComboBox x:Name="ActionBox"
+                              ItemsSource="{Binding Actions}"
+                              SelectedItem="{Binding SelectedAction, UpdateSourceTrigger=PropertyChanged}"
+                              Grid.Row="1"
+                              Grid.Column="1"
+                              Margin="0 8 0 0">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+            </GroupBox>
+        </Grid>
+
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="10">
+
+            <Button Content="OK"
+                    Style="{StaticResource ControlButton}"
+                    IsDefault="True"
+                    Command="{Binding ConfirmCommand}"/>
+
+            <Button Content="Cancel"
+                    Style="{StaticResource ControlButton}"
+                    IsCancel="True"/>
+        </StackPanel>
+
+    </Grid>
+</controls:TitleBarWindow>

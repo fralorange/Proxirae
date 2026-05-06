@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Proxirae.Application.UnitsOfWork.Proxy;
-using Proxirae.Infrastructure.TransactionControl.UnitsOfWork;
+using Proxirae.Application.UnitsOfWork.Proxies;
+using Proxirae.Application.UnitsOfWork.Rules;
+using Proxirae.Infrastructure.TransactionControl.UnitsOfWork.Proxies;
+using Proxirae.Infrastructure.TransactionControl.UnitsOfWork.Rules;
 
 namespace Proxirae.Infrastructure.TransactionControl
 {
@@ -9,6 +11,7 @@ namespace Proxirae.Infrastructure.TransactionControl
         public static IServiceCollection AddUnitsOfWork(this IServiceCollection services)
         {
             services.AddTransient<IProxyUnitOfWork, ProxyUnitOfWork>();
+            services.AddTransient<IRuleUnitOfWork, RuleUnitOfWork>();
             return services;
         }
     }

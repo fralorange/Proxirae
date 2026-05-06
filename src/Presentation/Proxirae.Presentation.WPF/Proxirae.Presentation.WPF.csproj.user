@@ -2,13 +2,16 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <Compile Update="Views\ProxyRulesView.xaml.cs">
+    <Compile Update="Views\ProxyRules\AddProxyRuleView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\AddProxyServerView.xaml.cs">
+    <Compile Update="Views\ProxyRules\ProxyRulesView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\ProxyServersView.xaml.cs">
+    <Compile Update="Views\ProxyServers\AddProxyServerView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\ProxyServers\ProxyServersView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

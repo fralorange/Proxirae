@@ -10,9 +10,9 @@ namespace Proxirae.Presentation.WPF
             Type viewModelType = viewModel.GetType();
             var viewModelNamespace = viewModelType.Namespace;
 
-            if (viewModelNamespace?.EndsWith("ViewModels") == true)
+            if (viewModelNamespace?.Contains("ViewModels") == true)
             {
-                var viewNamespace = string.Concat(viewModelNamespace.AsSpan(0, viewModelNamespace.Length - ".ViewModels".Length), ".Views");
+                var viewNamespace = viewModelNamespace.Replace("ViewModels", "Views");
                 var viewName = viewModelType.Name.EndsWith("ViewModel") ? viewModelType.Name.Substring(0, viewModelType.Name.Length - "Model".Length) : viewModelType.Name;
                 var fullViewName = $"{viewNamespace}.{viewName}";
                 var viewType = Type.GetType(fullViewName);

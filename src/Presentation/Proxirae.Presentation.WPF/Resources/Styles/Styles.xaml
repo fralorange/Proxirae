@@ -117,6 +117,10 @@
 
     <Style x:Key="ControlTable" TargetType="DataGrid">
         <Setter Property="AutoGenerateColumns" Value="False"/>
+        <Setter Property="SelectionUnit" Value="FullRow"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="CanUserResizeColumns" Value="False"/>
+        <Setter Property="CanUserResizeRows" Value="False"/>
         <Setter Property="Background" Value="White"/>
         <Setter Property="BorderBrush" Value="LightGray"/>
         <Setter Property="Margin" Value="10"/>
@@ -124,6 +128,18 @@
             <Setter.Value>
                 <Style TargetType="DataGridCell">
                     <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="DataGridCell">
+                                <Border BorderThickness="{TemplateBinding BorderThickness}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        Background="{TemplateBinding Background}">
+                                    <ContentPresenter VerticalAlignment="Center"
+                                                      HorizontalAlignment="Stretch"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
             </Setter.Value>
         </Setter>

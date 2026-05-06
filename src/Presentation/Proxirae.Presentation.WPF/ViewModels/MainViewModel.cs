@@ -2,6 +2,8 @@
 using CommunityToolkit.Mvvm.Input;
 using Proxirae.Application.Services.Application;
 using Proxirae.Presentation.WPF.Facades.Dialog;
+using Proxirae.Presentation.WPF.ViewModels.ProxyRules;
+using Proxirae.Presentation.WPF.ViewModels.ProxyServers;
 
 namespace Proxirae.Presentation.WPF.ViewModels
 {
