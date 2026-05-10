@@ -30,6 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\ProxyChecker\SetProxyServerView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\ProxyRules\EditProxyRuleView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -4,9 +4,6 @@
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                          xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
-                         xmlns:enum="clr-namespace:Proxirae.Contracts.DTOs.Proxies;assembly=Proxirae.Contracts"
-                         xmlns:system="clr-namespace:System;assembly=mscorlib"
-                         xmlns:local="clr-namespace:Proxirae.Presentation.WPF.Views.ProxyServers"
                          xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls" 
                          xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels.ProxyServers"
                          md:DialogServiceViews.IsRegistered="True"
@@ -20,15 +17,6 @@
                          Background="Transparent"
                          WindowStartupLocation="CenterOwner"
                          ShowInTaskbar="False">
-    <controls:TitleBarWindow.Resources>
-        <ObjectDataProvider x:Key="enumValues"
-                            MethodName="GetValues" 
-                            ObjectType="{x:Type system:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="enum:ProxyTypeDto"/>
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-    </controls:TitleBarWindow.Resources>
     <Grid Background="WhiteSmoke">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Proxirae.Contracts.DTOs.Rules;
 using Proxirae.Contracts.DTOs.Rules.Actions;
+using Proxirae.Presentation.WPF.Facades.Dialog;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
 {
@@ -8,7 +9,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
     {
         public RuleAddDto? ProxyRule { get; private set; }
 
-        public AddProxyRuleViewModel(List<BaseActionDto> actions) : base(actions)
+        public AddProxyRuleViewModel(DialogFacade dialogFacade, List<BaseActionDto> actions) : base(dialogFacade, actions)
         {
         }
 
@@ -16,6 +17,8 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         [RelayCommand]
         private void Confirm()
         {
+            ValidateAllProperties();
+
             if (HasErrors)
                 return;
 

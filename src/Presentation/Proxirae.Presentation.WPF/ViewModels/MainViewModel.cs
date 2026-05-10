@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Proxirae.Application.Services.Application;
 using Proxirae.Presentation.WPF.Facades.Dialog;
+using Proxirae.Presentation.WPF.ViewModels.ProxyChecker;
 using Proxirae.Presentation.WPF.ViewModels.ProxyRules;
 using Proxirae.Presentation.WPF.ViewModels.ProxyServers;
 
@@ -34,6 +35,12 @@ namespace Proxirae.Presentation.WPF.ViewModels
         private void OpenProxyRules()
         {
             _dialogFacade.ShowDialog<ProxyRulesViewModel>(this);
+        }
+
+        [RelayCommand]
+        private void OpenProxyChecker()
+        {
+            _dialogFacade.ShowDialog<ProxyCheckerViewModel>(this);
         }
     }
 }

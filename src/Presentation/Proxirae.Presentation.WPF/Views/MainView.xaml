@@ -36,7 +36,8 @@
                 <MenuItem Header="Reset Layout"/>
             </MenuItem>
             <MenuItem Header="Tools">
-                <MenuItem Header="Proxy Checker..."/>
+                <MenuItem Header="Proxy Checker..."
+                          Command="{Binding OpenProxyCheckerCommand}"/>
                 <Separator/>
                 <MenuItem Header="Options..."/>
             </MenuItem>

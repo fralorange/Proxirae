@@ -4,6 +4,7 @@ using MvvmDialogs;
 using Proxirae.Application.Services.Proxies;
 using Proxirae.Contracts.DTOs.Proxies;
 using Proxirae.Presentation.WPF.Facades.Dialog;
+using Proxirae.Presentation.WPF.ViewModels.ProxyChecker;
 using System.Collections.ObjectModel;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
@@ -22,6 +23,10 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
 
         public ObservableCollection<ProxyListDto> ProxyServers { get; } = [];
 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
+        private bool _hasChanges;
+
         public ProxyServersViewModel(DialogFacade dialogFacade, IProxyService proxyService)
         {
             _dialogFacade = dialogFacade;
@@ -39,6 +44,8 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
             {
                 ProxyServers.Add(proxyServer);
             }
+
+            ProxyServers.CollectionChanged += (_, _) => HasChanges = true;
         }
 
         [RelayCommand]
@@ -88,11 +95,36 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         }
 
         [RelayCommand]
+        private async Task CheckProxyServerAsync(ProxyListDto proxyServer)
+        {
+            var detail = await _proxyService.GetByIdAsync(proxyServer.Id, CancellationToken.None);
+            if (detail is null)
+            {
+                return;
+            }
+
+            var viewModel = new ProxyCheckerViewModel(_dialogFacade, detail);
+            _dialogFacade.ShowDialog(this, viewModel);
+        }
+
+        [RelayCommand]
         private async Task ConfirmAsync()
         {
             await _proxyService.SaveChangesAsync(CancellationToken.None);
 
             DialogResult = true;
+        }
+
+        private bool IsApplyExecutable() { return HasChanges; }
+
+        [RelayCommand(CanExecute = nameof(IsApplyExecutable))]
+        private async Task ApplyAsync()
+        {
+            if (HasChanges)
+            {
+                await _proxyService.SaveChangesAsync(CancellationToken.None);
+                HasChanges = false;
+            }
         }
     }
 }

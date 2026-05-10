@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using Proxirae.Contracts.DTOs.Proxies;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers

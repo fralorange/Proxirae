@@ -4,11 +4,13 @@
                          xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
                          xmlns:sdl="http://schemas.sdl.com/xaml"
                          xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
                          xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels.ProxyRules"
                          d:DataContext="{d:DesignInstance Type=viewmodels:AddProxyRuleViewModel}"
                          mc:Ignorable="d"
+                         md:DialogServiceViews.IsRegistered="True"
                          Title="Proxy Rule"
                          Width="700"
                          Height="500"
@@ -88,11 +90,12 @@
                            Target="{Binding ElementName=ProcessesBox}"/>
                     <TextBox x:Name="ProcessesBox"
                              Grid.Column="1"
+                             Style="{StaticResource FilePickerInput}"
                              AcceptsReturn="True"
                              TextWrapping="Wrap"
                              MinHeight="60"
                              VerticalAlignment="Top"
-                             Text="{Binding Processes, UpdateSourceTrigger=PropertyChanged}"/>
+                             Text="{Binding Processes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
                     <Label Content="_Hosts"
                            Grid.Row="1"

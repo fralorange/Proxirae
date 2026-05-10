@@ -29,6 +29,10 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         [ObservableProperty]
         private List<BaseActionDto> _actions = [];
 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
+        private bool _hasChanges;
+
         public ProxyRulesViewModel(DialogFacade dialogFacade, IRuleService ruleService, ActionFacade actionFacade)
         {
             _dialogFacade = dialogFacade;
@@ -48,12 +52,14 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
             {
                 ProxyRules.Add(proxyRule);
             }
+
+            ProxyRules.CollectionChanged += (_, _) => HasChanges = true;
         }
 
         [RelayCommand]
         private async Task AddProxyRuleAsync()
         {
-            var viewModel = new AddProxyRuleViewModel(Actions);
+            var viewModel = new AddProxyRuleViewModel(_dialogFacade, Actions);
             _dialogFacade.ShowDialog(this, viewModel);
 
             if (viewModel.ProxyRule is { } addRule)
@@ -66,7 +72,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         [RelayCommand]
         private async Task EditProxyRuleAsync(RuleDto proxyRule)
         {
-            var viewModel = new EditProxyRuleViewModel(Actions, proxyRule);
+            var viewModel = new EditProxyRuleViewModel(_dialogFacade, Actions, proxyRule);
             _dialogFacade.ShowDialog(this, viewModel);
 
             if (viewModel.ProxyRule is { } editRule)
@@ -86,7 +92,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         [RelayCommand]
         private async Task UpdateProxyRuleAsync(RuleDto proxyRule)
         {
-            var viewModel = new EditProxyRuleViewModel(Actions, proxyRule);
+            var viewModel = new EditProxyRuleViewModel(_dialogFacade, Actions, proxyRule);
             // TODO: Remove the use of ConfirmCommand outside the UI
             viewModel.ConfirmCommand.Execute(CancellationToken.None);
 
@@ -119,6 +125,16 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
             DialogResult = true;
         }
 
+        private bool IsApplyExecutable() { return HasChanges; }
 
+        [RelayCommand(CanExecute = nameof(IsApplyExecutable))]
+        private async Task ApplyAsync()
+        {
+            if (HasChanges)
+            {
+                await _ruleService.SaveChangesAsync(CancellationToken.None);
+                HasChanges = false;
+            }
+        }
     }
 }

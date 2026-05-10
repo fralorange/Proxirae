@@ -179,6 +179,10 @@
                    Grid.Column="0"
                    Grid.ColumnSpan="2"
                    LastChildFill="False">
+            <Button Content="Apply"
+                    Style="{StaticResource ControlButton}"
+                    DockPanel.Dock="Right"
+                    Command="{Binding ApplyCommand}"/>
             <Button Content="Cancel"
                     Style="{StaticResource ControlButton}"
                     DockPanel.Dock="Right" 

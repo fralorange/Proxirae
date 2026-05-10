@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Proxirae.Contracts.DTOs.Rules;
 using Proxirae.Contracts.DTOs.Rules.Actions;
+using Proxirae.Presentation.WPF.Facades.Dialog;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
 {
@@ -10,7 +11,8 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
 
         public RuleEditDto? ProxyRule { get; private set; }
 
-        public EditProxyRuleViewModel(List<BaseActionDto> actions, RuleDto ruleDto) : base(actions)
+        public EditProxyRuleViewModel(DialogFacade dialogFacade, List<BaseActionDto> actions, RuleDto ruleDto) 
+            : base(dialogFacade, actions)
         {
             _id = ruleDto.Id;
             IsEnabled = ruleDto.IsEnabled;
@@ -34,6 +36,8 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         [RelayCommand]
         private void Confirm()
         {
+            ValidateAllProperties();
+
             if (HasErrors)
                 return;
 
