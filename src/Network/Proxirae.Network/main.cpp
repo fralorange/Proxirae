@@ -1,6 +1,12 @@
-#include <windivert.h>
+#include <memory>
 
+#include "TrafficEngine.h"
+
+using namespace Proxirae::Network;
 
 int main() {
-    HANDLE h = WinDivertOpen("tcp.DstPort == 80", WINDIVERT_LAYER_NETWORK, 0, 0);
+	auto trafficEngine = std::make_unique<TrafficEngine>();
+	trafficEngine->Start();
+
+    return 0;
 }

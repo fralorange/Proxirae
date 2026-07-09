@@ -109,7 +109,7 @@ xcopy /Y /D "$(ProjectDir)external\WinDivert\x86\WinDivert64.sys" "$(OutDir)"</C
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)external\WinDivert\include</AdditionalIncludeDirectories>
     </ClCompile>
@@ -140,6 +140,15 @@ xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TrafficEngine.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="setup.bat" />
+    <None Include="unzip.vbs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PacketInfo.h" />
+    <ClInclude Include="TrafficEngine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
