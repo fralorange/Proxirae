@@ -111,7 +111,8 @@ xcopy /Y /D "$(ProjectDir)external\WinDivert\x86\WinDivert64.sys" "$(OutDir)"</C
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)external\WinDivert\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)include;$(ProjectDir)external\WinDivert\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,16 +140,29 @@ xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="TrafficEngine.cpp" />
+    <ClCompile Include="src\Daemon.cpp" />
+    <ClCompile Include="src\Logging\ConsoleLogger.cpp" />
+    <ClCompile Include="src\Logging\Logger.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="include\Persistence\ConnectionKey.h" />
+    <ClCompile Include="src\Persistence\ConnectionTable.cpp" />
+    <ClCompile Include="src\Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="setup.bat" />
     <None Include="unzip.vbs" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PacketInfo.h" />
-    <ClInclude Include="TrafficEngine.h" />
+    <ClInclude Include="include\Daemon.h" />
+    <ClInclude Include="include\Logging\ConsoleLogger.h" />
+    <ClInclude Include="include\Logging\ILogger.h" />
+    <ClInclude Include="include\Logging\LogLevel.h" />
+    <ClInclude Include="include\Packet.h" />
+    <ClInclude Include="include\Persistence\ConnectionEntry.h" />
+    <ClInclude Include="include\Persistence\ConnectionKeyHash.h" />
+    <ClInclude Include="include\Persistence\ConnectionState.h" />
+    <ClInclude Include="include\Persistence\ConnectionTable.h" />
+    <ClInclude Include="include\Engine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
