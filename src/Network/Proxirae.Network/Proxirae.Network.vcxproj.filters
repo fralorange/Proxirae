@@ -18,22 +18,46 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="include\Persistence\ConnectionKey.h">
+    <ClCompile Include="include\registry\ConnectionKey.h">
       <Filter>Файлы заголовков</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine.cpp">
+    <ClCompile Include="src\core\Engine.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\Persistence\ConnectionTable.cpp">
+    <ClCompile Include="src\registry\ConnectionTable.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\Daemon.cpp">
+    <ClCompile Include="src\core\Daemon.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\Logging\ConsoleLogger.cpp">
+    <ClCompile Include="src\diagnostics\ConsoleLogger.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\Logging\Logger.cpp">
+    <ClCompile Include="src\diagnostics\ILogger.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\Packet.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\Endpoint.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\Socks5Proxy.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\TcpHandler.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\PacketDiverter.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\PacketDispatcher.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\TcpSession.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\TcpListener.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -46,34 +70,61 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Packet.h">
+    <ClInclude Include="include\core\Packet.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Persistence\ConnectionEntry.h">
+    <ClInclude Include="include\registry\ConnectionEntry.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Persistence\ConnectionKeyHash.h">
+    <ClInclude Include="include\registry\ConnectionKeyHash.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Engine.h">
+    <ClInclude Include="include\registry\ConnectionState.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Persistence\ConnectionState.h">
+    <ClInclude Include="include\registry\ConnectionTable.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Persistence\ConnectionTable.h">
+    <ClInclude Include="include\core\Daemon.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Daemon.h">
+    <ClInclude Include="include\diagnostics\ILogger.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Logging\ILogger.h">
+    <ClInclude Include="include\diagnostics\LogLevel.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Logging\LogLevel.h">
+    <ClInclude Include="include\diagnostics\ConsoleLogger.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\Logging\ConsoleLogger.h">
+    <ClInclude Include="include\core\Endpoint.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\IProxy.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\Socks5Proxy.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\Engine.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\IPacketHandler.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\PacketDiverter.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\TcpHandler.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\PacketDispatcher.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\TcpSession.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core\TcpListener.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

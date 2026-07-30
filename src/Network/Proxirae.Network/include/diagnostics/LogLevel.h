@@ -1,4 +1,4 @@
-namespace Proxirae::Network::Logging {
+namespace Proxirae {
 	enum class LogLevel {
 		Debug,
 		Info,

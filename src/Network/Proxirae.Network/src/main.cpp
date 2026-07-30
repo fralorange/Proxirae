@@ -1,28 +1,47 @@
-#include <memory>
 #include <thread>
 
-#include "Persistence/ConnectionTable.h"
-#include "Logging/ConsoleLogger.h"
-#include "Engine.h"
-#include "Daemon.h"
+#include "registry/ConnectionTable.h"
+#include "diagnostics/ConsoleLogger.h"
+#include "core/Engine.h"
+#include "core/Daemon.h"
+#include "core/TcpHandler.h"
 
-using namespace Proxirae::Network;
+using namespace Proxirae;
 
 int main() {
-	Persistence::ConnectionTable connections;
-	Logging::ConsoleLogger logger;
+	ConsoleLogger logger;
 
-	auto engine = std::make_unique<Engine>(connections, logger);
-	auto daemon = std::make_unique<Daemon>(connections, logger);
+	WSAData wsaData;
+	WORD DLLVersion = MAKEWORD(2, 2);
+
+	if (WSAStartup(DLLVersion, &wsaData) != 0) {
+		logger.LogCritical("Failed to initialize Winsock.");
+		return 1;
+	}
+
+	ConnectionTable connections;
+
+	PacketDispatcher dispatcher;
+	PacketDiverter diverter(logger);
+
+	TcpHandler tcpHandler(connections, logger);
+	dispatcher.RegisterHandler(tcpHandler);
+
+	TcpListener listener(logger);
+
+	Engine engine(diverter, dispatcher);
+	Daemon daemon(listener, connections, logger);
 
 	std::thread daemonThread([&daemon]() {
-		daemon->Start();
+		daemon.Start();
 	});
 
-	engine->Start();
+	engine.Run();
 
-	daemon->Stop();
+	daemon.Stop();
 	daemonThread.join();
+
+	WSACleanup();
 
 	return 0;
 }

@@ -2,7 +2,7 @@
 
 #include <basetsd.h>
 
-namespace Proxirae::Network::Persistence {
+namespace Proxirae {
 	struct ConnectionKey {
 		UINT32 srcAddress = 0;
 		UINT16 srcPort = 0;

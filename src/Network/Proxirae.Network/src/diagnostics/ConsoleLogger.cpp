@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Logging/ConsoleLogger.h"
+#include "diagnostics/ConsoleLogger.h"
 
 #define CYAN    "\033[36m"
 #define GREEN   "\033[32m"
@@ -9,7 +9,7 @@
 #define BOLDRED     "\033[1m\033[31m"
 #define RESET   "\033[0m"
 
-namespace Proxirae::Network::Logging {
+namespace Proxirae {
 	void ConsoleLogger::Log(LogLevel level, std::string_view message)
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);

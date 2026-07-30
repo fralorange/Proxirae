@@ -4,7 +4,7 @@
 
 #include "ConnectionState.h"
 
-namespace Proxirae::Network::Persistence {
+namespace Proxirae {
 	struct ConnectionEntry {
 		UINT32 destAddress = 0;
 		UINT16 destPort = 0;

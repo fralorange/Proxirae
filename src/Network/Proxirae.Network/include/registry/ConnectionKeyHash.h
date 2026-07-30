@@ -1,8 +1,9 @@
 #pragma once
 #include <cstddef>
+
 #include "ConnectionKey.h"
 
-namespace Proxirae::Network::Persistence {
+namespace Proxirae {
 	struct ConnectionKeyHash {
 		std::size_t operator()(const ConnectionKey& key) const {
 			std::size_t h1 = std::hash<UINT32>{}(key.srcAddress);

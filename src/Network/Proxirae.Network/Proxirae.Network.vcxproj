@@ -140,29 +140,46 @@ xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Daemon.cpp" />
-    <ClCompile Include="src\Logging\ConsoleLogger.cpp" />
-    <ClCompile Include="src\Logging\Logger.cpp" />
+    <ClCompile Include="src\core\Endpoint.cpp" />
+    <ClCompile Include="src\core\Daemon.cpp" />
+    <ClCompile Include="src\core\PacketDispatcher.cpp" />
+    <ClCompile Include="src\core\PacketDiverter.cpp" />
+    <ClCompile Include="src\core\TcpListener.cpp" />
+    <ClCompile Include="src\core\TcpSession.cpp" />
+    <ClCompile Include="src\core\Socks5Proxy.cpp" />
+    <ClCompile Include="src\core\TcpHandler.cpp" />
+    <ClCompile Include="src\diagnostics\ConsoleLogger.cpp" />
+    <ClCompile Include="src\diagnostics\ILogger.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="include\Persistence\ConnectionKey.h" />
-    <ClCompile Include="src\Persistence\ConnectionTable.cpp" />
-    <ClCompile Include="src\Engine.cpp" />
+    <ClCompile Include="include\registry\ConnectionKey.h" />
+    <ClCompile Include="src\core\Packet.cpp" />
+    <ClCompile Include="src\registry\ConnectionTable.cpp" />
+    <ClCompile Include="src\core\Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="setup.bat" />
     <None Include="unzip.vbs" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Daemon.h" />
-    <ClInclude Include="include\Logging\ConsoleLogger.h" />
-    <ClInclude Include="include\Logging\ILogger.h" />
-    <ClInclude Include="include\Logging\LogLevel.h" />
-    <ClInclude Include="include\Packet.h" />
-    <ClInclude Include="include\Persistence\ConnectionEntry.h" />
-    <ClInclude Include="include\Persistence\ConnectionKeyHash.h" />
-    <ClInclude Include="include\Persistence\ConnectionState.h" />
-    <ClInclude Include="include\Persistence\ConnectionTable.h" />
-    <ClInclude Include="include\Engine.h" />
+    <ClInclude Include="include\core\Daemon.h" />
+    <ClInclude Include="include\core\Endpoint.h" />
+    <ClInclude Include="include\core\Engine.h" />
+    <ClInclude Include="include\core\IPacketHandler.h" />
+    <ClInclude Include="include\core\IProxy.h" />
+    <ClInclude Include="include\core\PacketDispatcher.h" />
+    <ClInclude Include="include\core\PacketDiverter.h" />
+    <ClInclude Include="include\core\TcpListener.h" />
+    <ClInclude Include="include\core\TcpSession.h" />
+    <ClInclude Include="include\core\Socks5Proxy.h" />
+    <ClInclude Include="include\core\TcpHandler.h" />
+    <ClInclude Include="include\diagnostics\ConsoleLogger.h" />
+    <ClInclude Include="include\diagnostics\ILogger.h" />
+    <ClInclude Include="include\diagnostics\LogLevel.h" />
+    <ClInclude Include="include\core\Packet.h" />
+    <ClInclude Include="include\registry\ConnectionEntry.h" />
+    <ClInclude Include="include\registry\ConnectionKeyHash.h" />
+    <ClInclude Include="include\registry\ConnectionState.h" />
+    <ClInclude Include="include\registry\ConnectionTable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

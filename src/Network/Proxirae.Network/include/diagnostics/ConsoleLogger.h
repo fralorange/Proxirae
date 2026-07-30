@@ -2,9 +2,9 @@
 
 #include <mutex>
 
-#include "Logging/ILogger.h"
+#include "ILogger.h"
 
-namespace Proxirae::Network::Logging {
+namespace Proxirae {
 	class ConsoleLogger : public ILogger {
 	public:
 		void Log(LogLevel level, std::string_view message) override;

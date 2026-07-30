@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Logging/ILogger.h"
+#include "diagnostics/ILogger.h"
 
-namespace Proxirae::Network::Logging {
+namespace Proxirae {
 	void ILogger::LogDebug(std::string_view message)
 	{
 		Log(LogLevel::Debug, message);

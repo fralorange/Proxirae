@@ -4,7 +4,7 @@
 
 #include "LogLevel.h"
 
-namespace Proxirae::Network::Logging {
+namespace Proxirae {
 	class ILogger {
 	public:
 		virtual ~ILogger() = default;
