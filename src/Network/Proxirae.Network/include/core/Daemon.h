@@ -2,11 +2,10 @@
 
 #include <vector>
 #include <mutex>
-#include <WinSock2.h>
 
-#include "core/TcpSession.h"
-#include "core/TcpListener.h"
-#include "registry/ConnectionTable.h"
+#include "core/transport/TcpSession.h"
+#include "core/transport/TcpListener.h"
+#include "core/registry/ConnectionTable.h"
 #include "diagnostics/ILogger.h"
 
 namespace Proxirae {
@@ -15,7 +14,7 @@ namespace Proxirae {
 		Daemon(TcpListener& listener, ConnectionTable& connections, ILogger& logger);
 		~Daemon();
 
-		void Start();
+		void Start(std::uint16_t port, std::function<void(bool)> onReady);
 		void Stop();
 
 	private:

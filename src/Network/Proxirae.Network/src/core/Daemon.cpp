@@ -1,26 +1,30 @@
 #include <string>
 #include <format>
-#include <WS2tcpip.h>
-#include <thread>
 
 #include "core/Daemon.h"
-#include "registry/ConnectionKey.h"
-#include "core/IProxy.h"
-#include "core/Socks5Proxy.h"
-
-constexpr uint16_t DAEMON_PORT = 33999;
+#include "platform/inet.h"
+#include "core/registry/ConnectionKey.h"
 
 namespace Proxirae {
 	Daemon::Daemon(TcpListener& listener, ConnectionTable& connections, ILogger& logger)
-		: m_listener(listener), m_connections(connections), m_logger(logger) {}
+		: m_listener(listener), m_connections(connections), m_logger(logger) {
+	}
 
 	Daemon::~Daemon() {
 		Stop();
 	}
 
-	void Daemon::Start() {
-		
-		m_listener.Listen(DAEMON_PORT);
+	void Daemon::Start(std::uint16_t port, std::function<void(bool)> onReady) {
+		bool success = m_listener.Listen(port);
+
+		if (!success) {
+			m_logger.LogError("Failed to start Daemon. Err=Listener closed.");
+			
+			return;
+		}
+
+		onReady(success);
+
 		m_running = true;
 
 		while (m_running) {
@@ -39,17 +43,15 @@ namespace Proxirae {
 			auto it = m_connections.GetConnection(key);
 
 			if (!it.has_value()) {
-				session->Stop();
+				session->Terminate();
 				continue;
 			}
 
 			AddClient(session);
 
-			std::thread([session, entry = it.value(), this]() {
-				session->Handle(entry);
-
-				this->RemoveClient(session);
-			}).detach();
+			session->Handle(it.value(), [this](auto s) {
+				RemoveClient(s);
+			});
 		}
 	}
 
@@ -60,7 +62,7 @@ namespace Proxirae {
 
 		for (auto& session : m_sessions) {
 			if (session) {
-				session->Stop();
+				session->Terminate();
 			}
 		}
 
