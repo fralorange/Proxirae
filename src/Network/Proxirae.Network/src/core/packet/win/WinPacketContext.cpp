@@ -3,16 +3,24 @@
 #include "core/packet/win/WinPacketContext.h"
 
 namespace Proxirae {
-	WinPacketContext::WinPacketContext(WINDIVERT_ADDRESS addr, PWINDIVERT_IPHDR ipHdr, UINT8 protocol, PWINDIVERT_TCPHDR tcpHdr, PWINDIVERT_UDPHDR udpHdr)
-		: m_addr(addr), m_ipHdr(ipHdr), m_protocol(protocol), m_tcpHdr(tcpHdr), m_udpHdr(udpHdr)
+	WinPacketContext::WinPacketContext(std::uint8_t* rawData, std::uint32_t rawDataLen, PacketMetadata metadata, PWINDIVERT_IPHDR ipHdr, UINT8 protocol, PWINDIVERT_TCPHDR tcpHdr, PWINDIVERT_UDPHDR udpHdr, std::uint32_t payloadLen)
+		: m_rawData(rawData), 
+		  m_rawDataLen(rawDataLen), 
+		  m_metadata(metadata), 
+		  m_ipHdr(ipHdr), 
+		  m_protocol(protocol), 
+		  m_tcpHdr(tcpHdr), 
+		  m_udpHdr(udpHdr), 
+		  m_payloadLen(payloadLen)
 	{}
 
-	std::optional<WinPacketContext> WinPacketContext::TryCreate(const std::uint8_t* buffer, std::uint32_t len, WINDIVERT_ADDRESS addr)
+	std::optional<WinPacketContext> WinPacketContext::TryCreate(const std::uint8_t* buffer, std::uint32_t len, PacketMetadata metadata)
 	{
 		PWINDIVERT_IPHDR ipHdr;
 		std::uint8_t protocol;
 		PWINDIVERT_TCPHDR tcpHdr;
 		PWINDIVERT_UDPHDR udpHdr;
+		std::uint32_t payloadLen;
 
 		if (!WinDivertHelperParsePacket(
 			buffer,
@@ -24,7 +32,7 @@ namespace Proxirae {
 			&tcpHdr,
 			&udpHdr,
 			nullptr,
-			nullptr,
+			&payloadLen,
 			nullptr,
 			nullptr
 		)) {
@@ -35,7 +43,7 @@ namespace Proxirae {
 			return std::nullopt;
 		}
 
-		return WinPacketContext(addr, ipHdr, protocol, tcpHdr, udpHdr);
+		return WinPacketContext(const_cast<std::uint8_t*>(buffer), len, metadata, ipHdr, protocol, tcpHdr, udpHdr, payloadLen);
 	}
 
 	bool WinPacketContext::IsTcp() const
@@ -68,17 +76,22 @@ namespace Proxirae {
 
 	bool WinPacketContext::IsOutbound() const
 	{
-		return m_addr.Outbound;
+		return m_metadata.Outbound;
 	}
 
 	bool WinPacketContext::IsLoopback() const
 	{
-		return m_addr.Loopback;
+		return m_metadata.Loopback;
 	}
 
 	bool WinPacketContext::IsModified() const
 	{
 		return m_isModified;
+	}
+
+	bool WinPacketContext::HasPayload() const
+	{
+		return m_payloadLen > 0;
 	}
 
 	std::uint32_t WinPacketContext::GetSourceAddress() const
@@ -130,6 +143,26 @@ namespace Proxirae {
 		return Endpoint(m_ipHdr->DstAddr, m_tcpHdr ? m_tcpHdr->DstPort : m_udpHdr->DstPort);
 	}
 
+	std::optional<std::uint32_t> WinPacketContext::GetProcessId() const
+	{
+		return m_processId;
+	}
+
+	std::uint8_t* WinPacketContext::GetRawData()
+	{
+		return m_rawData;
+	}
+
+	std::uint32_t WinPacketContext::GetRawDataLength() const
+	{
+		return m_rawDataLen;
+	}
+
+	PacketMetadata& WinPacketContext::GetMetadata()
+	{
+		return m_metadata;
+	}
+
 	void WinPacketContext::SetSource(std::uint32_t addr, std::uint16_t port)
 	{
 		m_ipHdr->SrcAddr = addr;
@@ -156,5 +189,14 @@ namespace Proxirae {
 		}
 
 		m_isModified = true;
+	}
+
+	void WinPacketContext::SetProcessId(std::uint32_t pid)
+	{
+		if (m_processId.has_value()) {
+			return;
+		}
+
+		m_processId = pid;
 	}
 }

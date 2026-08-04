@@ -1,6 +1,9 @@
 #pragma once
 
+#include <optional>
+
 #include "core/packet/Endpoint.h"
+#include "core/packet/PacketMetadata.h"
 
 namespace Proxirae {
 	class IPacketContext {
@@ -19,6 +22,8 @@ namespace Proxirae {
 		virtual bool IsLoopback() const = 0;
 		virtual bool IsModified() const = 0;
 
+		virtual bool HasPayload() const = 0;
+
 		virtual std::uint32_t GetSourceAddress() const = 0;
 		virtual std::uint32_t GetDestinationAddress() const = 0;
 
@@ -30,7 +35,15 @@ namespace Proxirae {
 		virtual Endpoint GetSourceEndpoint() const = 0;
 		virtual Endpoint GetDestinationEndpoint() const = 0;
 
+		virtual std::optional<std::uint32_t> GetProcessId() const = 0;
+
+		virtual std::uint8_t* GetRawData() = 0;
+		virtual std::uint32_t GetRawDataLength() const = 0;
+		virtual PacketMetadata& GetMetadata() = 0;
+
 		virtual void SetSource(std::uint32_t addr, std::uint16_t port) = 0;
 		virtual void SetDestination(std::uint32_t addr, std::uint16_t port) = 0;
+
+		virtual void SetProcessId(std::uint32_t pid) = 0;
 	};
 }

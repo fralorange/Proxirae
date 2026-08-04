@@ -2,6 +2,7 @@
 #include <future>
 
 #include "core/registry/ConnectionTable.h"
+#include "core/registry/AssociationTable.h"
 #include "diagnostics/ConsoleLogger.h"
 #include "core/Engine.h"
 #include "core/Daemon.h"
@@ -19,6 +20,8 @@ using namespace Proxirae;
 
 int main() {
 	ConsoleLogger logger;
+
+	AssociationTable associations;
 	
 #ifdef _WIN32
 	WSAData wsaData;
@@ -28,8 +31,9 @@ int main() {
 		logger.LogCritical("Failed to initialize Winsock.");
 		return 1;
 	}
-
-	PacketWinDiverter diverter(logger);
+	
+	WinTcpCorrelator tcpCorrelator(associations);
+	PacketWinDiverter diverter(tcpCorrelator, logger);
 	IocpDriver driver;
 #endif 
 

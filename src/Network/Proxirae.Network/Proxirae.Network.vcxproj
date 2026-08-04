@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -140,12 +140,18 @@ xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\contracts\rule\RuleContract.cpp" />
     <ClCompile Include="src\core\packet\Endpoint.cpp" />
     <ClCompile Include="src\core\Daemon.cpp" />
     <ClCompile Include="src\core\io\win\IocpContext.cpp" />
     <ClCompile Include="src\core\io\win\IocpDriver.cpp" />
     <ClCompile Include="src\core\packet\PacketDispatcher.cpp" />
+    <ClCompile Include="src\core\packet\PacketRouter.cpp" />
     <ClCompile Include="src\core\packet\win\PacketWinDiverter.cpp" />
+    <ClCompile Include="src\core\packet\win\WinTcpCorrelator.cpp" />
+    <ClCompile Include="src\core\registry\AssociationKeyHash.cpp" />
+    <ClCompile Include="src\core\registry\AssociationTable.cpp" />
+    <ClCompile Include="src\core\registry\ConnectionKeyHash.cpp" />
     <ClCompile Include="src\core\transport\TcpListener.cpp" />
     <ClCompile Include="src\core\transport\TcpSession.cpp" />
     <ClCompile Include="src\core\proxy\Socks5Proxy.cpp" />
@@ -163,6 +169,12 @@ xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I
     <None Include="unzip.vbs" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\contracts\proxy\ProxyContract.h" />
+    <ClInclude Include="include\contracts\proxy\ProxyType.h" />
+    <ClInclude Include="include\contracts\rule\RuleAction.h" />
+    <ClInclude Include="include\contracts\rule\RuleActionContract.h" />
+    <ClInclude Include="include\contracts\rule\RuleContract.h" />
+    <ClInclude Include="include\contracts\rule\RuleProtocol.h" />
     <ClInclude Include="include\core\Daemon.h" />
     <ClInclude Include="include\core\packet\Endpoint.h" />
     <ClInclude Include="include\core\Engine.h" />
@@ -175,9 +187,17 @@ xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I
     <ClInclude Include="include\core\packet\IPacketContext.h" />
     <ClInclude Include="include\core\packet\IPacketDiverter.h" />
     <ClInclude Include="include\core\packet\IPacketHandler.h" />
+    <ClInclude Include="include\core\packet\Packet.h" />
+    <ClInclude Include="include\core\packet\PacketMetadata.h" />
+    <ClInclude Include="include\core\packet\PacketRouter.h" />
+    <ClInclude Include="include\core\packet\win\WinTcpCorrelator.h" />
     <ClInclude Include="include\core\proxy\IProxy.h" />
     <ClInclude Include="include\core\packet\PacketDispatcher.h" />
     <ClInclude Include="include\core\packet\win\PacketWinDiverter.h" />
+    <ClInclude Include="include\core\registry\AssociationEntry.h" />
+    <ClInclude Include="include\core\registry\AssociationKey.h" />
+    <ClInclude Include="include\core\registry\AssociationKeyHash.h" />
+    <ClInclude Include="include\core\registry\AssociationTable.h" />
     <ClInclude Include="include\core\transport\TcpListener.h" />
     <ClInclude Include="include\core\transport\TcpSession.h" />
     <ClInclude Include="include\core\proxy\Socks5Proxy.h" />
@@ -193,6 +213,7 @@ xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I
     <ClInclude Include="include\platform\inet.h" />
     <ClInclude Include="include\platform\sock.h" />
     <ClInclude Include="include\platform\sock_types.h" />
+    <ClInclude Include="include\process\IProcessResolver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
