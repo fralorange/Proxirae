@@ -4,11 +4,12 @@
 #include "diagnostics/ILogger.h"
 #include "core/transport/TcpSession.h"
 #include "core/io/IIoDriver.h"
+#include "core/proxy/IProxyFactory.h"
 
 namespace Proxirae {
 	class TcpListener {
 	public:
-		TcpListener(IIoDriver& driver, ILogger& logger);
+		TcpListener(IIoDriver& driver, ILogger& logger, IProxyFactory& factory);
 		~TcpListener();
 
 		std::uint16_t Bind();
@@ -20,5 +21,6 @@ namespace Proxirae {
 
 		IIoDriver& m_driver;
 		ILogger& m_logger;
+		IProxyFactory& m_proxyFactory;
 	};
 }

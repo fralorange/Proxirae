@@ -3,14 +3,11 @@
 #include "platform/sock.h"
 #include "platform/inet.h"
 #include "core/transport/TcpSession.h"
-#include "core/proxy/Socks5Proxy.h"
 
 namespace Proxirae {
-	TcpSession::TcpSession(NativeSocket client, Endpoint endpoint, IIoDriver& driver, ILogger& logger)
-		: m_client(client), m_endpoint(endpoint), m_driver(driver), m_logger(logger) 
-	{ 
-		m_proxy = std::make_unique<Socks5Proxy>("127.0.0.1", 10808, m_driver, m_logger);
-	}
+	TcpSession::TcpSession(NativeSocket client, Endpoint endpoint, IIoDriver& driver, ILogger& logger, IProxyFactory& factory)
+		: m_client(client), m_endpoint(endpoint), m_driver(driver), m_logger(logger), m_proxyFactory(factory)
+	{ }
 
 	TcpSession::~TcpSession() {
 		Terminate();
@@ -26,15 +23,22 @@ namespace Proxirae {
 		return m_endpoint.GetPort();
 	}
 
-	void TcpSession::Handle(ConnectionEntry entry, std::function<void(std::shared_ptr<TcpSession>)> onTerminated)
+	void TcpSession::Handle(const FiveTuple& key, const ConnectionEntry& entry, std::function<void(std::shared_ptr<TcpSession>)> onTerminated)
 	{
 		m_onTerminated = std::move(onTerminated);
+
+		if (!entry.proxyId.has_value()) {
+			Terminate();
+			return;
+		}
+
+		m_proxy = m_proxyFactory.Create(*entry.proxyId);
 
 		char targetHost[INET_ADDRSTRLEN];
 		int targetPort;
 
-		inet_ntop(AF_INET, &entry.destAddress, targetHost, sizeof(targetHost));
-		targetPort = ntohs(entry.destPort);
+		inet_ntop(AF_INET, &key.dstAddress, targetHost, sizeof(targetHost));
+		targetPort = ntohs(key.dstPort);
 
 		if (!m_proxy->Connect(targetHost, targetPort)) {
 			Terminate();

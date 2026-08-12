@@ -12,8 +12,8 @@
 		constexpr int ShutdownBoth = SD_BOTH;
 		using SocketLen = int;
 
-		inline void CloseSocket(NativeSocket s) { closesocket(static_cast<SOCKET>(s)); }
-		inline int GetSocketError() { return WSAGetLastError(); }
+		void CloseSocket(NativeSocket s);
+		int GetSocketError();
 	}
 
 #elif defined(__linux__)
@@ -28,8 +28,8 @@
 		constexpr int ShutdownBoth = SHUT_RDWR;
 		using SocketLen = socklen_t;
 
-		inline void CloseSocket(NativeSocket s) { close(s); }
-		inline int GetSocketError() { return errno; }
+		void CloseSocket(NativeSocket s);
+		int GetSocketError();
 	}
 #else 
 	#error Unsupported platform

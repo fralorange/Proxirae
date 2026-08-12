@@ -5,13 +5,13 @@
 
 #include "core/transport/TcpSession.h"
 #include "core/transport/TcpListener.h"
-#include "core/registry/ConnectionTable.h"
+#include "core/registry/ConnectionRegistry.h"
 #include "diagnostics/ILogger.h"
 
 namespace Proxirae {
 	class Daemon {
 	public:
-		Daemon(TcpListener& listener, ConnectionTable& connections, ILogger& logger);
+		Daemon(TcpListener& listener, ConnectionRegistry& connections, ILogger& logger);
 		~Daemon();
 
 		void Start(std::uint16_t port, std::function<void(bool)> onReady);
@@ -22,7 +22,7 @@ namespace Proxirae {
 		std::vector<std::shared_ptr<TcpSession>> m_sessions;
 		std::mutex m_sessions_mtx;
 
-		ConnectionTable& m_connections;
+		ConnectionRegistry& m_connections;
 
 		ILogger& m_logger;
 

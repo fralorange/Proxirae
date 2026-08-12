@@ -1,5 +1,4 @@
 #include "core/packet/PacketDispatcher.h"
-#include "core/packet/IPacketContext.h"
 
 namespace Proxirae {
 	void PacketDispatcher::RegisterHandler(IPacketHandler& handler)
@@ -7,11 +6,11 @@ namespace Proxirae {
 		m_handlers.push_back(&handler);
 	}
 
-	void PacketDispatcher::Dispatch(IPacketContext& packet)
+	void PacketDispatcher::Dispatch(PacketDispatchContext ctx)
 	{
 		for (auto* handler : m_handlers) {
-			if (handler->CanHandle(packet)) {
-				handler->Handle(packet);
+			if (handler->CanHandle(ctx.packetCtx)) {
+				handler->Handle(ctx);
 
 				return;
 			}

@@ -1,9 +1,9 @@
 #include <functional>
 
-#include "core/registry/AssociationKeyHash.h"
+#include "core/registry/FiveTupleHash.h"
 
 namespace Proxirae {
-	std::size_t AssociationKeyHash::operator()(const AssociationKey& key) const
+	std::size_t FiveTupleHash::operator()(const FiveTuple& key) const
 	{
 		std::size_t h1 = std::hash<std::uint32_t>{}(key.srcAddress);
 		std::size_t h2 = std::hash<std::uint16_t>{}(key.srcPort);

@@ -4,8 +4,8 @@
 #include "core/packet/win/WinPacketContext.h"
 
 namespace Proxirae {
-	WinTcpCorrelator::WinTcpCorrelator(AssociationTable& associations) 
-		: m_associations(associations) { }
+	WinTcpCorrelator::WinTcpCorrelator(IProcessMonitor& monitor, AssociationRegistry& associations) 
+		: m_monitor(monitor), m_associations(associations) { }
 
 	void WinTcpCorrelator::CorrelateNetwork(const Packet& packet, const std::function<void(IPacketContext&)>& callback)
 	{
@@ -18,7 +18,7 @@ namespace Proxirae {
 		auto& ctx = ctxOpt.value();
 
 		bool isOutbound = packet.metadata.Outbound == 1;
-		AssociationKey key{
+		FiveTuple key{
 			.srcAddress = WinDivertHelperNtohl(isOutbound ? ctx.GetSourceAddress() : ctx.GetDestinationAddress()),
 			.srcPort = WinDivertHelperNtohs(isOutbound ? ctx.GetSourcePort() : ctx.GetDestinationPort()),
 			.dstAddress = WinDivertHelperNtohl(isOutbound ? ctx.GetDestinationAddress() : ctx.GetSourceAddress()),
@@ -46,7 +46,7 @@ namespace Proxirae {
 	{
 		if (metadata.Event == WINDIVERT_EVENT_SOCKET_CONNECT) {
 			if (metadata.IPv6 == 0) {
-				AssociationKey key{
+				FiveTuple key{
 					.srcAddress = metadata.Socket.LocalAddr[0],
 					.srcPort =	metadata.Socket.LocalPort,
 					.dstAddress = metadata.Socket.RemoteAddr[0],
@@ -59,6 +59,7 @@ namespace Proxirae {
 				};	
 
 				m_associations.AddAssociation(key, entry);
+				m_monitor.AcquireProcess(metadata.Socket.ProcessId);
 
 				auto [it, end] = m_pending.equal_range(key);
 
@@ -80,7 +81,7 @@ namespace Proxirae {
 		}
 		else if (metadata.Event == WINDIVERT_EVENT_SOCKET_CLOSE) {
 			if (metadata.IPv6 == 0) {
-				AssociationKey key{
+				FiveTuple key{
 					.srcAddress = metadata.Socket.LocalAddr[0],
 					.srcPort =	metadata.Socket.LocalPort,
 					.dstAddress = metadata.Socket.RemoteAddr[0],
@@ -89,6 +90,7 @@ namespace Proxirae {
 				};
 
 				m_associations.RemoveAssociation(key);
+				m_monitor.ReleaseProcess(metadata.Socket.ProcessId);
 			}
 		}
 	}

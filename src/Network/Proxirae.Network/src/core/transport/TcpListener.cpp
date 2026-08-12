@@ -6,8 +6,8 @@
 #include "core/packet/Endpoint.h"
 
 namespace Proxirae {
-	TcpListener::TcpListener(IIoDriver& driver, ILogger& logger)
-		: m_driver(driver), m_logger(logger) {}
+	TcpListener::TcpListener(IIoDriver& driver, ILogger& logger, IProxyFactory& factory)
+		: m_driver(driver), m_logger(logger), m_proxyFactory(factory) {}
 
 	TcpListener::~TcpListener()
 	{
@@ -102,6 +102,6 @@ namespace Proxirae {
 		std::string message = std::format("Client connected: Src={}", endpoint.ToString());
 		m_logger.LogInfo(message);
 
-		return std::make_shared<TcpSession>(client, endpoint, m_driver, m_logger);
+		return std::make_shared<TcpSession>(client, endpoint, m_driver, m_logger, m_proxyFactory);
 	}
 }

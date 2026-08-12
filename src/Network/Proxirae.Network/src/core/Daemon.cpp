@@ -3,10 +3,10 @@
 
 #include "core/Daemon.h"
 #include "platform/inet.h"
-#include "core/registry/ConnectionKey.h"
+#include "core/registry/ThreeTuple.h"
 
 namespace Proxirae {
-	Daemon::Daemon(TcpListener& listener, ConnectionTable& connections, ILogger& logger)
+	Daemon::Daemon(TcpListener& listener, ConnectionRegistry& connections, ILogger& logger)
 		: m_listener(listener), m_connections(connections), m_logger(logger) {
 	}
 
@@ -34,22 +34,29 @@ namespace Proxirae {
 				continue;
 			}
 
-			ConnectionKey key{
+			ThreeTuple key{
 				.srcAddress = session->GetAddress(),
 				.srcPort = session->GetPort(),
 				.protocol = IPPROTO_TCP
 			};
 
-			auto it = m_connections.GetConnection(key);
+			auto optKey = m_connections.FindKey(key);
 
-			if (!it.has_value()) {
+			if (!optKey.has_value()) {
+				session->Terminate();
+				continue;
+			}
+
+			auto entryIt = m_connections.GetConnection(*optKey);
+
+			if (!entryIt.has_value()) {
 				session->Terminate();
 				continue;
 			}
 
 			AddClient(session);
 
-			session->Handle(it.value(), [this](auto s) {
+			session->Handle(optKey.value(), entryIt.value(), [this](auto s) {
 				RemoveClient(s);
 			});
 		}
@@ -83,12 +90,16 @@ namespace Proxirae {
 			m_sessions.erase(it);
 		}
 
-		ConnectionKey key{
+		ThreeTuple key{
 			.srcAddress = session->GetAddress(),
 			.srcPort = session->GetPort(),
 			.protocol = IPPROTO_TCP
 		};
 
-		m_connections.RemoveConnection(key);
+		auto optKey = m_connections.FindKey(key);
+
+		if (optKey.has_value()) {
+			m_connections.RemoveConnection(*optKey);
+		}
 	}
 }

@@ -1,82 +1,86 @@
 #include <format>
-#include <WS2tcpip.h>
 
+#include "platform/inet.h"
 #include "core/packet/TcpHandler.h"
-#include <core/registry/ConnectionTable.h>
+#include "core/registry/ConnectionRegistry.h"
 
 namespace Proxirae {
-	TcpHandler::TcpHandler(std::uint16_t redirectPort, ConnectionTable& connections, ILogger& logger)
+	TcpHandler::TcpHandler(std::uint16_t redirectPort, ConnectionRegistry& connections, ILogger& logger)
 		: m_redirectPort(redirectPort), m_connections(connections), m_logger(logger) {}
 
-	bool TcpHandler::CanHandle(const IPacketContext& packet)
+	bool TcpHandler::CanHandle(const IPacketContext& ctx)
 	{
-		return packet.IsTcp();
+		return ctx.IsTcp();
 	}
 
-	void TcpHandler::Handle(IPacketContext& ctx)
+	void TcpHandler::Handle(PacketDispatchContext& ctx)
 	{
-		if (ctx.IsOutbound()) {
-			if (ctx.IsTcpRst()) {
-				HandleRst(ctx);
+		auto& packetCtx = ctx.packetCtx;
+
+		if (packetCtx.IsOutbound()) {
+			if (packetCtx.IsTcpRst()) {
+				HandleRst(packetCtx);
 			}
 
-			if (ctx.IsTcpSyn() && !ctx.IsTcpAck() && !ctx.IsLoopback()) {
+			if (packetCtx.IsTcpSyn() && !packetCtx.IsTcpAck() && !packetCtx.IsLoopback()) {
 				HandleSynOnly(ctx);
 			}
-			else if (ctx.IsTcpSyn() && ctx.IsTcpAck() && ntohs(ctx.GetSourcePort()) == m_redirectPort) {
-				HandleSynAckOnly(ctx);
+			else if (packetCtx.IsTcpSyn() && packetCtx.IsTcpAck() && ntohs(packetCtx.GetSourcePort()) == m_redirectPort) {
+				HandleSynAckOnly(packetCtx);
 			}
-			else if (!ctx.IsTcpSyn() && ctx.IsTcpAck()) {
-				HandleAckOnly(ctx);
+			else if (!packetCtx.IsTcpSyn() && packetCtx.IsTcpAck()) {
+				HandleAckOnly(packetCtx);
 			}
 
-			if (ctx.IsTcpFin()) {
-				HandleFin(ctx);
+			if (packetCtx.IsTcpFin()) {
+				HandleFin(packetCtx);
 			}
 		}
 	}
 
-	void TcpHandler::HandleSynOnly(IPacketContext& ctx)
+	void TcpHandler::HandleSynOnly(PacketDispatchContext& ctx)
 	{
+		auto& packetCtx = ctx.packetCtx;
+
 		std::string message;
 
-		ConnectionKey key{
-				.srcAddress = ctx.GetSourceAddress(),
-				.srcPort = ctx.GetSourcePort(),
-				.protocol = ctx.GetProtocol(),
+		FiveTuple key{
+			.srcAddress = packetCtx.GetSourceAddress(),
+			.srcPort = packetCtx.GetSourcePort(),
+			.dstAddress = packetCtx.GetDestinationAddress(),
+			.dstPort = packetCtx.GetDestinationPort(),
+			.protocol = packetCtx.GetProtocol(),
 		};
 
 		ConnectionEntry entry{
-			.destAddress = ctx.GetDestinationAddress(),
-			.destPort = ctx.GetDestinationPort(),
 			.createdAt = GetTickCount64(),
 			.lastSeen = GetTickCount64(),
-			.state = ConnectionState::NEW
+			.proxyId = ctx.proxyId,
 		};
 
 		m_connections.AddConnection(key, entry);
 
 		message = std::format(
 			"Intercepted TCP SYN OUTBOUND packet: Src={} Dst={}",
-			ctx.GetSourceEndpoint().ToString(),
-			ctx.GetDestinationEndpoint().ToString()
+			packetCtx.GetSourceEndpoint().ToString(),
+			packetCtx.GetDestinationEndpoint().ToString()
 		);
 
 		m_logger.LogDebug(message);
 
-		ctx.SetDestination(ctx.GetSourceAddress(), htons(m_redirectPort));
+		packetCtx.SetDestination(packetCtx.GetSourceAddress(), htons(m_redirectPort));
 
 		message = std::format(
 			"Modified TCP SYN OUTBOUND packet: Dst={}",
-			ctx.GetDestinationEndpoint().ToString()
+			packetCtx.GetDestinationEndpoint().ToString()
 		);
 
 		m_logger.LogDebug(message);
 
 		message = std::format(
 			"Sent TCP SYN OUTBOUND packet: Src={} Dst={}",
-			ctx.GetSourceEndpoint().ToString(),
-			ctx.GetDestinationEndpoint().ToString()
+			packetCtx.GetSourceEndpoint().ToString(),
+			packetCtx.GetDestinationEndpoint().ToString()
 		);
 
 		m_logger.LogDebug(message);
@@ -94,16 +98,16 @@ namespace Proxirae {
 
 		m_logger.LogDebug(message);
 
-		ConnectionKey key{
+		ThreeTuple key{
 			.srcAddress = ctx.GetDestinationAddress(),
 			.srcPort = ctx.GetDestinationPort(),
 			.protocol = ctx.GetProtocol(),
 		};
 
-		auto it = m_connections.GetConnection(key);
+		auto it = m_connections.FindKey(key);
 
 		if (it.has_value()) {
-			ctx.SetSource(it->destAddress, it->destPort);
+			ctx.SetSource(it->dstAddress, it->dstPort);
 
 			message = std::format(
 				"Modified TCP SYN ACK OUTBOUND packet: Src={}",
@@ -134,9 +138,11 @@ namespace Proxirae {
 
 		m_logger.LogDebug(message);
 
-		ConnectionKey key{
+		FiveTuple key{
 			.srcAddress = ctx.GetSourceAddress(),
 			.srcPort = ctx.GetSourcePort(),
+			.dstAddress = ctx.GetDestinationAddress(),
+			.dstPort = ctx.GetDestinationPort(),
 			.protocol = ctx.GetProtocol()
 		};
 
@@ -150,24 +156,25 @@ namespace Proxirae {
 
 			m_logger.LogDebug(message);
 		}
+		else {
+			ThreeTuple reversalKey{
+				.srcAddress = ctx.GetDestinationAddress(),
+				.srcPort = ctx.GetDestinationPort(),
+				.protocol = ctx.GetProtocol()
+			};
 
-		ConnectionKey reversalKey{
-			.srcAddress = ctx.GetDestinationAddress(),
-			.srcPort = ctx.GetDestinationPort(),
-			.protocol = ctx.GetProtocol()
-		};
+			auto it = m_connections.FindKey(reversalKey);
 
-		auto it = m_connections.GetConnection(reversalKey);
+			if (it.has_value()) {
+				ctx.SetSource(it->dstAddress, it->dstPort);
 
-		if (it.has_value()) {
-			ctx.SetSource(it->destAddress, it->destPort);
+				message = std::format(
+					"Modified TCP ACK OUTBOUND packet: Src={}",
+					ctx.GetSourceEndpoint().ToString()
+				);
 
-			message = std::format(
-				"Modified TCP ACK OUTBOUND packet: Src={}",
-				ctx.GetSourceEndpoint().ToString()
-			);
-
-			m_logger.LogDebug(message);
+				m_logger.LogDebug(message);
+			}
 		}
 
 		message = std::format(
@@ -191,14 +198,16 @@ namespace Proxirae {
 
 		m_logger.LogDebug(message);
 
-		ConnectionKey key{
+		ThreeTuple key{
 			.srcAddress = ctx.GetSourceAddress(),
 			.srcPort = ctx.GetSourcePort(),
 			.protocol = ctx.GetProtocol()
 		};
 
-		if (m_connections.ConnectionExists(key)) {
-			m_connections.RemoveConnection(key);
+		auto it = m_connections.FindKey(key);
+
+		if (it.has_value()) {
+			m_connections.RemoveConnection(*it);
 		}
 	}
 
@@ -214,14 +223,20 @@ namespace Proxirae {
 
 		m_logger.LogDebug(message);
 
-		ConnectionKey key{
+		ThreeTuple key{
 			.srcAddress = ctx.GetSourceAddress(),
 			.srcPort = ctx.GetSourcePort(),
 			.protocol = ctx.GetProtocol()
 		};
 
-		if (m_connections.GetState(key) != ConnectionState::CLOSED) {
-			m_connections.SetState(key, ConnectionState::CLOSED);
+		auto it = m_connections.FindKey(key);
+
+		if (!it.has_value()) {
+			return;
+		}
+
+		if (m_connections.GetState(*it) != ConnectionState::CLOSED) {
+			m_connections.SetState(*it, ConnectionState::CLOSED);
 		}
 	}
 }

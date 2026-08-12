@@ -1,17 +1,17 @@
-#include "core/registry/AssociationTable.h"
+#include "core/registry/AssociationRegistry.h"
 
 namespace Proxirae {
-	void AssociationTable::AddAssociation(const AssociationKey& key, const AssociationEntry& entry)
+	void AssociationRegistry::AddAssociation(const FiveTuple& key, const AssociationEntry& entry)
 	{
 		m_associations[key] = entry;
 	}
 
-	void AssociationTable::RemoveAssociation(const AssociationKey& key)
+	void AssociationRegistry::RemoveAssociation(const FiveTuple& key)
 	{
 		m_associations.erase(key);
 	}
 
-	std::optional<AssociationEntry> AssociationTable::GetAssociation(const AssociationKey& key) const
+	std::optional<AssociationEntry> AssociationRegistry::GetAssociation(const FiveTuple& key) const
 	{
 		auto it = m_associations.find(key);
 		if (it != m_associations.end()) {
@@ -20,7 +20,7 @@ namespace Proxirae {
 		return std::nullopt;
 	}
 
-	bool AssociationTable::AssociationExists(const AssociationKey& key) const
+	bool AssociationRegistry::AssociationExists(const FiveTuple& key) const
 	{
 		return m_associations.contains(key);
 	}

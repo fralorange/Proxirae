@@ -7,18 +7,20 @@
 #include "diagnostics/ILogger.h"
 #include "core/registry/ConnectionEntry.h"
 #include "core/proxy/IProxy.h"
-#include <core/packet/Endpoint.h>
+#include "core/packet/Endpoint.h"
+#include "core/proxy/IProxyFactory.h"
+#include "core/registry/FiveTuple.h"
 
 namespace Proxirae {
 	class TcpSession : public std::enable_shared_from_this<TcpSession> {
 	public:
-		TcpSession(NativeSocket client, Endpoint endpoint, IIoDriver& driver, ILogger& logger);
+		TcpSession(NativeSocket client, Endpoint endpoint, IIoDriver& driver, ILogger& logger, IProxyFactory& factory);
 		~TcpSession();
 
 		std::uint32_t GetAddress() const;
 		std::uint16_t GetPort() const;
 
-		void Handle(ConnectionEntry entry, std::function<void(std::shared_ptr<TcpSession>)> onTerminated);
+		void Handle(const FiveTuple& key, const ConnectionEntry& entry, std::function<void(std::shared_ptr<TcpSession>)> onTerminated);
 		void Terminate();
 
 	private:
@@ -26,6 +28,7 @@ namespace Proxirae {
 		Endpoint m_endpoint;
 
 		std::unique_ptr<IProxy> m_proxy;
+		IProxyFactory& m_proxyFactory;
 
 		std::vector<char> m_clientBuffer = std::vector<char>(4096);
 		std::vector<char> m_proxyBuffer = std::vector<char>(4096);
