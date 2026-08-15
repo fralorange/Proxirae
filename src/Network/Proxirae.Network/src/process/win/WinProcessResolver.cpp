@@ -1,7 +1,7 @@
 #include <Windows.h>
-#include <filesystem>
 
 #include "process/win/WinProcessResolver.h"
+#include "utils/StringUtils.h"
 
 namespace Proxirae {
 	void WinProcessResolver::AcquireProcess(std::uint32_t pid)
@@ -45,8 +45,8 @@ namespace Proxirae {
 		std::filesystem::path path(buffer);
 
 		ProcessInfo info{
-			.name = path.filename().string(),
-			.path = path.string()
+			.name = StringUtils::ToUTF8(path.filename()),
+			.path = StringUtils::ToUTF8(path)
 		};
 
 		return info;
