@@ -4,26 +4,22 @@ namespace Proxirae.Domain.Rules.Actions
 {
     public class ProxyAction : BaseAction
     {
-        public override Guid Id => Proxy.Id;
-        public Proxy Proxy { get; }
+        public override Guid Id { get; }
+        public override string Name { get; }
 
-        public ProxyAction(Proxy proxy)
+        public ProxyAction(string name, Guid proxyId)
         {
-            Proxy = proxy;
+            Id = proxyId;
+            Name = name;
         }
 
-        public override string Name 
-        { 
-            get
-            {
-                if (Proxy.Remarks is not null)
-                {
-                    return $"Proxy {Proxy.Type} {Proxy.Remarks}";
-                } else
-                {
-                    return $"Proxy {Proxy.Type} {Proxy.IP}:{Proxy.Port}";
-                }
-            }
+        public static ProxyAction CreateFrom(Proxy proxy)
+        {
+            var name = proxy.Remarks is not null
+                ? $"Proxy {proxy.Type} {proxy.Remarks}"
+                : $"Proxy {proxy.Type} {proxy.Address}:{proxy.Port}";
+
+            return new ProxyAction(name, proxy.Id);
         }
     }
 }

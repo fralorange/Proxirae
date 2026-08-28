@@ -25,17 +25,6 @@ namespace Proxirae {
 		return std::nullopt;
 	}
 
-	std::optional<ConnectionState> ConnectionTable::GetState(const FiveTuple& key) const
-	{
-		auto it = m_connections.find(key);
-
-		if (it != m_connections.end()) {
-			return it->second.state;
-		}
-
-		return std::nullopt;
-	}
-
 	std::optional<std::string_view> ConnectionTable::GetProxyId(const FiveTuple& key) const
 	{
 		auto it = m_connections.find(key);
@@ -45,15 +34,6 @@ namespace Proxirae {
 		}
 
 		return std::nullopt;
-	}
-
-	void ConnectionTable::SetState(const FiveTuple& key, ConnectionState state)
-	{
-		auto it = m_connections.find(key);
-
-		if (it != m_connections.end()) {
-			it->second.state = state;  
-		}
 	}
 
 	void ConnectionTable::SetProxyId(const FiveTuple& key, const std::string proxyId)

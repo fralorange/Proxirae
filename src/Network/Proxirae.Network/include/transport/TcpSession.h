@@ -1,15 +1,17 @@
 #pragma once
 
 #include <memory>
+#include <chrono>
+#include <string_view>
 
 #include "platform/sock_types.h"
 #include "io/IIoDriver.h"
 #include "diagnostics/ILogger.h"
 #include "persistence/ConnectionEntry.h"
-#include "proxy/IProxy.h"
 #include "packet/Endpoint.h"
 #include "proxy/IProxyFactory.h"
 #include "persistence/FiveTuple.h"
+#include "contracts/flow/FlowContract.h"
 
 namespace Proxirae {
 	class TcpSession : public std::enable_shared_from_this<TcpSession> {
@@ -17,30 +19,21 @@ namespace Proxirae {
 		TcpSession(NativeSocket client, Endpoint endpoint, IIoDriver& driver, ILogger& logger, IProxyFactory& factory);
 		~TcpSession();
 
+		std::string_view GetId() const;
 		std::uint32_t GetAddress() const;
 		std::uint16_t GetPort() const;
 
-		void Handle(const FiveTuple& key, const ConnectionEntry& entry, std::function<void(std::shared_ptr<TcpSession>)> onTerminated);
+		FlowContract GetFlow() const;
+
+		void Establish(const FiveTuple& key, const ConnectionEntry& entry, std::function<void(std::shared_ptr<TcpSession>)> onTerminated);
 		void Terminate();
 
 	private:
-		NativeSocket m_client;
-		Endpoint m_endpoint;
+		class TcpBridge;
+		std::unique_ptr<TcpBridge> m_bridge;
 
-		std::unique_ptr<IProxy> m_proxy;
-		IProxyFactory& m_proxyFactory;
+		std::chrono::steady_clock::time_point m_start;
 
-		std::vector<char> m_clientBuffer = std::vector<char>(4096);
-		std::vector<char> m_proxyBuffer = std::vector<char>(4096);
-
-		std::function<void(std::shared_ptr<TcpSession>)> m_onTerminated;
-
-		IIoDriver& m_driver;
-		ILogger& m_logger;
-
-		std::atomic_bool m_isStopping{ false };
-
-		void StartClientToProxy();
-		void StartProxyToClient();
+		std::string m_id;
 	};
 }

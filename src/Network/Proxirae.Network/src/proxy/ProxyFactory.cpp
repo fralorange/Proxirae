@@ -2,7 +2,7 @@
 #include "proxy/Socks5Proxy.h"
 
 namespace Proxirae {
-	ProxyFactory::ProxyFactory(ConfigurationStore& config, IIoDriver& driver, ILogger& logger)
+	ProxyFactory::ProxyFactory(Store<Configuration>& config, IIoDriver& driver, ILogger& logger)
 		: m_config(config), m_driver(driver), m_logger(logger) { }
 	
 	std::unique_ptr<IProxy> ProxyFactory::Create(const std::string proxyId)

@@ -23,7 +23,7 @@ namespace Proxirae {
 
 	bool Socks5Proxy::Connect(std::string_view targetAddress, std::uint16_t targetPort) {
 		if (m_connected) {
-			m_logger.LogWarning("Failed to connect to the SOCKS5 proxy. Error=Proxy connection already established!");
+			m_logger.LogWarning(std::format("[SOCKS5] Connect skipped: already connected to {}:{}", m_address, m_port));
 
 			return false;
 		}
@@ -59,15 +59,12 @@ namespace Proxirae {
 
 	void Socks5Proxy::Disconnect() {
 		if (!m_connected) {
-			m_logger.LogWarning("Failed to the disconnect the SOCKS5 proxy. Error=Proxy connection is not established!");
+			m_logger.LogWarning(std::format("[SOCKS5] Disconnect skipped: connection is not active ({}:{})", m_address, m_port));
 
 			return;
 		}
 
-		std::string message;
-
-		message = std::format("Disconnecting from the SOCKS5 proxy: Endpoint={}:{}", m_address, m_port);
-		m_logger.LogInfo(message);
+		m_logger.LogDebug(std::format("[SOCKS5] Closing connection to {}:{}", m_address, m_port));
 
 		shutdown(m_proxy, ShutdownBoth);
 		CloseSocket(m_proxy);
@@ -75,14 +72,13 @@ namespace Proxirae {
 		m_proxy = InvalidNativeSocket;
 		m_connected = false;
 
-		message = std::format("Disconnected from the SOCKS5 proxy: Endpoint={}:{}", m_address, m_port);
-		m_logger.LogInfo(message);
+		m_logger.LogInfo(std::format("[SOCKS5] Disconnected from {}:{}", m_address, m_port));
 	}
 
-	void Socks5Proxy::Send(std::span<const char> buffer, std::function<void(const IoResult&)> callback)
+	void Socks5Proxy::Send(std::span<const std::byte> buffer, std::function<void(const IoResult&)> callback)
 	{
 		if (!m_connected || m_proxy == InvalidNativeSocket) {
-			m_logger.LogError("Failed to send data through the SOCKS5 proxy. Error=Proxy is not connected");
+			m_logger.LogError(std::format("[SOCKS5] Send failed: proxy not connected ({}:{})", m_address, m_port));
 			callback(IoResult{ false, 0, SocketNotConnected });
 			
 			return;
@@ -91,10 +87,10 @@ namespace Proxirae {
 		m_driver.AsyncWrite(m_proxy, buffer, callback);
 	}
 
-	void Socks5Proxy::Recv(std::span<char> buffer, std::function<void(const IoResult&)> callback)
+	void Socks5Proxy::Recv(std::span<std::byte> buffer, std::function<void(const IoResult&)> callback)
 	{
 		if (!m_connected || m_proxy == InvalidNativeSocket) {
-			m_logger.LogError("Failed to receive data from the SOCKS5 proxy. Error=Proxy is not connected");
+			m_logger.LogError(std::format("[SOCKS5] Recv failed: proxy not connected ({}:{})", m_address, m_port));
 			callback(IoResult{ false, 0, SocketNotConnected });
 
 			return;
@@ -108,7 +104,7 @@ namespace Proxirae {
 		NativeSocket sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 		if (sock == InvalidNativeSocket) {
-			m_logger.LogCritical("Failed to create SOCKS5 proxy socket.");
+			m_logger.LogError(std::format("[SOCKS5] Socket creation failed: error {}", GetSocketError()));
 
 			return InvalidNativeSocket;
 		}
@@ -119,11 +115,10 @@ namespace Proxirae {
 		proxyAddr.sin_port = htons(m_port);
 		proxyAddr.sin_family = AF_INET;
 
-		std::string message = std::format("Connecting to the SOCKS5 proxy: Endpoint={}:{}", m_address, m_port);
-		m_logger.LogInfo(message);
+		m_logger.LogDebug(std::format("[SOCKS5] Connecting to {}:{}", m_address, m_port));
 
 		if (connect(sock, reinterpret_cast<struct sockaddr*>(&proxyAddr), sizeof(proxyAddr)) == SocketError) {
-			m_logger.LogCritical("Failed to connect to the SOCKS5 proxy.");
+			m_logger.LogError(std::format("[SOCKS5] Connection failed to {}:{}", m_address, m_port));
 			CloseSocket(sock);
 
 			return InvalidNativeSocket;
@@ -138,13 +133,10 @@ namespace Proxirae {
 		
 		char greeting[3] = { 0x05, 0x01, requiresAuth ? 0x02 : 0x00 };
 
-		std::string message;
-
-		message = std::format("Initiating the SOCKS5 proxy handshake: Endpoint={}:{}", m_address, m_port);
-		m_logger.LogInfo(message);
+		m_logger.LogDebug(std::format("[SOCKS5] Initiating handshake with {}:{}", m_address, m_port));
 
 		if (!SendExact(sock, greeting)) {
-			m_logger.LogCritical("Failed to initiate the SOCKS5 proxy handshake.");
+			m_logger.LogError(std::format("[SOCKS5] Handshake greeting send failed ({}:{})", m_address, m_port));
 			CloseSocket(sock);
 
 			return false;
@@ -152,7 +144,7 @@ namespace Proxirae {
 
 		char response[2]{};
 		if (!RecvExact(sock, response)) {
-			m_logger.LogCritical("Failed to complete the SOCKS5 proxy handshake.");
+			m_logger.LogError(std::format("[SOCKS5] Handshake response read failed ({}:{})", m_address, m_port));
 			CloseSocket(sock);
 
 			return false;
@@ -160,7 +152,7 @@ namespace Proxirae {
 
 		if (!requiresAuth) {
 			if (response[0] != 0x05 || response[1] != 0x00) {
-				m_logger.LogCritical("Failed to negotiate 'No Auth' method with the SOCKS5 proxy.");
+				m_logger.LogError(std::format("[SOCKS5] Negotiation 'No Auth' rejected by {}:{}", m_address, m_port));
 				CloseSocket(sock);
 
 				return false;
@@ -168,7 +160,7 @@ namespace Proxirae {
 		}
 		else {
 			if (response[0] != 0x05 || response[1] != 0x02) {
-				m_logger.LogCritical("Failed to negotiate 'Username/Password' method with the SOCKS5 proxy.");
+				m_logger.LogError(std::format("[SOCKS5] Negotiation 'User/Password' rejected by {}:{}", m_address, m_port));
 				CloseSocket(sock);
 
 				return false;
@@ -184,7 +176,7 @@ namespace Proxirae {
 			authReq.insert(authReq.end(), m_password.begin(), m_password.end());
 
 			if (!SendExact(sock, authReq)) {
-				m_logger.LogCritical("Failed to subnegotiate authentication.");
+				m_logger.LogError(std::format("[SOCKS5] Auth credentials send failed ({}:{})", m_address, m_port));
 				CloseSocket(sock);
 
 				return false;
@@ -192,48 +184,65 @@ namespace Proxirae {
 
 			char authResp[2]{};
 			if (!RecvExact(sock, authResp)) {
-				m_logger.LogCritical("Failed to complete subnegotiation.");
+				m_logger.LogError(std::format("[SOCKS5] Auth response read failed ({}:{})", m_address, m_port));
 				CloseSocket(sock);
 
 				return false;
 			}
 
 			if (authResp[1] != 0x00) {
-				m_logger.LogCritical("Rejected SOCKS5 Authentication. Error=Wrong username/password.");
+				m_logger.LogError(std::format("[SOCKS5] Authentication failed: invalid credentials ({}:{})", m_address, m_port));
 				CloseSocket(sock);
 
 				return false;
 			}
 		}
 
-		message = std::format("Finished the SOCKS5 proxy handshake: Endpoint={}:{}", m_address, m_port);
-		m_logger.LogInfo(message);
+		m_logger.LogDebug(std::format("[SOCKS5] Handshake successful with {}:{}", m_address, m_port));
 
 		return true;
 	}
 
-	bool Socks5Proxy::ConnectToTarget(NativeSocket sock, std::string_view targetAddress, std::uint16_t targetPort)
+bool Socks5Proxy::ConnectToTarget(NativeSocket sock, std::string_view targetAddress, std::uint16_t targetPort)
 	{
-		std::vector<char> connReq = {
-			0x05, // VERSION 5
-			0x01, // CMD: 0x01 (CONNECT)
-			0x00, // Reserved: 0x00
-			0x01, // Address Type: 0x01 (IPv4)
-		};
+		std::vector<char> connReq;
+		connReq.reserve(262); 
+		connReq.push_back(0x05); // VERSION 5
+		connReq.push_back(0x01); // CMD: 0x01 (CONNECT)
+		connReq.push_back(0x00); // Reserved: 0x00
+
+		std::string targetAddrStr(targetAddress);
 
 		struct in_addr ipv4Addr{};
-		if (inet_pton(AF_INET, targetAddress.data(), &ipv4Addr) != 1) {
-			return false; // NOT IP
+		struct in6_addr ipv6Addr{};
+
+		if (inet_pton(AF_INET, targetAddrStr.c_str(), &ipv4Addr) == 1) {
+			connReq.push_back(0x01); 
+			const char* ipBytes = reinterpret_cast<const char*>(&ipv4Addr.s_addr);
+			connReq.insert(connReq.end(), ipBytes, ipBytes + 4);
+		}
+		else if (inet_pton(AF_INET6, targetAddrStr.c_str(), &ipv6Addr) == 1) {
+			connReq.push_back(0x04);
+			const char* ipBytes = reinterpret_cast<const char*>(&ipv6Addr.s6_addr);
+			connReq.insert(connReq.end(), ipBytes, ipBytes + 16);
+		}
+		else {
+			if (targetAddrStr.empty() || targetAddrStr.length() > 255) {
+				m_logger.LogError(std::format("[SOCKS5] Invalid domain name length: {}", targetAddrStr.length()));
+				CloseSocket(sock);
+				return false;
+			}
+
+			connReq.push_back(0x03); 
+			connReq.push_back(static_cast<char>(targetAddrStr.length()));
+			connReq.insert(connReq.end(), targetAddrStr.begin(), targetAddrStr.end());
 		}
 
-		const char* ipBytes = reinterpret_cast<const char*>(&ipv4Addr.s_addr);
-
-		connReq.insert(connReq.end(), ipBytes, ipBytes + 4);
-		connReq.push_back((targetPort >> 8) & 0xFF);
-		connReq.push_back(targetPort & 0xFF);
+		connReq.push_back(static_cast<char>((targetPort >> 8) & 0xFF));
+		connReq.push_back(static_cast<char>(targetPort & 0xFF));
 
 		if (!SendExact(sock, connReq)) {
-			m_logger.LogCritical("Failed to initiate the SOCKS5 proxy CONNECT request.");
+			m_logger.LogError(std::format("[SOCKS5] CONNECT request send failed for target {}:{}", targetAddress, targetPort));
 			CloseSocket(sock);
 
 			return false;
@@ -241,39 +250,41 @@ namespace Proxirae {
 
 		char connHeader[4]{};
 		if (!RecvExact(sock, connHeader)) {
-			m_logger.LogCritical("Failed to receive connection header from the SOCKS5 proxy.");
+			m_logger.LogError(std::format("[SOCKS5] CONNECT response read failed for target {}:{}", targetAddress, targetPort));
 			CloseSocket(sock);
 
 			return false;
 		}
 
-		std::string message;
-
 		if (connHeader[1] != 0x00) {
-			message = std::format("Rejected SOCKS5 connection to target. Status={}", static_cast<int>(connHeader[1]));
-			m_logger.LogCritical(message);
+			m_logger.LogError(std::format(
+				"[SOCKS5] Proxy {}:{} rejected connection to {}:{}: status {}",
+				m_address, m_port, targetAddress, targetPort, static_cast<int>(connHeader[1])
+			));
 			CloseSocket(sock);
 
 			return false;
 		}
 
 		if (connHeader[3] == 0x01) { // IPv4
-			char bindAddr[6]{};
+			char bindAddr[6]{}; 
 			RecvExact(sock, bindAddr);
 		}
 		else if (connHeader[3] == 0x04) { // IPv6
-			char bindAddr[18]{};
+			char bindAddr[18]{}; 
 			RecvExact(sock, bindAddr);
 		}
 		else if (connHeader[3] == 0x03) { // Domain
 			char len = 0;
 			RecvExact(sock, std::span(&len, 1));
-			std::vector<char> domainAddr(len + 2);
+			std::vector<char> domainAddr(static_cast<unsigned char>(len) + 2);
 			RecvExact(sock, domainAddr);
 		}
 
-		message = std::format("Established connection to target via SOCKS5 proxy: Target={}:{}", targetAddress, targetPort);
-		m_logger.LogInfo(message);
+		m_logger.LogInfo(std::format(
+			"[SOCKS5] Tunnel established to {}:{} via {}:{}",
+			targetAddress, targetPort, m_address, m_port
+		));
 
 		return true;
 	}

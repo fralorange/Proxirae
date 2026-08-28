@@ -1,17 +1,13 @@
-﻿using Proxirae.Contracts.DTOs.Proxies;
-
-namespace Proxirae.Contracts.DTOs.Rules.Actions
+﻿namespace Proxirae.Contracts.DTOs.Rules.Actions
 {
     public class ProxyActionDto : BaseActionDto
     {
         public override string Name { get; }
-        public ProxyDetailDto Proxy { get; set; }
 
-        public ProxyActionDto(string name, ProxyDetailDto proxy)
+        public ProxyActionDto(string name, Guid proxyId)
         {
-            Id = proxy.Id;
+            Id = proxyId;
             Name = name;
-            Proxy = proxy;
         }
     }
 }

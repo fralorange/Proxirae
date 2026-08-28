@@ -5,6 +5,7 @@ namespace Proxirae.Contracts.DTOs.Rules
     public class RuleDto
     {
         public Guid Id { get; set; }
+        public int Priority { get; set; }
         public bool IsEnabled { get; set; } = true;
         public string? Remarks { get; set; }
         public string? Processes { get; set; } 

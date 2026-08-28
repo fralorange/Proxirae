@@ -1,24 +1,30 @@
-﻿using Proxirae.Application.Mappers.Rules.Actions;
-using Proxirae.Application.Repositories.Proxies;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Proxirae.Application.Mappers.Rules.Actions;
+using Proxirae.Application.Repositories;
 using Proxirae.Contracts.DTOs.Rules.Actions;
+using Proxirae.Domain.Proxies;
 using Proxirae.Domain.Rules.Actions;
 
 namespace Proxirae.Application.Facades.Actions
 {
     public class ActionFacade
     {
-        private readonly IProxyRepository _proxyRepository;
-        private readonly IActionMapper _actionMapper;
+        private readonly IActionDtoMapper _actionMapper;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        public ActionFacade(IProxyRepository proxyRepository, IActionMapper actionMapper)
+        public ActionFacade(IActionDtoMapper actionMapper, IServiceScopeFactory scopeFactory)
         {
-            _proxyRepository = proxyRepository;
             _actionMapper = actionMapper;
+            _scopeFactory = scopeFactory;
         }
 
         public async Task<List<BaseActionDto>> GetActionsAsync(CancellationToken token)
         {
-            var proxies = await _proxyRepository.GetAsync(token);
+            using var scope = _scopeFactory.CreateAsyncScope();
+
+            var proxyRepository = scope.ServiceProvider.GetRequiredService<ICrudRepository<Proxy>>();
+
+            var proxies = await proxyRepository.GetAsync(token);
 
             var actions = new List<BaseAction>()
             {
@@ -26,11 +32,25 @@ namespace Proxirae.Application.Facades.Actions
                 new BlockAction(),
             };
 
-            actions.AddRange(
-                proxies.Select(p => new ProxyAction(p))
-            );
-
+            actions.AddRange(proxies.Select(ProxyAction.CreateFrom));
             return actions.Select(_actionMapper.MapToDto).ToList();
+        }
+
+        public async Task<BaseActionDto> GetActionAsync(Guid proxyId, CancellationToken token)
+        {
+            using var scope = _scopeFactory.CreateAsyncScope();
+
+            var proxyRepository = scope.ServiceProvider.GetRequiredService<ICrudRepository<Proxy>>();
+
+            var proxy = await proxyRepository.GetByIdAsync(proxyId, token);
+
+            if (proxy is null)
+            {
+                return _actionMapper.MapToDto(new DirectAction());
+            }
+
+            var proxyAction = ProxyAction.CreateFrom(proxy);
+            return _actionMapper.MapToDto(proxyAction);
         }
     }
 }

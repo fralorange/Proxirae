@@ -1,0 +1,18 @@
+#pragma once
+
+#include "ipc/ISendChannel.h"
+
+namespace Proxirae {
+	class IpcMessenger {
+	public:
+		explicit IpcMessenger(ISendChannel& sender);
+
+		template<typename T>
+		bool Send(PipeMessageType type, const T& payload);
+			
+	private:
+		ISendChannel& m_sender;
+	};
+}
+
+#include "ipc/IpcMessenger.inl"

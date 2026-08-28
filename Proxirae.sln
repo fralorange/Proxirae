@@ -31,6 +31,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Network", "Network", "{1161
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Proxirae.Network", "src\Network\Proxirae.Network\Proxirae.Network.vcxproj", "{E103AF08-2BB2-4B20-A60B-A2AF3BC1E77A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proxirae.Infrastructure.ProcessCommunication", "src\Infrastructure\Proxirae.Infrastructure.ProcessCommunication\Proxirae.Infrastructure.ProcessCommunication.csproj", "{EFB0460D-D3F5-E45C-E5A5-F70ADD132BE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,18 @@ Global
 		{E103AF08-2BB2-4B20-A60B-A2AF3BC1E77A}.Release|x64.Build.0 = Release|x64
 		{E103AF08-2BB2-4B20-A60B-A2AF3BC1E77A}.Release|x86.ActiveCfg = Release|Win32
 		{E103AF08-2BB2-4B20-A60B-A2AF3BC1E77A}.Release|x86.Build.0 = Release|Win32
+		{EFB0460D-D3F5-E45C-E5A5-F70ADD132BE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFB0460D-D3F5-E45C-E5A5-F70ADD132BE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFB0460D-D3F5-E45C-E5A5-F70ADD132BE0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EFB0460D-D3F5-E45C-E5A5-F70ADD132BE0}.Debug|x64.Build.0 = Debug|Any CPU
+		{EFB0460D-D3F5-E45C-E5A5-F70ADD132BE0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EFB0460D-D3F5-E45C-E5A5-F70ADD132BE0}.Debug|x86.Build.0 = Debug|Any CPU
+		{EFB0460D-D3F5-E45C-E5A5-F70ADD132BE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFB0460D-D3F5-E45C-E5A5-F70ADD132BE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFB0460D-D3F5-E45C-E5A5-F70ADD132BE0}.Release|x64.ActiveCfg = Release|Any CPU
+		{EFB0460D-D3F5-E45C-E5A5-F70ADD132BE0}.Release|x64.Build.0 = Release|Any CPU
+		{EFB0460D-D3F5-E45C-E5A5-F70ADD132BE0}.Release|x86.ActiveCfg = Release|Any CPU
+		{EFB0460D-D3F5-E45C-E5A5-F70ADD132BE0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -143,6 +157,7 @@ Global
 		{8E592932-4F00-4FBB-9282-517C822135E3} = {3D1CA6E3-B2B8-4B1C-9E4A-58F88C19C554}
 		{1161EFA6-D17A-4D92-B5AA-3409DDA447BE} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
 		{E103AF08-2BB2-4B20-A60B-A2AF3BC1E77A} = {1161EFA6-D17A-4D92-B5AA-3409DDA447BE}
+		{EFB0460D-D3F5-E45C-E5A5-F70ADD132BE0} = {3D1CA6E3-B2B8-4B1C-9E4A-58F88C19C554}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {29182559-08CA-4886-A816-23D97CA04E13}

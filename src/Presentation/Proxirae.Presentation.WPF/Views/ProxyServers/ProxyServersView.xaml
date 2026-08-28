@@ -59,7 +59,7 @@
                                     Binding="{Binding Remarks}"/>
                 <DataGridTextColumn Header="Address" 
                                     Width="*" 
-                                    Binding="{Binding IP}"/>
+                                    Binding="{Binding Address}"/>
                 <DataGridTextColumn Header="Port" 
                                     Width="*" 
                                     Binding="{Binding Port}"/>

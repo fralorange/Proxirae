@@ -4,6 +4,7 @@ using MvvmDialogs;
 using Proxirae.Application.Services.Proxies;
 using Proxirae.Contracts.DTOs.Proxies;
 using Proxirae.Presentation.WPF.Facades.Dialog;
+using Proxirae.Presentation.WPF.Factories.ProxyChecker;
 using Proxirae.Presentation.WPF.ViewModels.ProxyChecker;
 using System.Collections.ObjectModel;
 
@@ -13,6 +14,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
     {
         private readonly DialogFacade _dialogFacade;
         private readonly IProxyService _proxyService;
+        private readonly IProxyCheckerViewModelFactory _proxyCheckerFactory;
 
         private bool? dialogResult;
         public bool? DialogResult
@@ -27,16 +29,17 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
         private bool _hasChanges;
 
-        public ProxyServersViewModel(DialogFacade dialogFacade, IProxyService proxyService)
+        public ProxyServersViewModel(DialogFacade dialogFacade, IProxyService proxyService, IProxyCheckerViewModelFactory proxyCheckerFactory)
         {
             _dialogFacade = dialogFacade;
             _proxyService = proxyService;
+            _proxyCheckerFactory = proxyCheckerFactory;
         }
 
         [RelayCommand]
-        private async Task LoadProxyServersAsync()
+        private async Task LoadProxyServersAsync(CancellationToken cancellationToken)
         {
-            var proxyServers = await _proxyService.GetAsync(CancellationToken.None);
+            var proxyServers = await _proxyService.GetAsync(cancellationToken);
 
             ProxyServers.Clear();
 
@@ -49,21 +52,21 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         }
 
         [RelayCommand]
-        private async Task AddProxyServerAsync()
+        private async Task AddProxyServerAsync(CancellationToken cancellationToken)
         {
             var viewModel = _dialogFacade.ShowDialog<AddProxyServerViewModel>(this);
 
             if (viewModel.ProxyServer is not null)
             {
-                var proxy = await _proxyService.AddAsync(viewModel.ProxyServer, CancellationToken.None);
+                var proxy = await _proxyService.AddAsync(viewModel.ProxyServer, cancellationToken);
                 ProxyServers.Add(proxy);
             }
         }
 
         [RelayCommand]
-        private async Task EditProxyServerAsync(ProxyListDto proxyServer)
+        private async Task EditProxyServerAsync(ProxyListDto proxyServer, CancellationToken cancellationToken)
         {
-            var proxyDetail = await _proxyService.GetByIdAsync(proxyServer.Id, CancellationToken.None);
+            var proxyDetail = await _proxyService.GetByIdAsync(proxyServer.Id, cancellationToken);
             if (proxyDetail is null)
             {
                 return;
@@ -75,7 +78,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
 
             if (viewModel.ProxyServer is not null)
             {
-                var proxy = await _proxyService.UpdateAsync(viewModel.ProxyServer, CancellationToken.None);
+                var proxy = await _proxyService.UpdateAsync(viewModel.ProxyServer, cancellationToken);
                 if (proxy is not null)
                 {
                     var index = ProxyServers.IndexOf(proxyServer);
@@ -88,29 +91,29 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         }
 
         [RelayCommand]
-        private async Task RemoveProxyServerAsync(ProxyListDto proxyServer)
+        private async Task RemoveProxyServerAsync(ProxyListDto proxyServer, CancellationToken cancellationToken)
         {
-            await _proxyService.DeleteAsync(proxyServer.Id, CancellationToken.None);
+            await _proxyService.DeleteAsync(proxyServer.Id, cancellationToken);
             ProxyServers.Remove(proxyServer);
         }
 
         [RelayCommand]
-        private async Task CheckProxyServerAsync(ProxyListDto proxyServer)
+        private async Task CheckProxyServerAsync(ProxyListDto proxyServer, CancellationToken cancellationToken)
         {
-            var detail = await _proxyService.GetByIdAsync(proxyServer.Id, CancellationToken.None);
+            var detail = await _proxyService.GetByIdAsync(proxyServer.Id, cancellationToken);
             if (detail is null)
             {
                 return;
             }
 
-            var viewModel = new ProxyCheckerViewModel(_dialogFacade, detail);
+            var viewModel = _proxyCheckerFactory.Create(detail);
             _dialogFacade.ShowDialog(this, viewModel);
         }
 
         [RelayCommand]
-        private async Task ConfirmAsync()
+        private async Task ConfirmAsync(CancellationToken cancellationToken)
         {
-            await _proxyService.SaveChangesAsync(CancellationToken.None);
+            await _proxyService.SaveChangesAsync(cancellationToken);
 
             DialogResult = true;
         }
@@ -118,11 +121,11 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         private bool IsApplyExecutable() { return HasChanges; }
 
         [RelayCommand(CanExecute = nameof(IsApplyExecutable))]
-        private async Task ApplyAsync()
+        private async Task ApplyAsync(CancellationToken cancellationToken)
         {
             if (HasChanges)
             {
-                await _proxyService.SaveChangesAsync(CancellationToken.None);
+                await _proxyService.SaveChangesAsync(cancellationToken);
                 HasChanges = false;
             }
         }

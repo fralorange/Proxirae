@@ -7,7 +7,9 @@
                          xmlns:svg="https://github.com/dotnetprojects/SVGImage"
                          xmlns:local="clr-namespace:Proxirae.Presentation.WPF"
                          xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
+                         xmlns:converters="clr-namespace:Proxirae.Presentation.WPF.Converters"
                          xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels"
+                         xmlns:behaviors="clr-namespace:Proxirae.Presentation.WPF.Behaviors"
                          md:DialogServiceViews.IsRegistered="True"
                          mc:Ignorable="d"
                          Title="Proxirae"
@@ -20,8 +22,14 @@
         <Menu Background="WhiteSmoke" 
               Margin="0 5 0 5">
             <MenuItem Header="File">
+                <MenuItem Header="Import Configuration..."/>
+                <MenuItem Header="Export Configuration..."/>
+                <Separator/>
                 <MenuItem Header="Export Traffic History..."/>
                 <MenuItem Header="Export Logs History..."/>
+                <Separator/>
+                <MenuItem Header="Autostart"
+                          IsCheckable="True"/>
                 <Separator/>
                 <MenuItem Header="Exit" 
                           Command="{Binding ExitCommand}"/>
@@ -59,14 +67,19 @@
         <DockPanel Grid.Row="0" 
                    Style="{StaticResource ProcessPanel}">
             <StackPanel DockPanel.Dock="Left">
-                <Button Style="{StaticResource ProcessButton}" IsEnabled="False">
+                <Button Style="{StaticResource ProcessButton}"
+                        Margin="0 0 0 10"
+                        Command="{Binding DisconnectCommand}"
+                        CommandParameter="{Binding ElementName=FlowsTable, Path=SelectedItem}">
                     <svg:SVGImage Source="/Resources/Vectors/disconnect.svg" 
                                   RenderTransformOrigin="0.5,0.5" 
                                   VerticalContentAlignment="Center" 
                                   HorizontalContentAlignment="Center"
-                                  SizeType="SizeToContent" />
+                                  SizeType="SizeToContent"/>
                 </Button>
-                <Button Style="{StaticResource ProcessButton}" IsEnabled="False">
+                <Button Style="{StaticResource ProcessButton}" 
+                        Command="{Binding EndCommand}"
+                        CommandParameter="{Binding ElementName=FlowsTable, Path=SelectedItem}">
                     <svg:SVGImage Source="/Resources/Vectors/stop.svg" 
                                   RenderTransformOrigin="0.5,0.5" 
                                   VerticalContentAlignment="Center" 
@@ -75,28 +88,285 @@
                 </Button>
             </StackPanel>
 
-            <DataGrid DockPanel.Dock="Right" 
-                      Style="{StaticResource ProcessTable}">
+            <DataGrid x:Name="FlowsTable"
+                      DockPanel.Dock="Right"
+                      ItemsSource="{Binding Flows}"
+                      IsReadOnly="True"
+                      Style="{StaticResource ProcessTable}"
+                      behaviors:ClearSelectionBehavior.IsEnabled="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Application" Width="*" />
-                    <DataGridTextColumn Header="Target" Width="*"  />
-                    <DataGridTextColumn Header="Time" Width="*" />
-                    <DataGridTextColumn Header="Action" Width="*" />
-                    <DataGridTextColumn Header="Sent" Width="*" />
-                    <DataGridTextColumn Header="Received" Width="*"/>
+                    <DataGridTemplateColumn Header="Application" Width="*" >
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="4 0">
+                                    <Image Width="16" 
+                                           Height="16" 
+                                           Margin="0 0 6 0"
+                                           Source="{Binding ProcessId, Converter={StaticResource ProcessIdToIconConverter}, IsAsync=True}"/>
+
+                                    <TextBlock Text="{Binding ProcessId, Converter={StaticResource ProcessIdToNameConverter}, IsAsync=True}"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Target" Width="*"  >
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock VerticalAlignment="Center">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0}:{1}">
+                                            <Binding Path="Target.Address"/>
+                                            <Binding Path="Target.Port"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Time" Width="*" >
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SecondsPassed, Converter={StaticResource SecondsToTimeConverters}, IsAsync=True}" 
+                                           VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Action" Width="*" >
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ActionName}" 
+                                           VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Sent" Width="*" >
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding BytesSent, Converter={StaticResource BytesToSizeConverter}, IsAsync=True}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Received" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding BytesReceived, Converter={StaticResource BytesToSizeConverter}, IsAsync=True}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
 
         <TabControl Grid.Row="2"
                     Margin="0 -25 0 0"
-                    Style="{StaticResource LogPanel}">
-            <TabItem Header="Connections"
+                    Style="{StaticResource LogPanel}"
+                    SelectedIndex="{Binding SelectedTabIndex}">
+            <TabItem Header="Routing"
                      IsSelected="True">
-                <ListBox Style="{StaticResource LogBox}"/>
+                <ListBox ItemsSource="{Binding Routes}"
+                         Style="{StaticResource LogBox}"
+                         SelectionMode="Extended"
+                         behaviors:ClearSelectionBehavior.IsEnabled="True"
+                         behaviors:SelectAllBehavior.IsEnabled="True">
+                    <ListBox.Resources>
+                        <Style TargetType="ScrollViewer">
+                            <Setter Property="behaviors:AutoScrollBehavior.AutoScroll" 
+                                    Value="{Binding Path=DataContext.RoutesAutoScroll, 
+                                        RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                        </Style>
+                    </ListBox.Resources>
+
+                    <ListBox.InputBindings>
+                        <KeyBinding Key="C" Modifiers="Ctrl"
+                                    Command="{Binding CopyCommand}"
+                                    CommandParameter="{Binding Path=SelectedItems, 
+                                        RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                    </ListBox.InputBindings>
+
+                    <ListBox.ContextMenu>
+                        <ContextMenu DataContext="{Binding Path=PlacementTarget.DataContext, 
+                                RelativeSource={RelativeSource Mode=Self}}">
+                            <MenuItem Header="Copy"
+                                      InputGestureText="Ctrl+C"
+                                      Command="{Binding CopyCommand}"
+                                      CommandParameter="{Binding PlacementTarget.SelectedItems, 
+                                    RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="Select All"
+                                      InputGestureText="Ctrl+A"
+                                      Command="ApplicationCommands.SelectAll"
+                                      CommandTarget="{Binding Path=PlacementTarget, 
+                                    RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="Clear"
+                                      Command="{Binding ClearCommand}"
+                                      CommandParameter="Routes"/>
+                            <Separator/>
+                            <MenuItem Header="AutoScroll"
+                                      IsCheckable="True"
+                                      IsChecked="{Binding RoutesAutoScroll, Mode=TwoWay}"/>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel VirtualizingPanel.IsVirtualizing="True"
+                                                    VirtualizingPanel.VirtualizationMode="Recycling"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" 
+                                           Text="{Binding Timestamp, StringFormat='{}{0:HH:mm:ss}', 
+                                                Converter={StaticResource UtcToLocalTimeConverter}}"
+                                           Margin="0 0 20 0"
+                                           ToolTip="{Binding Timestamp, StringFormat='{}{0:dd-MM-yyyy HH:mm:ss}'}"/>
+
+                                <TextBlock Grid.Column="1" TextTrimming="CharacterEllipsis">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} ({1})">
+                                            <Binding Path="ProcessId" Converter="{StaticResource ProcessIdToNameConverter}"/>
+                                            <Binding Path="ProcessId"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+
+                                <TextBlock Grid.Column="2" Text=" - " HorizontalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="3" TextTrimming="CharacterEllipsis">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0}:{1}">
+                                            <Binding Path="Endpoint.Address"/>
+                                            <Binding Path="Endpoint.Port"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+
+                                <TextBlock Grid.Column="4" Text=" - " HorizontalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="5" Text="{Binding ActionName}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </TabItem>
             <TabItem Header="Logs">
-                <ListBox Style="{StaticResource LogBox}"/>
+                <ListBox ItemsSource="{Binding Logs}"
+                         Style="{StaticResource LogBox}"
+                         SelectionMode="Extended"
+                         behaviors:ClearSelectionBehavior.IsEnabled="True"
+                         behaviors:SelectAllBehavior.IsEnabled="True">
+                    <ListBox.Resources>
+                        <Style TargetType="ScrollViewer">
+                            <Setter Property="behaviors:AutoScrollBehavior.AutoScroll" 
+                                    Value="{Binding Path=DataContext.LogsAutoScroll, 
+                                        RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                        </Style>    
+                    </ListBox.Resources>
+
+                    <ListBox.InputBindings>
+                        <KeyBinding Key="C" Modifiers="Ctrl"
+                                    Command="{Binding CopyCommand}"
+                                    CommandParameter="{Binding Path=SelectedItems, 
+                                        RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                    </ListBox.InputBindings>
+
+                    <ListBox.ContextMenu>
+                        <ContextMenu DataContext="{Binding Path=PlacementTarget.DataContext, 
+                                RelativeSource={RelativeSource Mode=Self}}">
+                            <MenuItem Header="Copy"
+                                      InputGestureText="Ctrl+C"
+                                      Command="{Binding CopyCommand}"
+                                      CommandParameter="{Binding PlacementTarget.SelectedItems, 
+                                    RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="Select All"
+                                      InputGestureText="Ctrl+A"
+                                      Command="ApplicationCommands.SelectAll"
+                                      CommandTarget="{Binding Path=PlacementTarget, 
+                                    RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+                            <MenuItem Header="Clear"
+                                      Command="{Binding ClearCommand}"
+                                      CommandParameter="Logs"/>
+                            <Separator/>
+                            <MenuItem Header="AutoScroll"
+                                      IsCheckable="True"
+                                      IsChecked="{Binding Path=LogsAutoScroll, Mode=TwoWay}"/>
+                            <Separator/>
+                            <MenuItem Header="Log Level" 
+                                      ItemContainerStyle="{StaticResource RadioMenuItemContainer}"
+                                      xmlns:local="clr-namespace:Proxirae.Contracts.DTOs.Logs;assembly=Proxirae.Contracts">
+                                <MenuItem Header="Debug"
+                                          Style="{StaticResource RadioMenuItem}"
+                                          IsCheckable="True"
+                                          IsChecked="{Binding SelectedLogLevel, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:LogLevelDto.Debug}, Mode=TwoWay}"
+                                          Command="{Binding ChangeLogLevelCommand}"
+                                          CommandParameter="{x:Static local:LogLevelDto.Debug}"/>
+                                <MenuItem Header="Info"
+                                          Style="{StaticResource RadioMenuItem}"
+                                          IsCheckable="True"
+                                          IsChecked="{Binding SelectedLogLevel, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:LogLevelDto.Info}, Mode=TwoWay}"
+                                          Command="{Binding ChangeLogLevelCommand}"
+                                          CommandParameter="{x:Static local:LogLevelDto.Info}"/>
+                                <MenuItem Header="Warning"
+                                          Style="{StaticResource RadioMenuItem}"
+                                          IsCheckable="True"
+                                          IsChecked="{Binding SelectedLogLevel, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:LogLevelDto.Warning}, Mode=TwoWay}"
+                                          Command="{Binding ChangeLogLevelCommand}"
+                                          CommandParameter="{x:Static local:LogLevelDto.Warning}"/>
+                                <MenuItem Header="Error"
+                                          Style="{StaticResource RadioMenuItem}"
+                                          IsCheckable="True"
+                                          IsChecked="{Binding SelectedLogLevel, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:LogLevelDto.Critical}, Mode=TwoWay}"
+                                          Command="{Binding ChangeLogLevelCommand}"
+                                          CommandParameter="{x:Static local:LogLevelDto.Error}"/>
+                            </MenuItem>
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel VirtualizingPanel.IsVirtualizing="True"
+                                                    VirtualizingPanel.VirtualizationMode="Recycling"
+                                                    VirtualizingPanel.ScrollUnit="Item"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Timestamp, StringFormat='{}{0:HH:mm:ss}', Converter={StaticResource UtcToLocalTimeConverter}}"
+                                           Margin="0 0 0 0"
+                                           ToolTip="{Binding Timestamp, StringFormat='{}{0:dd-MM-yyyy HH:mm:ss}'}"/>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Level, StringFormat='{}{0}', Converter={StaticResource EnumToUpperStringConverter}}" 
+                                           Foreground="{Binding Level, Converter={StaticResource LogLevelToBrushConverter}}" 
+                                           HorizontalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="2"  
+                                           Text="{Binding Message}" 
+                                           TextWrapping="NoWrap"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </TabItem>
         </TabControl>
 

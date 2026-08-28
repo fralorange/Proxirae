@@ -7,12 +7,14 @@
 #include "process/IProcessResolver.h"
 #include "packet/RuleEvaluator.h"
 #include "persistence/ConnectionTable.h"
-#include "persistence/ConfigurationStore.h"
+#include "persistence/Store.h"
+#include "persistence/Configuration.h"
+#include "monitoring/IRoutingMonitor.h"
 
 namespace Proxirae {
 	class PacketRouter {
 	public:
-		PacketRouter(IProcessResolver& resolver, RuleEvaluator& evaluator, ConfigurationStore& config, ConnectionTable& connections);
+		PacketRouter(IProcessResolver& resolver, RuleEvaluator& evaluator, Store<Configuration>& config, ConnectionTable& connections, IRoutingMonitor& monitor);
 
 		RuleActionContract Route(IPacketContext& ctx);
 
@@ -21,9 +23,11 @@ namespace Proxirae {
 		
 		RuleEvaluator& m_evaluator;
 
-		ConfigurationStore& m_config;
+		Store<Configuration>& m_config;
 
 		ConnectionTable& m_connections;
+
+		IRoutingMonitor& m_monitor;
 
 		std::optional<RuleActionContract> TryGetExistingRoute(IPacketContext& ctx);
 	};

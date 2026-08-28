@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Proxirae.Application.Factories.Rule;
 using Proxirae.Contracts.DTOs.Rules;
 using Proxirae.Contracts.DTOs.Rules.Actions;
 using Proxirae.Presentation.WPF.Facades.Dialog;
@@ -15,6 +16,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
             : base(dialogFacade, actions)
         {
             _id = ruleDto.Id;
+            Priority = ruleDto.Priority;
             IsEnabled = ruleDto.IsEnabled;
             Remarks = ruleDto.Remarks;
             Processes = ruleDto.Processes;
@@ -26,13 +28,12 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
             SelectedAction = Actions.FirstOrDefault(a =>
             {
                 if (a is ProxyActionDto proxyAction && ruleDto.Action is ProxyActionDto ruleAction)
-                    return proxyAction.Proxy.Id == ruleAction.Proxy.Id;
+                    return proxyAction.Id == ruleAction.Id;
 
                 return a.Name == ruleDto.Action.Name;
             });
         }
 
-        // TODO: Extract the creation of RuleEditDto to the factory
         [RelayCommand]
         private void Confirm()
         {
@@ -41,17 +42,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
             if (HasErrors)
                 return;
 
-            ProxyRule = new RuleEditDto
-            {
-                Id = _id,
-                IsEnabled = IsEnabled,
-                Remarks = Remarks,
-                Processes = Processes,
-                Hosts = Hosts,
-                Ports = Ports,
-                Protocol = SelectedProtocols.Aggregate((acc, p) => acc | p),
-                Action = SelectedAction!,
-            };
+            ProxyRule = RuleFactory.CreateEditDto(_id, Priority, IsEnabled, Remarks, Processes, Hosts, Ports, SelectedProtocols, SelectedAction!);
 
             DialogResult = true;
         }

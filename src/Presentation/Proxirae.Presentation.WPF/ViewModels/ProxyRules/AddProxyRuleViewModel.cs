@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Proxirae.Application.Factories.Rule;
 using Proxirae.Contracts.DTOs.Rules;
 using Proxirae.Contracts.DTOs.Rules.Actions;
 using Proxirae.Presentation.WPF.Facades.Dialog;
@@ -9,11 +10,11 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
     {
         public RuleAddDto? ProxyRule { get; private set; }
 
-        public AddProxyRuleViewModel(DialogFacade dialogFacade, List<BaseActionDto> actions) : base(dialogFacade, actions)
+        public AddProxyRuleViewModel(DialogFacade dialogFacade, List<BaseActionDto> actions, int nextPriority) : base(dialogFacade, actions)
         {
+            Priority = nextPriority;
         }
 
-        // TODO: Extract the creation of RuleAddDto to the factory
         [RelayCommand]
         private void Confirm()
         {
@@ -22,16 +23,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
             if (HasErrors)
                 return;
 
-            ProxyRule = new RuleAddDto
-            {
-                IsEnabled = IsEnabled,
-                Remarks = Remarks,
-                Processes = Processes,
-                Hosts = Hosts,
-                Ports = Ports,
-                Protocol = SelectedProtocols.Aggregate((acc, p) => acc | p),
-                Action = SelectedAction!,
-            };
+            ProxyRule = RuleFactory.CreateAddDto(Priority, IsEnabled, Remarks, Processes, Hosts, Ports, SelectedProtocols, SelectedAction!);
 
             DialogResult = true;
         }

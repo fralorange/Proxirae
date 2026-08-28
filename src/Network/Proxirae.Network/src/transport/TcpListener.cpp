@@ -11,10 +11,7 @@ namespace Proxirae {
 
 	TcpListener::~TcpListener()
 	{
-		if (m_listener != InvalidNativeSocket) {
-			CloseSocket(m_listener);
-			m_listener = InvalidNativeSocket;
-		}
+		Close();
 	}
 
 	std::uint16_t TcpListener::Bind()
@@ -22,7 +19,7 @@ namespace Proxirae {
 		NativeSocket listener = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 		if (listener == InvalidNativeSocket) {
-			m_logger.LogCritical("Failed to create socket listener.");
+			m_logger.LogError(std::format("[TcpListener] Failed to create socket: error {}", GetSocketError()));
 
 			return 0;
 		}
@@ -35,13 +32,11 @@ namespace Proxirae {
 
 		int on = 1;
 		if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&on), sizeof(int))) {
-			std::string message = std::format("Failed to re-use address. Error={}", GetSocketError());
-			m_logger.LogWarning(message);
+			m_logger.LogWarning(std::format("[TcpListener] Failed to set SO_REUSEADDR: error {}", GetSocketError()));
 		}
 
 		if (bind(listener, reinterpret_cast<struct sockaddr*>(&listenerAddr), sizeof(listenerAddr)) == SocketError) {
-			std::string message = std::format("Failed to bind address to socket. Error={}", GetSocketError());
-			m_logger.LogError(message);
+			m_logger.LogError(std::format("[TcpListener] Bind failed: error {}", GetSocketError()));
 			CloseSocket(listener);
 
 			return 0;
@@ -50,8 +45,7 @@ namespace Proxirae {
 		struct sockaddr_in boundAddr {};
 		SocketLen len = sizeof(boundAddr);
 		if (getsockname(listener, reinterpret_cast<struct sockaddr*>(&boundAddr), &len) == SocketError) {
-			std::string message = std::format("Failed to get socket name. Error={}", GetSocketError());
-			m_logger.LogError(message);
+			m_logger.LogError(std::format("[TcpListener] getsockname failed: error {}", GetSocketError()));
 			CloseSocket(listener);
 			return 0;
 		}
@@ -64,15 +58,13 @@ namespace Proxirae {
 	bool TcpListener::Listen(std::uint16_t port)
 	{
 		if (listen(m_listener, SOMAXCONN) == SocketError) {
-			std::string message = std::format("Failed to listen on socket. Error={}", GetSocketError());
-			m_logger.LogError(message);
+			m_logger.LogError(std::format("[TcpListener] Listen failed on port {}: error {}", port, GetSocketError()));
 			CloseSocket(m_listener);
 
 			return false;
 		}
 
-		std::string message = std::format("Listening on Port={}", port);
-		m_logger.LogDebug(message);
+		m_logger.LogInfo(std::format("[TcpListener] Listening on port {}", port));
 
 		return true;
 	}
@@ -85,13 +77,17 @@ namespace Proxirae {
 		NativeSocket client = accept(m_listener, reinterpret_cast<struct sockaddr*>(&clientAddr), &clientAddrSize);
 
 		if (client == InvalidNativeSocket) {
-			m_logger.LogError("Failed to accept client connection.");
+			if (m_listener == InvalidNativeSocket) {
+				return nullptr;
+			}
+
+			m_logger.LogError(std::format("[TcpListener] Accept failed: error {}", GetSocketError()));
 
 			return nullptr;
 		}
 
 		if (!m_driver.Attach(client)) {
-			m_logger.LogError("Failed to attach client socket to IOCP");
+			m_logger.LogError(std::format("[TcpListener] Failed to attach client socket to IOCP: error {}", GetSocketError()));
 			CloseSocket(client);
 
 			return nullptr;
@@ -99,9 +95,15 @@ namespace Proxirae {
 
 		Endpoint endpoint(clientAddr.sin_addr.s_addr, clientAddr.sin_port);
 
-		std::string message = std::format("Client connected: Src={}", endpoint.ToString());
-		m_logger.LogInfo(message);
+		m_logger.LogDebug(std::format("[TcpListener] Client connected from {}", endpoint.ToString()));
 
 		return std::make_shared<TcpSession>(client, endpoint, m_driver, m_logger, m_proxyFactory);
+	}
+
+	void TcpListener::Close() {
+		if (m_listener != InvalidNativeSocket) {
+			CloseSocket(m_listener);
+			m_listener = InvalidNativeSocket;
+		}
 	}
 }

@@ -3,6 +3,7 @@
 namespace Proxirae {
 	enum class IoOperation {
 		Read,
-		Write
+		Write,
+		Accept
 	};
 }

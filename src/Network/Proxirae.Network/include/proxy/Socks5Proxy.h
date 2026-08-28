@@ -17,8 +17,8 @@ namespace Proxirae {
 		bool Connect(std::string_view targetAddress, std::uint16_t targetPort) override;
 		void Disconnect() override;
 
-		void Send(std::span<const char> buffer, std::function<void(const IoResult&)> callback) override;
-		void Recv(std::span<char> buffer, std::function<void(const IoResult&)> callback) override;
+		void Send(std::span<const std::byte> buffer, std::function<void(const IoResult&)> callback) override;
+		void Recv(std::span<std::byte> buffer, std::function<void(const IoResult&)> callback) override;
 	private:
 		NativeSocket m_proxy{ InvalidNativeSocket };
 
@@ -31,10 +31,11 @@ namespace Proxirae {
 		ILogger& m_logger;
 
 		bool m_connected{ false };
-
-		NativeSocket ConnectToProxy();
-		bool PerformHandshake(NativeSocket sock);
-		bool ConnectToTarget(NativeSocket sock, std::string_view targetAddress, std::uint16_t targetPort);
+	
+	protected:
+		virtual NativeSocket ConnectToProxy();
+		virtual bool PerformHandshake(NativeSocket sock);
+		virtual bool ConnectToTarget(NativeSocket sock, std::string_view targetAddress, std::uint16_t targetPort);
 
 		static bool SendExact(NativeSocket sock, std::span<const char> buffer);
 		static bool RecvExact(NativeSocket sock, std::span<char> buffer);

@@ -16,7 +16,7 @@ namespace Proxirae {
 
 		virtual bool Attach(NativeHandle handle) = 0;
 
-		virtual void AsyncRead(NativeHandle handle, std::span<char> buffer, IoCallback callback) = 0;
-		virtual void AsyncWrite(NativeHandle handle, std::span<const char> buffer, IoCallback callback) = 0;
+		virtual void AsyncRead(NativeHandle handle, std::span<std::byte> buffer, IoCallback callback) = 0;
+		virtual void AsyncWrite(NativeHandle handle, std::span<const std::byte> buffer, IoCallback callback) = 0;
 	};
 }

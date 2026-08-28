@@ -4,7 +4,7 @@
     {
         public Guid Id { get; init; }
         public string? Remarks { get; set; }
-        public required string IP { get; set; }
+        public string Address { get; set; } = string.Empty;
         public int Port { get; set; }
         public ProxyType Type { get; set; }
         public string? Username { get; set; }

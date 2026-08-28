@@ -20,10 +20,7 @@ namespace Proxirae {
 
 		std::optional<std::reference_wrapper<const ConnectionEntry>> GetConnection(const FiveTuple& key) const;
 
-		std::optional<ConnectionState> GetState(const FiveTuple& key) const;
 		std::optional<std::string_view> GetProxyId(const FiveTuple& key) const;
-
-		void SetState(const FiveTuple& key, ConnectionState state);
 		void SetProxyId(const FiveTuple& key, const std::string proxyId);
 
 		std::optional<FiveTuple> FindKey(const ThreeTuple& key);

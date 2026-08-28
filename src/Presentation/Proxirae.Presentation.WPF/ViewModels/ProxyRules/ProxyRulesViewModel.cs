@@ -2,11 +2,14 @@
 using CommunityToolkit.Mvvm.Input;
 using MvvmDialogs;
 using Proxirae.Application.Facades.Actions;
+using Proxirae.Application.Factories.Rule;
 using Proxirae.Application.Services.Rules;
 using Proxirae.Contracts.DTOs.Rules;
 using Proxirae.Contracts.DTOs.Rules.Actions;
 using Proxirae.Presentation.WPF.Facades.Dialog;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
 {
@@ -24,7 +27,8 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
             private set => SetProperty(ref dialogResult, value);
         }
 
-        public ObservableCollection<RuleDto> ProxyRules { get; } = [];
+        private ObservableCollection<RuleDto> _proxyRules { get; } = [];
+        public ICollectionView ProxyRules { get; }
 
         [ObservableProperty]
         private List<BaseActionDto> _actions = [];
@@ -38,89 +42,136 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
             _dialogFacade = dialogFacade;
             _ruleService = ruleService;
             _actionFacade = actionFacade;
+
+            ProxyRules = CollectionViewSource.GetDefaultView(_proxyRules);
+            ProxyRules.SortDescriptions.Clear();
+
+            ProxyRules.SortDescriptions.Add(
+                new SortDescription(nameof(RuleDto.Priority), ListSortDirection.Descending)
+            );
         }
 
         [RelayCommand]
-        private async Task LoadAsync()
+        private async Task LoadAsync(CancellationToken cancellationToken)
         {
-            Actions = await _actionFacade.GetActionsAsync(CancellationToken.None);
-            var proxyRules = await _ruleService.GetAsync(CancellationToken.None);
+            Actions = await _actionFacade.GetActionsAsync(cancellationToken);
+            var proxyRules = await _ruleService.GetAsync(cancellationToken);
 
-            ProxyRules.Clear();
+            _proxyRules.Clear();
 
             foreach (var proxyRule in proxyRules)
             {
-                ProxyRules.Add(proxyRule);
+                _proxyRules.Add(proxyRule);
             }
 
-            ProxyRules.CollectionChanged += (_, _) => HasChanges = true;
+            _proxyRules.CollectionChanged += (_, _) => HasChanges = true;
         }
 
         [RelayCommand]
-        private async Task AddProxyRuleAsync()
+        private async Task AddProxyRuleAsync(CancellationToken cancellationToken)
         {
-            var viewModel = new AddProxyRuleViewModel(_dialogFacade, Actions);
+            var nextPriority = 1;
+            if (_proxyRules.Count > 0)
+            {
+                nextPriority = _proxyRules.Max(r => r.Priority) + 1;
+            }
+
+            var viewModel = new AddProxyRuleViewModel(_dialogFacade, Actions, nextPriority);
             _dialogFacade.ShowDialog(this, viewModel);
 
             if (viewModel.ProxyRule is { } addRule)
             {
-                var rule = await _ruleService.AddAsync(addRule, CancellationToken.None);
-                ProxyRules.Add(rule);
+                var rule = await _ruleService.AddAsync(addRule, cancellationToken);
+                _proxyRules.Add(rule);
             }
         }
 
         [RelayCommand]
-        private async Task EditProxyRuleAsync(RuleDto proxyRule)
+        private async Task EditProxyRuleAsync(RuleDto proxyRule, CancellationToken cancellationToken)
         {
             var viewModel = new EditProxyRuleViewModel(_dialogFacade, Actions, proxyRule);
             _dialogFacade.ShowDialog(this, viewModel);
 
             if (viewModel.ProxyRule is { } editRule)
             {
-                var rule = await _ruleService.UpdateAsync(editRule, CancellationToken.None);
+                var rule = await _ruleService.UpdateAsync(editRule, cancellationToken);
                 if (rule is not null)
                 {
-                    var index = ProxyRules.IndexOf(proxyRule);
+                    var index = _proxyRules.IndexOf(proxyRule);
                     if (index >= 0)
                     {
-                        ProxyRules[index] = rule;
+                        _proxyRules[index] = rule;
                     }
                 }
             }
         }
 
         [RelayCommand]
-        private async Task UpdateProxyRuleAsync(RuleDto proxyRule)
+        private async Task UpdateProxyRuleAsync(RuleDto proxyRule, CancellationToken cancellationToken)
         {
-            var viewModel = new EditProxyRuleViewModel(_dialogFacade, Actions, proxyRule);
-            // TODO: Remove the use of ConfirmCommand outside the UI
-            viewModel.ConfirmCommand.Execute(CancellationToken.None);
+            var editRule = RuleFactory.CreateEditDto(proxyRule);
 
-            if (viewModel.ProxyRule is { } editRule)
+            if (editRule is not null)
             {
-                var rule = await _ruleService.UpdateAsync(editRule, CancellationToken.None);
+                var rule = await _ruleService.UpdateAsync(editRule, cancellationToken);
                 if (rule is not null)
                 {
-                    var index = ProxyRules.IndexOf(proxyRule);
+                    var index = _proxyRules.IndexOf(proxyRule);
                     if (index >= 0)
                     {
-                        ProxyRules[index] = rule;
+                        _proxyRules[index] = rule;
                     }
                 }
             }
         }
 
         [RelayCommand]
-        private async Task DeleteProxyRuleAsync(RuleDto proxyRule)
+        private async Task DeleteProxyRuleAsync(RuleDto proxyRule, CancellationToken cancellationToken)
         {
-            await _ruleService.DeleteAsync(proxyRule.Id, CancellationToken.None);
-            ProxyRules.Remove(proxyRule);
+            await _ruleService.DeleteAsync(proxyRule.Id, cancellationToken);
+            _proxyRules.Remove(proxyRule);
         }
 
         [RelayCommand]
-        private async Task ConfirmAsync()
+        private async Task MoveProxyRuleUpAsync(RuleDto proxyRule, CancellationToken cancellationToken)
         {
-            await _ruleService.SaveChangesAsync(CancellationToken.None);
+            var nextRule = _proxyRules
+                .Where(r => proxyRule.Priority < r.Priority)
+                .OrderBy(r => r.Priority)
+                .FirstOrDefault();
+
+            if (nextRule is not null)
+            {
+                (proxyRule.Priority, nextRule.Priority) = (nextRule.Priority, proxyRule.Priority);
+
+                ProxyRules.Refresh();
+
+                await _ruleService.SwapPrioritiesAsync(proxyRule.Id, nextRule.Id, cancellationToken);
+            }
+        }
+
+        [RelayCommand]
+        private async Task MoveProxyRuleDownAsync(RuleDto proxyRule, CancellationToken cancellationToken)
+        {
+            var previousRule = _proxyRules
+                .Where(r => r.Priority < proxyRule.Priority)
+                .OrderByDescending(r => r.Priority)
+                .FirstOrDefault();
+
+            if (previousRule is not null)
+            {
+                (proxyRule.Priority, previousRule.Priority) = (previousRule.Priority, proxyRule.Priority);
+
+                ProxyRules.Refresh();
+
+                await _ruleService.SwapPrioritiesAsync(proxyRule.Id, previousRule.Id, cancellationToken);
+            }
+        }
+
+        [RelayCommand]
+        private async Task ConfirmAsync(CancellationToken cancellationToken)
+        {
+            await _ruleService.SaveChangesAsync(cancellationToken);
 
             DialogResult = true;
         }
@@ -128,11 +179,11 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         private bool IsApplyExecutable() { return HasChanges; }
 
         [RelayCommand(CanExecute = nameof(IsApplyExecutable))]
-        private async Task ApplyAsync()
+        private async Task ApplyAsync(CancellationToken cancellationToken)
         {
             if (HasChanges)
             {
-                await _ruleService.SaveChangesAsync(CancellationToken.None);
+                await _ruleService.SaveChangesAsync(cancellationToken);
                 HasChanges = false;
             }
         }

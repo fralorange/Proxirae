@@ -65,44 +65,46 @@ namespace Proxirae {
 		return hResult != nullptr;
 	}
 
-	void IocpDriver::AsyncRead(NativeHandle handle, std::span<char> buffer, IoCallback callback)
+	void IocpDriver::AsyncRead(NativeHandle handle, std::span<std::byte> buffer, IoCallback callback)
 	{
-		auto* ctx = new IocpContext(IoOperation::Read, std::move(callback));
-		ctx->wsaBuf.buf = buffer.data();
-		ctx->wsaBuf.len = static_cast<ULONG>(buffer.size());
+		auto* ctx = new IocpContext{ IoOperation::Read, std::move(callback) };
 
-		SOCKET sock = static_cast<SOCKET>(handle);
-		DWORD flags = 0;
-		DWORD bytesRecv = 0;
+		BOOL result = ReadFile(
+			reinterpret_cast<HANDLE>(handle),
+			buffer.data(),
+			static_cast<DWORD>(buffer.size()),
+			nullptr,
+			&ctx->overlapped
+		);
 
-		int result = WSARecv(sock, &ctx->wsaBuf, 1, &bytesRecv, &flags, &ctx->overlapped, NULL);
+		if (!result) {
+			DWORD err = GetLastError();
 
-		if (result == SOCKET_ERROR) {
-			int err = WSAGetLastError();
-
-			if (err != WSA_IO_PENDING) {
-				ctx->callback(IoResult{ false, 0, err });
+			if (err != ERROR_IO_PENDING) {
+				ctx->callback(IoResult{ false, 0, static_cast<int>(err) });
 				delete ctx;
 			}
 		}
 	}
 
-	void IocpDriver::AsyncWrite(NativeHandle handle, std::span<const char> buffer, IoCallback callback)
+	void IocpDriver::AsyncWrite(NativeHandle handle, std::span<const std::byte> buffer, IoCallback callback)
 	{
 		auto* ctx = new IocpContext(IoOperation::Write, std::move(callback));
-		ctx->wsaBuf.buf = const_cast<char*>(buffer.data());
-		ctx->wsaBuf.len = static_cast<ULONG>(buffer.size());
+		ctx->buffer.assign(buffer.begin(), buffer.end());
 
-		SOCKET sock = static_cast<SOCKET>(handle);
-		DWORD bytesSent = 0;
+		BOOL result = WriteFile(
+			reinterpret_cast<HANDLE>(handle),
+			ctx->buffer.data(),
+			static_cast<DWORD>(ctx->buffer.size()),
+			nullptr,
+			&ctx->overlapped
+		);
 
-		int result = WSASend(sock, &ctx->wsaBuf, 1, &bytesSent, 0, &ctx->overlapped, NULL);
+		if (!result) {
+			DWORD err = GetLastError();
 
-		if (result == SOCKET_ERROR) {
-			int err = WSAGetLastError();
-
-			if (err != WSA_IO_PENDING) {
-				ctx->callback(IoResult{ false, 0, err });
+			if (err != ERROR_IO_PENDING) {
+				ctx->callback(IoResult{ false, 0, static_cast<int>(err) });
 				delete ctx;
 			}
 		}

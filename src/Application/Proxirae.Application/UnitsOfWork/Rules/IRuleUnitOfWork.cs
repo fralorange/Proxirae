@@ -5,7 +5,7 @@ namespace Proxirae.Application.UnitsOfWork.Rules
     public interface IRuleUnitOfWork
     {
         Task<IReadOnlyCollection<Rule>> GetAsync(CancellationToken token);
-        Rule? GetById(Guid id);
+        Task<Rule?> GetByIdAsync(Guid id, CancellationToken token);
         void Add(Rule rule);
         bool Update(Rule rule);
         bool Delete(Guid id);

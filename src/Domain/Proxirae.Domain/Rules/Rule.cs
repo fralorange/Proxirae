@@ -5,6 +5,7 @@ namespace Proxirae.Domain.Rules
     public class Rule
     {
         public Guid Id { get; set; }
+        public int Priority { get; set; }
         public bool IsEnabled { get; set; } = true;
         public string? Remarks { get; set; }
         public string? Processes { get; set; } 

@@ -53,6 +53,12 @@ namespace Proxirae {
 			}
 		}
 
+		void Interrupt() {
+			if (handle != INVALID_HANDLE_VALUE) {
+				WinDivertShutdown(handle, WINDIVERT_SHUTDOWN_BOTH);
+			}
+		}
+
 		bool StartReceive() {
 			ResetEvent(event);
 
@@ -131,6 +137,12 @@ namespace Proxirae {
 		m_socket->Close();
 	}
 
+	void PacketWinDiverter::Interrupt()
+	{
+		m_network->Interrupt();
+		m_socket->Interrupt();
+	}
+
 	bool PacketWinDiverter::Receive(const std::function<void(IPacketContext&)>& callback)
 	{
 		HANDLE events[2] = { m_network->event, m_socket->event };
@@ -141,8 +153,13 @@ namespace Proxirae {
 			DWORD bytesTransferred = 0;
 
 			if (!GetOverlappedResult(m_network->handle, &m_network->overlapped, &bytesTransferred, FALSE)) {
-				std::string message = std::format("Failed to get overlapped result for network receive. Error={}", GetLastError());
-				m_logger.LogError(message);
+				DWORD error = GetLastError();
+
+				if (error == ERROR_NO_DATA) {
+					return false;
+				}
+
+				m_logger.LogError(std::format("[WinDivert] Network receive overlapped result failed: error {}", error));
 				return false;
 			}
 
@@ -158,8 +175,13 @@ namespace Proxirae {
 			DWORD bytesTransferred = 0;
 
 			if (!GetOverlappedResult(m_socket->handle, &m_socket->overlapped, &bytesTransferred, FALSE)) {
-				std::string message = std::format("Failed to get overlapped result for socket receive. Error={}", GetLastError());
-				m_logger.LogError(message);
+				DWORD error = GetLastError();
+
+				if (error == ERROR_NO_DATA) {
+					return false;
+				}
+
+				m_logger.LogError(std::format("[WinDivert] Socket receive overlapped result failed: error {}", error));
 
 				return false;
 			}
@@ -177,14 +199,13 @@ namespace Proxirae {
 	bool PacketWinDiverter::Send(IPacketContext& packet)
 	{
 		if (packet.IsModified() && !WinDivertHelperCalcChecksums(packet.GetRawData(), packet.GetRawDataLength(), &packet.GetMetadata(), 0)) {
-			m_logger.LogError("Failed to calculate checksums.");
+			m_logger.LogError("[WinDivert] Failed to calculate packet checksums");
 
 			return false;
 		}
 
 		if (!WinDivertSend(m_network->handle, packet.GetRawData(), packet.GetRawDataLength(), nullptr, &packet.GetMetadata())) {
-			std::string message = std::format("Failed to send packet. Error={}", GetLastError());
-			m_logger.LogError(message);
+			m_logger.LogError(std::format("[WinDivert] Failed to send packet: error {}", GetLastError()));
 
 			return false;
 		}

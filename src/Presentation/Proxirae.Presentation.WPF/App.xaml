@@ -5,8 +5,9 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Styles/Constants.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/Brushes.xaml"/>
                 <ResourceDictionary Source="/Resources/Providers/Providers.xaml"/>
-                <ResourceDictionary Source="Converters/Converters.xaml"/>
+                <ResourceDictionary Source="/Converters/Converters.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

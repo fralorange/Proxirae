@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Proxirae.Application.Services.Preferences;
 using Proxirae.Infrastructure;
+using Proxirae.Infrastructure.ProcessCommunication;
 using Proxirae.Infrastructure.TransactionControl;
 using System.Windows;
 
@@ -10,36 +13,43 @@ namespace Proxirae.Presentation.WPF
     /// </summary>
     public partial class App : WinApp
     {
-        public IServiceProvider ServiceProvider { get; }
+        private readonly IHost _host;
 
         public App()
         {
-            ServiceProvider = new ServiceCollection()
-                .AddStartupServices()
-                .AddServices()
-                .AddRepositories()
-                .AddUnitsOfWork()
-                .AddMappers()
-                .AddFacades()
-                .AddViewModels()
-                .BuildServiceProvider();
+            _host = Host.CreateDefaultBuilder()
+                .ConfigureServices(services =>
+                {
+                    services
+                        .AddStartupServices()
+                        .AddServices()
+                        .AddRepositories()
+                        .AddStores()
+                        .AddUnitsOfWork()
+                        .AddMappers()
+                        .AddFacades()
+                        .AddFactories()
+                        .AddViewModels()
+                        .AddPipes();
+                })
+                .Build();
         }
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
-            var mainView = ServiceProvider.GetRequiredService<MainView>();
+            await _host.StartAsync();
+
+            var mainView = _host.Services.GetRequiredService<MainView>();
             mainView.Show();
             Current.MainWindow = mainView;
 
             base.OnStartup(e);
         }
 
-        protected override void OnExit(ExitEventArgs e)
+        protected override async void OnExit(ExitEventArgs e)
         {
-            if (ServiceProvider is IDisposable disposable)
-            {
-                disposable.Dispose();
-            }
+            await _host.StopAsync();
+            _host.Dispose();
 
             base.OnExit(e);
         }

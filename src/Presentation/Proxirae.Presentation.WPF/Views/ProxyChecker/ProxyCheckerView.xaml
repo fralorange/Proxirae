@@ -13,139 +13,122 @@
                          Background="Transparent"
                          WindowStartupLocation="CenterOwner"
                          ShowInTaskbar="False"
-                         MinWidth="480"
-                         MinHeight="500"
-                         Width="480"
-                         Height="500">
+                         Width="420"
+                         SizeToContent="Height"
+                         ResizeMode="NoResize">
+
     <Grid Background="WhiteSmoke">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <GroupBox Header="Test Proxy" Margin="15" Grid.Row="0">
-            <Grid Margin="10">
+        <GroupBox Header="Test Proxy" Grid.Row="0" Margin="0 0 0 10" Padding="10">
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Grid>
-                    <Grid x:Name="ProxyDetailsText"
-                          Visibility="{Binding IsProxySet, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Hidden'}">
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="90"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                <Grid x:Name="ProxyDetailsText" 
+                      Visibility="{Binding IsProxySet, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Hidden'}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="70"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="1" Text="Server:" />
-                        <TextBlock Grid.Row="1" Grid.Column="1">
-                            <TextBlock.Text>
-                                <MultiBinding StringFormat="{}{0}:{1}">
-                                    <Binding Path="ProxyServer.IP"/>
-                                    <Binding Path="ProxyServer.Port"/>
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-
-                        <TextBlock Grid.Row="2" Text="Protocol:" />
-                        <TextBlock Grid.Row="2" Grid.Column="1"
-                                   Text="{Binding ProxyServer.Type}" />
-                    </Grid>
-
-                    <TextBlock Text="No proxy selected">
-                        <TextBlock.Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Visibility" Value="Visible"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Visibility, ElementName=ProxyDetailsText}"
-                                                 Value="Visible">
-                                        <Setter Property="Visibility" Value="Hidden"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Server:" Margin="0 0 0 4"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="0 0 0 4">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0}:{1}">
+                                <Binding Path="ProxyServer.Address"/>
+                                <Binding Path="ProxyServer.Port"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
                     </TextBlock>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Protocol:" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ProxyServer.Type}" />
                 </Grid>
 
-                <Button Grid.Column="1"
-                        Content="Set..."
-                        Style="{StaticResource ControlButton}"
+                <TextBlock Text="No proxy selected" VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Visibility, ElementName=ProxyDetailsText}" Value="Visible">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <Button Grid.Column="1" Content="Set..." Width="80" Height="26" Margin="10 0 0 0"
                         VerticalAlignment="Center"
-                        Margin="10 0 0 0"
+                        Style="{StaticResource ControlButton}"
                         Command="{Binding SetProxyServerCommand}"/>
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="Test Target" Margin="15" Grid.Row="1">
-            <StackPanel Margin="10">
-
-                <StackPanel Orientation="Horizontal" Margin="0 0 0 8">
-                    <Label Content="URL:" Width="80"/>
-                    <TextBox x:Name="UrlTextBox"
-                             Width="250"
-                             Text="www.google.com"
-                             VerticalContentAlignment="Center"/>
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Port:" Width="80"/>
-                    <TextBox x:Name="PortTextBox"
-                             Width="250"
-                             Text="80"
-                             VerticalContentAlignment="Center"/>
-                </StackPanel>
-
-            </StackPanel>
-        </GroupBox>
-
-        <GroupBox Header="Test Results" Margin="15" Grid.Row="2">
-            <Grid Margin="10">
-
+        <GroupBox Header="Test Target" Grid.Row="1" Margin="0 0 0 10" Padding="10">
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Status:" Width="80"/>
-                    <TextBlock x:Name="StatusTextBlock"
-                               Text="Idle"
-                               VerticalAlignment="Center"/>
-                </StackPanel>
+                <TextBlock Text="URL:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0 0 0 5"/>
+                <TextBox Text="{Binding TestAddress, UpdateSourceTrigger=PropertyChanged}" 
+                         Grid.Row="0" Grid.Column="1" Margin="0 0 0 5" Padding="2"/>
 
-                <TextBox x:Name="LogTextBox"
-                         Grid.Row="1"
-                         Margin="0 10 0 0"
-                         IsReadOnly="True"
-                         TextWrapping="Wrap"
-                         VerticalScrollBarVisibility="Auto"
-                         AutoWordSelection="True"/>
-
+                <TextBlock Text="Port:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding TestPort, UpdateSourceTrigger=PropertyChanged}" 
+                         Grid.Row="1" Grid.Column="1" Padding="2"/>
             </Grid>
         </GroupBox>
 
-        <DockPanel Grid.Row="3" 
-                   Margin="10" 
-                   LastChildFill="False">
-            <Button Content="Close"
-                    Style="{StaticResource ControlButton}"
-                    DockPanel.Dock="Right"
-                    IsCancel="True"/>
+        <GroupBox Header="Test Results" Grid.Row="2" Margin="0 0 0 15" Padding="10">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 0 0 8">
+                    <TextBlock Text="Status: " />
+                    <TextBlock Text="{Binding StatusMessage}" />
+                </StackPanel>
 
-            <Button Content="Test"
+                <ProgressBar Height="15" Minimum="0" Maximum="3" 
+                             Value="{Binding ProgressValue}" Margin="0 0 0 8"/>
+
+                <Grid MinHeight="16">
+                    <TextBlock Style="{StaticResource LatencyBlock}"
+                               Text="{Binding LatencyMessage, StringFormat='Latency: {0}'}" 
+                               Visibility="{Binding IsSuccess, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                    <TextBlock Style="{StaticResource StatusBlock}"
+                               Text="Proxy check failed." 
+                               Visibility="{Binding IsFailed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </Grid>
+            </StackPanel>
+        </GroupBox>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Test" 
                     Style="{StaticResource ControlButton}"
-                    DockPanel.Dock="Right"
-                    IsDefault="True"
-                    IsEnabled="{Binding IsProxySet}"/>
-        </DockPanel>
+                    IsDefault="True" Width="80" Height="26" Margin="0 0 10 0"
+                    Command="{Binding TestCommand}"/>
+
+            <Button Content="Close" 
+                    Style="{StaticResource ControlButton}"
+                    IsCancel="True" Width="80" Height="26"/>
+        </StackPanel>
     </Grid>
 </controls:TitleBarWindow>

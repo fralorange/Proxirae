@@ -69,6 +69,10 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="conan\conantoolchain.props" Condition="Exists('conan\conantoolchain.props')" />
+    <Import Project="conan\conandeps.props" Condition="Exists('conan\conandeps.props')" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -80,16 +84,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)external\WinDivert\x86</AdditionalLibraryDirectories>
-      <AdditionalDependencies>WinDivert.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /Y /D "$(ProjectDir)external\WinDivert\x86\WinDivert.dll" "$(OutDir)" 
-
-xcopy /Y /D "$(ProjectDir)external\WinDivert\x86\WinDivert32.sys" "$(OutDir)"
-
-xcopy /Y /D "$(ProjectDir)external\WinDivert\x86\WinDivert64.sys" "$(OutDir)"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -111,19 +106,16 @@ xcopy /Y /D "$(ProjectDir)external\WinDivert\x86\WinDivert64.sys" "$(OutDir)"</C
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)include;$(ProjectDir)external\WinDivert\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)external\WinDivert\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>WinDivert.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+		  %(AdditionalLibraryDirectories)
+	  </AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert.dll" "$(OutDir)" /Y /D /I
-xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -140,20 +132,40 @@ xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="include\contracts\flow\FlowDisconnectContract.h" />
+    <ClCompile Include="include\ipc\FlowPipeHandler.h" />
+    <ClCompile Include="include\proxy\ProxyTestStage.h" />
+    <ClCompile Include="include\utils\UuidUtils.h" />
+    <ClCompile Include="src\application\Host.cpp" />
+    <ClCompile Include="src\controllers\SessionController.cpp" />
+    <ClCompile Include="src\controllers\TestController.cpp" />
+    <ClCompile Include="src\ipc\FlowPipeHandler.cpp" />
+    <ClCompile Include="src\ipc\PreferencesPipeHandler.cpp" />
+    <ClCompile Include="src\ipc\TestPipeHandler.cpp" />
+    <ClCompile Include="src\monitoring\Monitor.cpp" />
     <ClCompile Include="src\contracts\rule\RuleContract.cpp" />
+    <ClCompile Include="src\diagnostics\JournalLogger.cpp" />
+    <ClCompile Include="src\io\win\IocpContext.cpp" />
+    <ClCompile Include="src\ipc\ConfigurationPipeHandler.cpp" />
+    <ClCompile Include="src\ipc\IpcChannel.cpp" />
+    <ClCompile Include="src\ipc\PipeMessage.cpp" />
+    <ClCompile Include="src\ipc\IpcMessenger.cpp" />
+    <ClCompile Include="src\ipc\win\WinPipeServer.cpp" />
     <ClCompile Include="src\packet\Endpoint.cpp" />
     <ClCompile Include="src\application\Daemon.cpp" />
-    <ClCompile Include="src\io\win\IocpContext.cpp" />
     <ClCompile Include="src\io\win\IocpDriver.cpp" />
     <ClCompile Include="src\packet\PacketDispatcher.cpp" />
     <ClCompile Include="src\packet\PacketRouter.cpp" />
     <ClCompile Include="src\packet\win\PacketWinDiverter.cpp" />
     <ClCompile Include="src\packet\win\WinTcpCorrelator.cpp" />
+    <ClCompile Include="src\persistence\ConfigurationLoader.cpp" />
+    <ClCompile Include="src\persistence\PreferencesLoader.cpp" />
+    <ClCompile Include="src\process\win\WinProcessManager.cpp" />
     <ClCompile Include="src\proxy\ProxyFactory.cpp" />
-    <ClCompile Include="src\persistence\ConfigurationStore.cpp" />
     <ClCompile Include="src\persistence\FiveTupleHash.cpp" />
     <ClCompile Include="src\persistence\AssociationTable.cpp" />
     <ClCompile Include="src\persistence\ThreeTupleHash.cpp" />
+    <ClCompile Include="src\proxy\TestableSocks5Proxy.cpp" />
     <ClCompile Include="src\transport\TcpListener.cpp" />
     <ClCompile Include="src\transport\TcpSession.cpp" />
     <ClCompile Include="src\proxy\Socks5Proxy.cpp" />
@@ -172,13 +184,27 @@ xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I
     <ClCompile Include="src\packet\PortCriteria.cpp" />
     <ClCompile Include="src\packet\ProcessCriteria.cpp" />
     <ClCompile Include="src\packet\RuleEvaluator.cpp" />
+    <ClCompile Include="src\utils\JsonUtils.cpp" />
+    <ClCompile Include="src\utils\PathUtils.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
+    <ClCompile Include="src\utils\UuidUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="setup.bat" />
-    <None Include="unzip.vbs" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="include\contracts\flow\FlowDestroyContract.h" />
+    <ClInclude Include="include\contracts\proxy\ProxyTestContract.h" />
+    <ClInclude Include="include\contracts\test\TestContract.h" />
+    <ClInclude Include="include\contracts\test\TestProgressContract.h" />
+    <ClInclude Include="include\controllers\SessionController.h" />
+    <ClInclude Include="include\controllers\TestController.h" />
+    <ClInclude Include="include\ipc\PreferencesPipeHandler.h" />
+    <ClInclude Include="include\ipc\TestPipeHandler.h" />
+    <ClInclude Include="include\monitoring\IFlowMonitor.h" />
+    <ClInclude Include="include\monitoring\IRoutingMonitor.h" />
+    <ClInclude Include="include\monitoring\Monitor.h" />
+    <ClInclude Include="include\contracts\flow\FlowContract.h" />
+    <ClInclude Include="include\contracts\flow\FlowStatus.h" />
+    <ClInclude Include="include\contracts\log\LogContract.h" />
+    <ClInclude Include="include\contracts\log\LogLevelContract.h" />
     <ClInclude Include="include\contracts\proxy\ProxyContract.h" />
     <ClInclude Include="include\contracts\proxy\ProxyType.h" />
     <ClInclude Include="include\contracts\rule\RuleAction.h" />
@@ -186,6 +212,21 @@ xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I
     <ClInclude Include="include\contracts\rule\RuleContract.h" />
     <ClInclude Include="include\contracts\rule\RuleProtocol.h" />
     <ClInclude Include="include\application\Daemon.h" />
+    <ClInclude Include="include\application\Host.h" />
+    <ClInclude Include="include\contracts\route\RouteContract.h" />
+    <ClInclude Include="include\diagnostics\JournalLogger.h" />
+    <ClInclude Include="include\ipc\ConfigurationPipeHandler.h" />
+    <ClInclude Include="include\ipc\IpcChannel.h" />
+    <ClInclude Include="include\ipc\IpcMessenger.h" />
+    <ClInclude Include="include\ipc\IPipeMessageHandler.h" />
+    <ClInclude Include="include\ipc\IPipeServer.h" />
+    <ClInclude Include="include\ipc\IDispatchChannel.h" />
+    <ClInclude Include="include\ipc\IReceiveChannel.h" />
+    <ClInclude Include="include\ipc\ISendChannel.h" />
+    <ClInclude Include="include\ipc\PipeMessage.h" />
+    <ClInclude Include="include\ipc\PipeMessageHeader.h" />
+    <ClInclude Include="include\ipc\PipeMessageType.h" />
+    <ClInclude Include="include\ipc\win\WinPipeServer.h" />
     <ClInclude Include="include\packet\Endpoint.h" />
     <ClInclude Include="include\application\Engine.h" />
     <ClInclude Include="include\io\IIoDriver.h" />
@@ -202,6 +243,11 @@ xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I
     <ClInclude Include="include\packet\PacketMetadata.h" />
     <ClInclude Include="include\packet\PacketRouter.h" />
     <ClInclude Include="include\packet\win\WinTcpCorrelator.h" />
+    <ClInclude Include="include\persistence\ConfigurationLoader.h" />
+    <ClInclude Include="include\persistence\LoadTarget.h" />
+    <ClInclude Include="include\persistence\PreferencesLoader.h" />
+    <ClInclude Include="include\process\IProcessManager.h" />
+    <ClInclude Include="include\process\win\WinProcessManager.h" />
     <ClInclude Include="include\proxy\IProxy.h" />
     <ClInclude Include="include\packet\PacketDispatcher.h" />
     <ClInclude Include="include\packet\win\PacketWinDiverter.h" />
@@ -209,10 +255,11 @@ xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I
     <ClInclude Include="include\proxy\ProxyFactory.h" />
     <ClInclude Include="include\persistence\AssociationEntry.h" />
     <ClInclude Include="include\persistence\Configuration.h" />
-    <ClInclude Include="include\persistence\ConfigurationStore.h" />
+    <ClInclude Include="include\persistence\Store.h" />
     <ClInclude Include="include\persistence\FiveTuple.h" />
     <ClInclude Include="include\persistence\FiveTupleHash.h" />
     <ClInclude Include="include\persistence\AssociationTable.h" />
+    <ClInclude Include="include\proxy\TestableSocks5Proxy.h" />
     <ClInclude Include="include\transport\TcpListener.h" />
     <ClInclude Include="include\transport\TcpSession.h" />
     <ClInclude Include="include\proxy\Socks5Proxy.h" />
@@ -223,13 +270,12 @@ xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I
     <ClInclude Include="include\packet\win\WinPacketContext.h" />
     <ClInclude Include="include\persistence\ConnectionEntry.h" />
     <ClInclude Include="include\persistence\ThreeTupleHash.h" />
-    <ClInclude Include="include\persistence\ConnectionState.h" />
     <ClInclude Include="include\persistence\ConnectionTable.h" />
     <ClInclude Include="include\platform\inet.h" />
     <ClInclude Include="include\platform\sock.h" />
     <ClInclude Include="include\platform\sock_types.h" />
     <ClInclude Include="include\process\CachedProcessResolver.h" />
-    <ClInclude Include="include\process\IProcessMonitor.h" />
+    <ClInclude Include="include\process\IProcessGuard.h" />
     <ClInclude Include="include\process\IProcessResolver.h" />
     <ClInclude Include="include\process\ProcessInfo.h" />
     <ClInclude Include="include\process\win\WinProcessResolver.h" />
@@ -237,7 +283,17 @@ xcopy "$(ProjectDir)external\WinDivert\x64\WinDivert64.sys" "$(OutDir)" /Y /D /I
     <ClInclude Include="include\packet\PortCriteria.h" />
     <ClInclude Include="include\packet\ProcessCriteria.h" />
     <ClInclude Include="include\packet\RuleEvaluator.h" />
+    <ClInclude Include="include\utils\JsonUtils.h" />
+    <ClInclude Include="include\utils\PathUtils.h" />
     <ClInclude Include="include\utils\StringUtils.h" />
+    <ClInclude Include="include\persistence\Preferences.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="conanfile.py" />
+    <None Include="deps\windivert\conanfile.py" />
+    <None Include="src\ipc\IpcMessenger.inl" />
+    <None Include="src\persistence\Store.inl" />
+    <None Include="src\proxy\TestableSocks5Proxy.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

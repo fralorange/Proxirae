@@ -56,48 +56,25 @@ namespace Proxirae {
 			.createdAt = GetTickCount64(),
 			.lastSeen = GetTickCount64(),
 			.proxyId = ctx.proxyId,
+			.processId = packetCtx.GetProcessId()
 		};
 
 		m_connections.AddConnection(key, entry);
-
-		message = std::format(
-			"Intercepted TCP SYN OUTBOUND packet: Src={} Dst={}",
-			packetCtx.GetSourceEndpoint().ToString(),
-			packetCtx.GetDestinationEndpoint().ToString()
-		);
 
 		m_logger.LogDebug(message);
 
 		packetCtx.SetDestination(packetCtx.GetSourceAddress(), htons(m_redirectPort));
 
-		message = std::format(
-			"Modified TCP SYN OUTBOUND packet: Dst={}",
-			packetCtx.GetDestinationEndpoint().ToString()
-		);
-
-		m_logger.LogDebug(message);
-
-		message = std::format(
-			"Sent TCP SYN OUTBOUND packet: Src={} Dst={}",
+		m_logger.LogDebug(std::format(
+			"[TcpHandler] Redirected SYN outbound: {} -> {} (redirect port {})",
 			packetCtx.GetSourceEndpoint().ToString(),
-			packetCtx.GetDestinationEndpoint().ToString()
-		);
-
-		m_logger.LogDebug(message);
+			packetCtx.GetDestinationEndpoint().ToString(),
+			m_redirectPort
+		));
 	}
 
 	void TcpHandler::HandleSynAckOnly(IPacketContext& ctx)
 	{
-		std::string message;
-
-		message = std::format(
-			"Intercepted TCP SYN ACK OUTBOUND packet: Src={} Dst={}",
-			ctx.GetSourceEndpoint().ToString(),
-			ctx.GetDestinationEndpoint().ToString()
-		);
-
-		m_logger.LogDebug(message);
-
 		ThreeTuple key{
 			.srcAddress = ctx.GetDestinationAddress(),
 			.srcPort = ctx.GetDestinationPort(),
@@ -109,35 +86,16 @@ namespace Proxirae {
 		if (it.has_value()) {
 			ctx.SetSource(it->dstAddress, it->dstPort);
 
-			message = std::format(
-				"Modified TCP SYN ACK OUTBOUND packet: Src={}",
-				ctx.GetSourceEndpoint().ToString()
-			);
-
-			m_logger.LogDebug(message);
+			m_logger.LogDebug(std::format(
+				"[TcpHandler] Restored SYN-ACK source: {} -> {}",
+				ctx.GetSourceEndpoint().ToString(),
+				ctx.GetDestinationEndpoint().ToString()
+			));
 		}
-
-		message = std::format(
-			"Sent TCP SYN ACK OUTBOUND packet: Src={} Dst={}",
-			ctx.GetSourceEndpoint().ToString(),
-			ctx.GetDestinationEndpoint().ToString()
-		);
-
-		m_logger.LogDebug(message);
 	}
 
 	void TcpHandler::HandleAckOnly(IPacketContext& ctx)
 	{
-		std::string message;
-
-		message = std::format(
-			"Intercepted TCP ACK OUTBOUND packet: Src={} Dst={}",
-			ctx.GetSourceEndpoint().ToString(),
-			ctx.GetDestinationEndpoint().ToString()
-		);
-
-		m_logger.LogDebug(message);
-
 		FiveTuple key{
 			.srcAddress = ctx.GetSourceAddress(),
 			.srcPort = ctx.GetSourcePort(),
@@ -149,12 +107,12 @@ namespace Proxirae {
 		if (m_connections.ConnectionExists(key)) {
 			ctx.SetDestination(ctx.GetSourceAddress(), htons(m_redirectPort));
 
-			message = std::format(
-				"Modified TCP ACK OUTBOUND packet: Dst={}",
-				ctx.GetDestinationEndpoint().ToString()
-			);
-
-			m_logger.LogDebug(message);
+			m_logger.LogDebug(std::format(
+				"[TcpHandler] Redirected ACK outbound: {} -> {} (redirect port {})",
+				ctx.GetSourceEndpoint().ToString(),
+				ctx.GetDestinationEndpoint().ToString(),
+				m_redirectPort
+			));
 		}
 		else {
 			ThreeTuple reversalKey{
@@ -168,47 +126,30 @@ namespace Proxirae {
 			if (it.has_value()) {
 				ctx.SetSource(it->dstAddress, it->dstPort);
 
-				message = std::format(
-					"Modified TCP ACK OUTBOUND packet: Src={}",
-					ctx.GetSourceEndpoint().ToString()
-				);
-
-				m_logger.LogDebug(message);
+				m_logger.LogDebug(std::format(
+					"[TcpHandler] Restored ACK source: {} -> {}",
+					ctx.GetSourceEndpoint().ToString(),
+					ctx.GetDestinationEndpoint().ToString()
+				));
 			}
 		}
-
-		message = std::format(
-			"Sent TCP ACK OUTBOUND packet: Src={} Dst={}",
-			ctx.GetSourceEndpoint().ToString(),
-			ctx.GetDestinationEndpoint().ToString()
-		);
-
-		m_logger.LogDebug(message);
 	}
 
 	void TcpHandler::HandleRst(IPacketContext& ctx)
 	{
-		std::string message;
-
-		message = std::format(
-			"Intercepted TCP RST OUTBOUND packet: Src={} Dst={}",
+		m_logger.LogDebug(std::format(
+			"[TcpHandler] RST outbound: {} -> {}",
 			ctx.GetSourceEndpoint().ToString(),
 			ctx.GetDestinationEndpoint().ToString()
-		);
-
-		m_logger.LogDebug(message);
+		));
 	}
 
 	void TcpHandler::HandleFin(IPacketContext& ctx)
 	{ 
-		std::string message;
-
-		message = std::format(
-			"Intercepted TCP FIN OUTBOUND packet: Src={} Dst={}",
+		m_logger.LogDebug(std::format(
+			"[TcpHandler] FIN outbound: {} -> {}",
 			ctx.GetSourceEndpoint().ToString(),
 			ctx.GetDestinationEndpoint().ToString()
-		);
-
-		m_logger.LogDebug(message);
+		));
 	}
 }

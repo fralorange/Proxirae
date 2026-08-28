@@ -1,0 +1,8 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="LogCriticalBrush" Color="#C00000"/>
+    <SolidColorBrush x:Key="LogErrorBrush" Color="#FF3300"/>
+    <SolidColorBrush x:Key="LogWarningBrush" Color="#FFC000"/>
+    <SolidColorBrush x:Key="LogInfoBrush" Color="#70AD47"/>
+    <SolidColorBrush x:Key="LogDebugBrush" Color="#5B9BD5"/>
+</ResourceDictionary>

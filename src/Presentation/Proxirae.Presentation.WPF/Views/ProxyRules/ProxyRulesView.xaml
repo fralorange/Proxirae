@@ -41,6 +41,7 @@
                   Grid.Column="0"
                   Style="{StaticResource ControlTable}"
                   ItemsSource="{Binding ProxyRules}"
+                  CanUserSortColumns="False"
                   behaviors:DataGridFocusBehavior.ClearSelectionOnClick="True">
             <i:Interaction.Behaviors>
                 <behaviors:DataGridPreventRowSelectionBehavior/>
@@ -144,10 +145,16 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <StackPanel Grid.Row="0"
-                    Grid.Column="1"
-                    Margin="0 20 0 0">
-            <StackPanel.Resources>
+        <Grid Grid.Row="0"
+              Grid.Column="1"
+              Margin="0 20 0 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="25" />
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.Resources>
                 <Style x:Key="TaskButton" 
                        TargetType="Button"
                        BasedOn="{StaticResource ControlButton}">
@@ -160,19 +167,33 @@
                     </Style.Triggers>
                 </Style>
 
-            </StackPanel.Resources>
-            <Button Content="Add..."
-                    Style="{StaticResource ControlButton}"
-                    Command="{Binding AddProxyRuleCommand}"/>
-            <Button Content="Edit..."
-                    Style="{StaticResource TaskButton}"
-                    Command="{Binding EditProxyRuleCommand}"
-                    CommandParameter="{Binding SelectedItem, ElementName=ProxyRulesDataGrid}"/>
-            <Button Content="Remove"
-                    Style="{StaticResource TaskButton}"
-                    Command="{Binding DeleteProxyRuleCommand}"
-                    CommandParameter="{Binding SelectedItem, ElementName=ProxyRulesDataGrid}"/>
-        </StackPanel>
+            </Grid.Resources>
+            
+            <StackPanel Grid.Row="0">
+                <Button Content="Add..."
+                        Style="{StaticResource ControlButton}"
+                        Command="{Binding AddProxyRuleCommand}"/>
+                <Button Content="Edit..."
+                        Style="{StaticResource TaskButton}"
+                        Command="{Binding EditProxyRuleCommand}"
+                        CommandParameter="{Binding SelectedItem, ElementName=ProxyRulesDataGrid}"/>
+                <Button Content="Remove"
+                        Style="{StaticResource TaskButton}"
+                        Command="{Binding DeleteProxyRuleCommand}"
+                        CommandParameter="{Binding SelectedItem, ElementName=ProxyRulesDataGrid}"/>
+            </StackPanel>
+            
+            <StackPanel Grid.Row="2">
+                <Button Content="Up"
+                        Style="{StaticResource TaskButton}"
+                        Command="{Binding MoveProxyRuleUpCommand}"
+                        CommandParameter="{Binding SelectedItem, ElementName=ProxyRulesDataGrid}"/>
+                <Button Content="Down"
+                        Style="{StaticResource TaskButton}"
+                        Command="{Binding MoveProxyRuleDownCommand}"
+                        CommandParameter="{Binding SelectedItem, ElementName=ProxyRulesDataGrid}"/>
+            </StackPanel>
+        </Grid>
 
 
         <DockPanel Grid.Row="1"

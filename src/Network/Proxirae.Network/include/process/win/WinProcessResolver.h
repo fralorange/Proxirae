@@ -1,10 +1,10 @@
 #pragma once
 
 #include "process/CachedProcessResolver.h"
-#include "process/IProcessMonitor.h"
+#include "process/IProcessGuard.h"
 
 namespace Proxirae {
-	class WinProcessResolver : public CachedProcessResolver, public IProcessMonitor {
+	class WinProcessResolver : public CachedProcessResolver, public IProcessGuard {
 	public:
 		void AcquireProcess(std::uint32_t pid) override;
 		void ReleaseProcess(std::uint32_t pid) override;

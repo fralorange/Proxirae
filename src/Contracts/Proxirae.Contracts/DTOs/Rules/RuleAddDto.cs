@@ -4,6 +4,7 @@ namespace Proxirae.Contracts.DTOs.Rules
 {
     public class RuleAddDto
     {
+        public int Priority { get; set; }
         public bool IsEnabled { get; set; } = true;
         public string? Remarks { get; set; }
         public string? Processes { get; set; } 

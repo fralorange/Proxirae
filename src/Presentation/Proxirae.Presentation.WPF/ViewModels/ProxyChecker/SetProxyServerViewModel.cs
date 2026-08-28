@@ -38,13 +38,13 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyChecker
         [ObservableProperty]
         private bool _isAuth;
 
-        public ProxyDetailDto? ProxyServer { get; private set; }
+        public ProxyTestDto? ProxyServer { get; private set; }
 
-        public SetProxyServerViewModel(ProxyDetailDto? proxy)
+        public SetProxyServerViewModel(ProxyTestDto? proxy)
         {
             if (proxy is not null)
             {
-                Address = proxy.IP;
+                Address = proxy.Address;
                 Port = proxy.Port;
                 Protocol = proxy.Type;
                 Username = proxy.Username;
@@ -60,9 +60,9 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyChecker
             if (HasErrors)
                 return;
 
-            ProxyServer = new ProxyDetailDto
+            ProxyServer = new ProxyTestDto
             {
-                IP = Address,
+                Address = Address,
                 Port = Port!.Value,
                 Type = Protocol,
                 Username = Username,

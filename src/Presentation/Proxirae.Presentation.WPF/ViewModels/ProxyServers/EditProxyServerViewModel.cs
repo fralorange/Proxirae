@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Proxirae.Application.Factories.Proxy;
 using Proxirae.Contracts.DTOs.Proxies;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
@@ -13,14 +14,13 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         {
             _id = proxy.Id;
             Remarks = proxy.Remarks;
-            Address = proxy.IP;
+            Address = proxy.Address;
             Port = proxy.Port;
             Protocol = proxy.Type;
             Username = proxy.Username;
             Password = proxy.Password;
         }
 
-        // TODO: Extract the creation of ProxyEditDto to the factory
         [RelayCommand]
         private void Confirm()
         {
@@ -29,16 +29,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
             if (HasErrors)
                 return;
 
-            ProxyServer = new ProxyEditDto
-            {
-                Id = _id,
-                IP = Address,
-                Port = Port!.Value,
-                Type = Protocol,
-                Username = Username,
-                Password = Password,
-                Remarks = Remarks
-            };
+            ProxyServer = ProxyFactory.CreateEditDto(_id, Address, Port!.Value, Protocol, Username, Password, Remarks);
 
             DialogResult = true;
         }

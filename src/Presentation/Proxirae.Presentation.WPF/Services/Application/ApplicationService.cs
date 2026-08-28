@@ -6,7 +6,7 @@ namespace Proxirae.Presentation.WPF.Services.Application
     {
         public void Shutdown()
         {
-            WinApp.Current.Shutdown();
+            WinApp.Current.Dispatcher.Invoke(WinApp.Current.Shutdown);
         }
     }
 }

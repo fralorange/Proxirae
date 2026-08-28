@@ -14,7 +14,10 @@ namespace Proxirae {
 
 		std::uint16_t Bind();
 		bool Listen(std::uint16_t port);
+
 		std::shared_ptr<TcpSession> Accept();
+
+		void Close();
 
 	private:
 		NativeSocket m_listener{ InvalidNativeSocket };

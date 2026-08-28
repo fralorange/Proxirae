@@ -2,20 +2,25 @@
 
 #include <vector>
 #include <mutex>
+#include <stop_token>
+#include <string>
 
 #include "transport/TcpSession.h"
 #include "transport/TcpListener.h"
 #include "persistence/ConnectionTable.h"
 #include "diagnostics/ILogger.h"
+#include "monitoring/IFlowMonitor.h"
 
 namespace Proxirae {
 	class Daemon {
 	public:
-		Daemon(TcpListener& listener, ConnectionTable& connections, ILogger& logger);
+		Daemon(TcpListener& listener, ConnectionTable& connections, ILogger& logger, IFlowMonitor& monitor, std::stop_token token);
 		~Daemon();
 
 		void Run(std::uint16_t port, std::function<void(bool)> onReady);
 
+		std::optional<std::vector<FlowContract>> GetActiveFlows();
+		void TerminateFlow(std::string id);
 	private:
 		TcpListener m_listener;
 		std::vector<std::shared_ptr<TcpSession>> m_sessions;
@@ -25,9 +30,8 @@ namespace Proxirae {
 
 		ILogger& m_logger;
 
-		std::atomic_bool m_running{ false };
+		IFlowMonitor& m_monitor;
 
-		void AddClient(std::shared_ptr<TcpSession> session);
-		void RemoveClient(std::shared_ptr<TcpSession> session);
+		std::stop_token m_token;
 	};
 }

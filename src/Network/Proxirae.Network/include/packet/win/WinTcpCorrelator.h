@@ -7,12 +7,12 @@
 #include "persistence/FiveTupleHash.h"
 #include "packet/IPacketContext.h"
 #include "packet/Packet.h"
-#include "process/IProcessMonitor.h"
+#include "process/IProcessGuard.h"
 
 namespace Proxirae {
 	class WinTcpCorrelator {
 	public:
-		WinTcpCorrelator(IProcessMonitor& monitor, AssociationTable& associations);
+		WinTcpCorrelator(IProcessGuard& guard, AssociationTable& associations);
 
 		void CorrelateNetwork(const Packet& packet, const std::function<void(IPacketContext&)>& callback);
 		void CorrelateSocket(const PacketMetadata& metadata, const std::function<void(IPacketContext&)>& callback);
@@ -20,7 +20,7 @@ namespace Proxirae {
 	private:
 		std::unordered_multimap<FiveTuple, Packet, FiveTupleHash> m_pending;
 
-		IProcessMonitor& m_monitor;
+		IProcessGuard& m_guard;
 		AssociationTable& m_associations;
 	};
 }

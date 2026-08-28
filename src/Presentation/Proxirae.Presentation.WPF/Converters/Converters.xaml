@@ -2,4 +2,17 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:Proxirae.Presentation.WPF.Converters">
     <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    <local:ProcessIdToIconConverter x:Key="ProcessIdToIconConverter"/>
+    <local:ProcessIdToNameConverter x:Key="ProcessIdToNameConverter"/>
+    <local:SecondsToTimeConverters x:Key="SecondsToTimeConverters"/>
+    <local:BytesToSizeConverter x:Key="BytesToSizeConverter"/>
+    <local:EnumToUpperStringConverter x:Key="EnumToUpperStringConverter"/>
+    <local:LogLevelToBrushConverter x:Key="LogLevelToBrushConverter"
+                                    DebugBrush="{DynamicResource LogDebugBrush}"
+                                    InfoBrush="{DynamicResource LogInfoBrush}"
+                                    WarningBrush="{DynamicResource LogWarningBrush}"
+                                    ErrorBrush="{DynamicResource LogErrorBrush}"
+                                    CriticalBrush="{DynamicResource LogCriticalBrush}"/>
+    <local:UtcToLocalTimeConverter x:Key="UtcToLocalTimeConverter"/>
+    <local:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
 </ResourceDictionary>

@@ -1,8 +1,8 @@
 #include "packet/PacketRouter.h"
 
 namespace Proxirae {
-	PacketRouter::PacketRouter(IProcessResolver& resolver, RuleEvaluator& evaluator, ConfigurationStore& config, ConnectionTable& connections)
-		: m_resolver(resolver), m_evaluator(evaluator), m_config(config), m_connections(connections) { }
+	PacketRouter::PacketRouter(IProcessResolver& resolver, RuleEvaluator& evaluator, Store<Configuration>& config, ConnectionTable& connections, IRoutingMonitor& monitor)
+		: m_resolver(resolver), m_evaluator(evaluator), m_config(config), m_connections(connections), m_monitor(monitor) { }
 
 	RuleActionContract PacketRouter::Route(IPacketContext& ctx)
 	{
@@ -12,37 +12,39 @@ namespace Proxirae {
 			return existingActionOpt.value();
 		}
 		
-		RuleActionContract defaultAction{ RuleAction::Direct, "" };
+		RuleActionContract returnAction{ RuleAction::Direct, "" };
+
+		RouteContract route{
+			.timestamp = std::chrono::system_clock::now(),
+			.address = ctx.GetDestinationAddress(),
+			.port = ctx.GetDestinationPort(),
+		};
 
 		auto pidOpt = ctx.GetProcessId();
 
-		if (!pidOpt.has_value()) {
-			return defaultAction;
-		}
+		if (pidOpt.has_value()) {
+			auto infoOpt = m_resolver.Resolve(*pidOpt);
 
-		auto pid = pidOpt.value();
+			route.processId = *pidOpt;
+			
+			if (infoOpt.has_value()) {
+				auto& info = *infoOpt;
+				auto config = m_config.Get();
 
-		auto infoOpt = m_resolver.Resolve(pid);
+				for (const auto& rule : config->rules) {
+					if (rule.isEnabled && m_evaluator.IsMatch(rule, ctx, info)) {
+						returnAction = rule.action;
+						route.ruleId = rule.id;
 
-		if (!infoOpt.has_value()) {
-			return defaultAction;
-		}
+						m_monitor.ReportRouteEvent(route);
 
-		auto& info = infoOpt.value();
-
-		auto configuration = m_config.Get();
-
-		for (const auto& rule : configuration->rules) {
-			if (!rule.isEnabled) {
-				continue;
-			}
-
-			if (m_evaluator.IsMatch(rule, ctx, info)) {
-				return rule.action;
+						break;
+					}
+				}
 			}
 		}
 
-		return defaultAction;
+		return returnAction;
 	}
 
 	std::optional<RuleActionContract> PacketRouter::TryGetExistingRoute(IPacketContext& ctx)

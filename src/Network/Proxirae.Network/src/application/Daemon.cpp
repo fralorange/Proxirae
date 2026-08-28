@@ -6,38 +6,44 @@
 #include "persistence/ThreeTuple.h"
 
 namespace Proxirae {
-	Daemon::Daemon(TcpListener& listener, ConnectionTable& connections, ILogger& logger)
-		: m_listener(listener), m_connections(connections), m_logger(logger) {
-	}
+	Daemon::Daemon(TcpListener& listener, ConnectionTable& connections, ILogger& logger, IFlowMonitor& monitor, std::stop_token token)
+		: m_listener(listener), 
+		  m_connections(connections), 
+		  m_logger(logger),
+		  m_monitor(monitor),
+		  m_token(token) { }
 
 	Daemon::~Daemon() {
-		m_running = false;
+		std::vector<std::shared_ptr<TcpSession>> sessionsToTerminate;
+		{
+			std::lock_guard<std::mutex> lock(m_sessions_mtx);
+			sessionsToTerminate = std::move(m_sessions);
+		}
 
-		std::lock_guard<std::mutex> lock(m_sessions_mtx);
-
-		for (auto& session : m_sessions) {
+		for (auto& session : sessionsToTerminate) {
 			if (session) {
 				session->Terminate();
 			}
 		}
-
-		m_sessions.clear();
 	}
 
 	void Daemon::Run(std::uint16_t port, std::function<void(bool)> onReady) {
 		bool success = m_listener.Listen(port);
 
 		if (!success) {
-			m_logger.LogError("Failed to start Daemon. Err=Listener closed.");
+			m_logger.LogError(std::format("[Daemon] Failed to start: TCP listener closed on port {}", port));
 			
 			return;
 		}
 
 		onReady(success);
 
-		m_running = true;
+		std::stop_callback interruptCallback(m_token, [this]() {
+			m_listener.Close();
+		});
 
-		while (m_running) {
+
+		while (!m_token.stop_requested()) {
 			auto session = m_listener.Accept();
 
 			if (!session) {
@@ -64,38 +70,76 @@ namespace Proxirae {
 				continue;
 			}
 
-			AddClient(session);
+			{
+				std::lock_guard<std::mutex> lock(m_sessions_mtx);
+				m_sessions.push_back(session);
+			}
 
-			session->Handle(optKey.value(), entryIt.value(), [this](auto s) {
-				RemoveClient(s);
+			session->Establish(optKey.value(), entryIt.value(), [this](auto s) {
+				m_monitor.ReportFlowClosed(s->GetFlow());
+
+				std::lock_guard<std::mutex> lock(m_sessions_mtx);
+				auto it = std::find(m_sessions.begin(), m_sessions.end(), s);
+				if (it != m_sessions.end()) {
+					m_sessions.erase(it);
+				}
+
+				ThreeTuple key{
+					.srcAddress = s->GetAddress(),
+					.srcPort = s->GetPort(),
+					.protocol = IPPROTO_TCP
+				};
+
+				auto optKey = m_connections.FindKey(key);
+
+				if (optKey.has_value()) {
+					m_connections.RemoveConnection(*optKey);
+				}
 			});
 		}
 	}
 
-	void Daemon::AddClient(std::shared_ptr<TcpSession> session)
+	std::optional<std::vector<FlowContract>> Daemon::GetActiveFlows()
 	{
-		std::lock_guard<std::mutex> lock(m_sessions_mtx);
-		m_sessions.push_back(session);
-	}
+		std::vector<FlowContract> snapshot;
+		{
+			std::lock_guard<std::mutex> lock(m_sessions_mtx);
+			if (m_sessions.empty()) {
+				return std::nullopt;
+			}
 
-	void Daemon::RemoveClient(std::shared_ptr<TcpSession> session)
-	{
-		std::lock_guard<std::mutex> lock(m_sessions_mtx);
-		auto it = std::find(m_sessions.begin(), m_sessions.end(), session);
-		if (it != m_sessions.end()) {
-			m_sessions.erase(it);
+			snapshot.reserve(m_sessions.size());
+			for (auto& session : m_sessions) {
+				if (session) 
+				{
+					snapshot.push_back(session->GetFlow());
+				}
+			}
 		}
 
-		ThreeTuple key{
-			.srcAddress = session->GetAddress(),
-			.srcPort = session->GetPort(),
-			.protocol = IPPROTO_TCP
-		};
+		return snapshot;
+	}
 
-		auto optKey = m_connections.FindKey(key);
+	void Daemon::TerminateFlow(std::string id)
+	{
+		std::shared_ptr<TcpSession> target;
+		{
+			std::lock_guard<std::mutex> lock(m_sessions_mtx);
 
-		if (optKey.has_value()) {
-			m_connections.RemoveConnection(*optKey);
+			if (m_sessions.empty()) {
+				return;
+			}
+
+			for (auto& session : m_sessions) {
+				if (session && session->GetId() == id) {
+					target = session;
+					break;
+				}
+			}
+		}
+
+		if (target) {
+			target->Terminate();
 		}
 	}
 }

@@ -9,6 +9,7 @@ namespace Proxirae.Application.Services.Rules
         Task<RuleDto> AddAsync(RuleAddDto ruleAddDto, CancellationToken token);
         Task<RuleDto?> UpdateAsync(RuleEditDto ruleEditDto, CancellationToken token);
         Task<bool> DeleteAsync(Guid id, CancellationToken token);
+        Task SwapPrioritiesAsync(Guid sourceId, Guid targetId, CancellationToken token);
         Task SaveChangesAsync(CancellationToken token);
     }
 }

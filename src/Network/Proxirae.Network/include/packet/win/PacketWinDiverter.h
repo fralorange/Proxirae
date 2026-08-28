@@ -13,6 +13,8 @@ namespace Proxirae {
 		bool Open() override;
 		void Close() override;
 
+		void Interrupt() override;
+
 		bool Receive(const std::function<void(IPacketContext&)>& callback) override;
 
 		bool Send(IPacketContext& ctx) override;

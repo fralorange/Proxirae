@@ -8,17 +8,20 @@ namespace Proxirae.Presentation.WPF.Facades.Dialog
     public class DialogFacade
     {
         private readonly IDialogService _dialogService;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        public DialogFacade(IDialogService dialogService, IServiceProvider serviceProvider)
+        public DialogFacade(IDialogService dialogService, IServiceScopeFactory scopeFactory)
         {
             _dialogService = dialogService;
-            _serviceProvider = serviceProvider;
+            _scopeFactory = scopeFactory;
         }
 
         public TViewModel ShowDialog<TViewModel>(INotifyPropertyChanged ownerViewModel) where TViewModel : IModalDialogViewModel
         {
-            var viewModel = _serviceProvider.GetRequiredService<TViewModel>();
+            using var scope = _scopeFactory.CreateAsyncScope();
+
+            var viewModel = scope.ServiceProvider.GetRequiredService<TViewModel>();
+
             _dialogService.ShowDialog(ownerViewModel, viewModel);
             return viewModel;
         }

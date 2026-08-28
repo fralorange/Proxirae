@@ -3,138 +3,208 @@
 #include "platform/sock.h"
 #include "platform/inet.h"
 #include "transport/TcpSession.h"
+#include "utils/UuidUtils.h"
 
 namespace Proxirae {
-	TcpSession::TcpSession(NativeSocket client, Endpoint endpoint, IIoDriver& driver, ILogger& logger, IProxyFactory& factory)
-		: m_client(client), m_endpoint(endpoint), m_driver(driver), m_logger(logger), m_proxyFactory(factory)
-	{ }
+	class TcpSession::TcpBridge {
+	public:
+		NativeSocket client;
+		Endpoint endpoint;
 
-	TcpSession::~TcpSession() {
+		IIoDriver& driver;
+		ILogger& logger;
+		IProxyFactory& proxyFactory;
+
+		std::unique_ptr<IProxy> proxy;
+
+		std::function<void(std::shared_ptr<TcpSession>)> onTerminated;
+		std::atomic_bool isStopping{ false };
+
+		std::vector<std::byte> clientBuffer;
+		std::vector<std::byte> proxyBuffer;
+
+		std::string proxyId;
+		std::uint32_t dstAddress{ 0 };
+		std::uint16_t dstPort{ 0 };
+		std::int64_t processId{ 0 };
+
+		std::atomic<std::uint64_t> bytesSent{ 0 };
+		std::atomic<std::uint64_t> bytesReceived{ 0 };
+
+		TcpBridge(NativeSocket client, Endpoint endpoint, IIoDriver& driver, ILogger& logger, IProxyFactory& factory)
+			: client(client), endpoint(endpoint), driver(driver), logger(logger), proxyFactory(factory) {
+			clientBuffer.resize(4096);
+			proxyBuffer.resize(4096);
+		}
+
+		bool Open(std::shared_ptr<TcpSession> self, const FiveTuple& key, const ConnectionEntry& entry, std::function<void(std::shared_ptr<TcpSession>)> cb) {
+			onTerminated = std::move(cb);
+
+			if (!entry.proxyId.has_value()) {
+				return false;
+			}
+
+			proxy = proxyFactory.Create(*entry.proxyId);
+
+			char targetHost[INET_ADDRSTRLEN];
+			inet_ntop(AF_INET, &key.dstAddress, targetHost, sizeof(targetHost));
+			int targetPort = ntohs(key.dstPort);
+
+			if (!proxy->Connect(targetHost, targetPort)) {
+				return false;
+			}
+
+			proxyId = *entry.proxyId;
+			dstAddress = key.dstAddress;
+			dstPort = key.dstPort;
+			processId = entry.processId.has_value() ? *entry.processId : -1;
+
+			ForwardToProxy(self);
+			ForwardToClient(self);
+
+			return true;
+		}
+
+		void Close(std::shared_ptr<TcpSession> self) {
+			bool expected = false;
+			if (!isStopping.compare_exchange_strong(expected, true)) {
+				return; 
+			}
+
+			if (client != InvalidNativeSocket) {
+				shutdown(client, ShutdownBoth);
+				CloseSocket(client);
+				client = InvalidNativeSocket;
+			}
+
+			if (onTerminated && self) {
+				onTerminated(self);
+			}
+		}
+
+		void ForwardToProxy(std::shared_ptr<TcpSession> self) {
+			if (isStopping) {
+				return;
+			}
+
+			driver.AsyncRead(client, std::span(clientBuffer), [this, self](const IoResult& res) {
+				if (!res.success || res.bytesTransferred == 0) {
+					if (!isStopping) logger.LogDebug(std::format("[TcpSession] Client connection closed ({}:{})", endpoint.GetAddress(), endpoint.GetPort()));
+					self->Terminate();
+
+					return;
+				}
+
+				auto payload = std::span<const std::byte>(clientBuffer.data(), res.bytesTransferred);
+
+				proxy->Send(payload, [this, self, bytes = res.bytesTransferred](const IoResult& wRes) {
+					if (!wRes.success) {
+						logger.LogError(std::format("[TcpSession] Failed to send data to proxy: error {}", wRes.errorCode));
+						self->Terminate();
+
+						return;
+					}
+
+					bytesSent.fetch_add(bytes, std::memory_order_relaxed);
+
+					logger.LogDebug(std::format("[TcpSession] Forwarded {} bytes (Client -> Proxy)", bytes));
+
+					ForwardToProxy(self);
+				});
+			});
+		}
+
+		void ForwardToClient(std::shared_ptr<TcpSession> self) {
+			if (isStopping) return;
+
+			proxy->Recv(std::span(proxyBuffer), [this, self](const IoResult& res) {
+				if (!res.success || res.bytesTransferred == 0) {
+					if (!isStopping) logger.LogDebug(std::format("[TcpSession] Proxy connection closed for {}", proxyId));
+					self->Terminate();
+
+					return;
+				}
+
+				auto payload = std::span<const std::byte>(proxyBuffer.data(), res.bytesTransferred);
+
+				driver.AsyncWrite(client, payload, [this, self, bytes = res.bytesTransferred](const IoResult& wRes) {
+					if (!wRes.success) {
+						logger.LogError(std::format("[TcpSession] Failed to send data to client: error {}", wRes.errorCode));
+						self->Terminate();
+
+						return;
+					}
+
+					bytesReceived.fetch_add(bytes, std::memory_order_relaxed);
+
+					logger.LogDebug(std::format("[TcpSession] Forwarded {} bytes (Proxy -> Client)", bytes));
+
+					ForwardToClient(self);
+				});
+			});
+		}
+	};
+
+	TcpSession::TcpSession(NativeSocket client, Endpoint endpoint, IIoDriver& driver, ILogger& logger, IProxyFactory& factory)
+		: m_bridge(std::make_unique<TcpBridge>(client, endpoint, driver, logger, factory)) 
+	{
+		m_id = UuidUtils::GenerateUUID();
+	}
+
+	TcpSession::~TcpSession() 
+	{
 		Terminate();
+	}
+
+	std::string_view TcpSession::GetId() const
+	{
+		return m_id;
 	}
 
 	std::uint32_t TcpSession::GetAddress() const
 	{
-		return m_endpoint.GetAddress();
+		return m_bridge->endpoint.GetAddress();
 	}
 
 	std::uint16_t TcpSession::GetPort() const
 	{
-		return m_endpoint.GetPort();
+		return m_bridge->endpoint.GetPort();
 	}
 
-	void TcpSession::Handle(const FiveTuple& key, const ConnectionEntry& entry, std::function<void(std::shared_ptr<TcpSession>)> onTerminated)
+	void TcpSession::Establish(const FiveTuple& key, const ConnectionEntry& entry, std::function<void(std::shared_ptr<TcpSession>)> onTerminated)
 	{
-		m_onTerminated = std::move(onTerminated);
+		m_start = std::chrono::steady_clock::now();
 
-		if (!entry.proxyId.has_value()) {
+		if (!m_bridge->Open(shared_from_this(), key, entry, std::move(onTerminated))) {
 			Terminate();
-			return;
-		}
-
-		m_proxy = m_proxyFactory.Create(*entry.proxyId);
-
-		char targetHost[INET_ADDRSTRLEN];
-		int targetPort;
-
-		inet_ntop(AF_INET, &key.dstAddress, targetHost, sizeof(targetHost));
-		targetPort = ntohs(key.dstPort);
-
-		if (!m_proxy->Connect(targetHost, targetPort)) {
-			Terminate();
-			return;
-		}
-
-		StartClientToProxy();
-		StartProxyToClient();
-	}
-
-	void TcpSession::Terminate() {
-		bool expected = false;
-		if (!m_isStopping.compare_exchange_strong(expected, true)) {
-			return;
-		}
-
-		if (m_client != InvalidNativeSocket) {
-			shutdown(m_client, ShutdownBoth);
-			CloseSocket(m_client);
-			m_client = InvalidNativeSocket;
-		}
-
-		if (m_proxy) {
-			m_proxy->Disconnect();
-		}
-
-		if (m_onTerminated) {
-			m_onTerminated(shared_from_this());
 		}
 	}
 
-	void TcpSession::StartClientToProxy()
+	void TcpSession::Terminate() 
 	{
-		if (m_isStopping) {
-			return;
+		std::shared_ptr<TcpSession> self = nullptr;
+		try {
+			self = weak_from_this().lock();
 		}
-
-		auto self = shared_from_this();
-
-		m_driver.AsyncRead(m_client, std::span(m_clientBuffer), [this, self](const IoResult& res) {
-			if (!res.success || res.bytesTransferred == 0) {
-				if (!m_isStopping) m_logger.LogDebug("Terminated DAEMON connection.");
-				Terminate();
-
-				return;
-			}
-
-			m_logger.LogInfo(std::format("Received data from DAEMON: Length={}", res.bytesTransferred));
-
-			auto payload = std::span<const char>(m_clientBuffer.data(), res.bytesTransferred);
-
-			m_proxy->Send(payload, [this, self](const IoResult& wRes) {
-				if (!wRes.success) {
-					m_logger.LogError(std::format("Failed to send data to PROXY. Error={}", wRes.errorCode));
-					Terminate();
-
-					return;
-				}
-
-				m_logger.LogInfo("Sent data from DAEMON to PROXY");
-
-				StartClientToProxy();
-			});
-		});
+		catch (const std::bad_weak_ptr&) {}
+		m_bridge->Close(self);
 	}
 
-	void TcpSession::StartProxyToClient()
+	FlowContract TcpSession::GetFlow() const
 	{
-		if (m_isStopping) return;
+		auto now = std::chrono::steady_clock::now();
+		auto seconds = std::chrono::duration_cast<std::chrono::seconds>(now - m_start).count();
 
-		auto self = shared_from_this();
-
-		m_proxy->Recv(std::span(m_proxyBuffer), [this, self](const IoResult& res) {
-			if (!res.success || res.bytesTransferred == 0) {
-				if (!m_isStopping) m_logger.LogDebug("Terminated PROXY connection.");
-				Terminate();
-
-				return;
-			}
-
-			m_logger.LogInfo(std::format("Received data from PROXY: Length={}", res.bytesTransferred));
-
-			auto payload = std::span<const char>(m_proxyBuffer.data(), res.bytesTransferred);
-
-			m_driver.AsyncWrite(m_client, payload, [this, self](const IoResult& wRes) {
-				if (!wRes.success) {
-					m_logger.LogError(std::format("Failed to send data to CLIENT. Error={}", wRes.errorCode));
-					Terminate();
-
-					return;
-				}
-
-				m_logger.LogInfo("Sent data from PROXY to CLIENT");
-
-				StartProxyToClient();
-			});
-		});
+		return FlowContract{
+			.id = m_id,
+			.targetAddress = m_bridge->dstAddress,
+			.targetPort = m_bridge->dstPort,
+			.processId = m_bridge->processId,
+			.secondsPassed = static_cast<std::uint64_t>(seconds),
+			.proxyId = m_bridge->proxyId,
+			.bytesSent = m_bridge->bytesSent.load(std::memory_order_relaxed),
+			.bytesReceived = m_bridge->bytesReceived.load(std::memory_order_relaxed),
+			.status = m_bridge->isStopping ? FlowStatus::Closing : FlowStatus::Active
+		};
 	}
 }

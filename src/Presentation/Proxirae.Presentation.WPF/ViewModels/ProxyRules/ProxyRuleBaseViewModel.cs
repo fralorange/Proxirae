@@ -52,6 +52,9 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         [ObservableProperty]
         private bool _isEnabled = true;
 
+        [ObservableProperty]
+        private int _priority;
+
         public ProxyRuleBaseViewModel(DialogFacade dialogFacade, List<BaseActionDto> actions)
         {
             _dialogFacade = dialogFacade;

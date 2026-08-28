@@ -1,4 +1,5 @@
 ﻿using Proxirae.Application.Mappers.Proxies;
+using Proxirae.Application.Messenger;
 using Proxirae.Application.UnitsOfWork.Proxies;
 using Proxirae.Contracts.DTOs.Proxies;
 
@@ -7,12 +8,14 @@ namespace Proxirae.Application.Services.Proxies
     public class ProxyService : IProxyService
     {
         private readonly IProxyUnitOfWork _proxyUnitOfWork;
-        private readonly IProxyMapper _proxyMapper;
+        private readonly IProxyDtoMapper _proxyMapper;
+        private readonly IMessenger _messenger;
 
-        public ProxyService(IProxyUnitOfWork proxyUnitOfWork, IProxyMapper proxyMapper)
+        public ProxyService(IProxyUnitOfWork proxyUnitOfWork, IProxyDtoMapper proxyMapper, IMessenger messenger)
         {
             _proxyUnitOfWork = proxyUnitOfWork;
             _proxyMapper = proxyMapper;
+            _messenger = messenger;
         }
 
         public async Task<IReadOnlyCollection<ProxyListDto>> GetAsync(CancellationToken token)
@@ -21,10 +24,10 @@ namespace Proxirae.Application.Services.Proxies
             return proxies.Select(_proxyMapper.MapToList).ToList();
         }
 
-        public Task<ProxyDetailDto?> GetByIdAsync(Guid id, CancellationToken token)
+        public async Task<ProxyDetailDto?> GetByIdAsync(Guid id, CancellationToken token)
         {
-            var proxy = _proxyUnitOfWork.GetById(id);
-            return Task.FromResult(proxy is null ? null : _proxyMapper.MapToDetail(proxy));
+            var proxy = await _proxyUnitOfWork.GetByIdAsync(id, token);
+            return proxy is null ? null : _proxyMapper.MapToDetail(proxy);
         }
 
         public Task<ProxyListDto> AddAsync(ProxyAddDto proxyAddDto, CancellationToken token)
@@ -53,9 +56,11 @@ namespace Proxirae.Application.Services.Proxies
             return Task.FromResult(_proxyUnitOfWork.Delete(id));
         }
 
-        public Task SaveChangesAsync(CancellationToken token)
+        public async Task SaveChangesAsync(CancellationToken token)
         {
-            return _proxyUnitOfWork.SaveChangesAsync(token);
+            await _proxyUnitOfWork.SaveChangesAsync(token);
+
+            await _messenger.SendMessageAsync(MessageType.Cmd_ReloadProxies, token);
         }
     }
 }

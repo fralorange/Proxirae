@@ -1,16 +1,16 @@
 #pragma once
 
-#include <WinSock2.h>
+#include <Windows.h>
 
 #include "IoOperation.h"
 #include "io/IoCallback.h"
 
 namespace Proxirae {
 	struct IocpContext {
-		WSAOVERLAPPED overlapped;
-		WSABUF wsaBuf;
+		OVERLAPPED overlapped;
 		IoOperation operation;
 		IoCallback callback;
+		std::vector<std::byte> buffer;
 
 		IocpContext(IoOperation operation, IoCallback callback);
 	};

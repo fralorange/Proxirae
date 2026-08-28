@@ -4,8 +4,8 @@
 #include "packet/win/WinPacketContext.h"
 
 namespace Proxirae {
-	WinTcpCorrelator::WinTcpCorrelator(IProcessMonitor& monitor, AssociationTable& associations) 
-		: m_monitor(monitor), m_associations(associations) { }
+	WinTcpCorrelator::WinTcpCorrelator(IProcessGuard& monitor, AssociationTable& associations) 
+		: m_guard(monitor), m_associations(associations) { }
 
 	void WinTcpCorrelator::CorrelateNetwork(const Packet& packet, const std::function<void(IPacketContext&)>& callback)
 	{
@@ -59,7 +59,7 @@ namespace Proxirae {
 				};	
 
 				m_associations.AddAssociation(key, entry);
-				m_monitor.AcquireProcess(metadata.Socket.ProcessId);
+				m_guard.AcquireProcess(metadata.Socket.ProcessId);
 
 				auto [it, end] = m_pending.equal_range(key);
 
@@ -90,7 +90,7 @@ namespace Proxirae {
 				};
 
 				m_associations.RemoveAssociation(key);
-				m_monitor.ReleaseProcess(metadata.Socket.ProcessId);
+				m_guard.ReleaseProcess(metadata.Socket.ProcessId);
 			}
 		}
 	}
