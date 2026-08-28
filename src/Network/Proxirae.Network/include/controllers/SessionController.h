@@ -3,8 +3,8 @@
 #include <string>
 #include <cstdint>
 
-#include "application/Daemon.h"
-#include "process/IProcessManager.h"
+#include "runtime/Daemon.h"
+#include "processes/IProcessManager.h"
 
 namespace Proxirae {
 	class SessionController {

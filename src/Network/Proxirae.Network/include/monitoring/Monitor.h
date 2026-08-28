@@ -6,7 +6,7 @@
 #include "monitoring/IRoutingMonitor.h"
 #include "contracts/flow/FlowContract.h"
 #include "contracts/route/RouteContract.h"
-#include "ipc/IpcMessenger.h"
+#include "communication/IpcMessenger.h"
 
 namespace Proxirae {
 	class Monitor : public IFlowMonitor, public IRoutingMonitor {

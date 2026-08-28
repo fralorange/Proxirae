@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ipc/IpcMessenger.h"
-#include "io/IIoDriver.h"
+#include "communication/IpcMessenger.h"
+#include "asyncio/IIoDriver.h"
 #include "diagnostics/ILogger.h"
 #include "contracts/test/TestContract.h"
 

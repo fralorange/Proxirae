@@ -1,7 +1,7 @@
 #include <format>
 
-#include "platform/sock.h"
-#include "platform/inet.h"
+#include "environment/sock.h"
+#include "environment/inet.h"
 #include "transport/TcpSession.h"
 #include "utils/UuidUtils.h"
 

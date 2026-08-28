@@ -1,10 +1,10 @@
 #pragma once
 
-#include "platform/sock_types.h"
+#include "environment/sock_types.h"
 #include "diagnostics/ILogger.h"
 #include "transport/TcpSession.h"
-#include "io/IIoDriver.h"
-#include "proxy/IProxyFactory.h"
+#include "asyncio/IIoDriver.h"
+#include "proxification/IProxyFactory.h"
 
 namespace Proxirae {
 	class TcpListener {

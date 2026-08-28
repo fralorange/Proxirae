@@ -4,7 +4,7 @@
 #include <string_view>
 
 #include "diagnostics/ILogger.h"
-#include "ipc/IpcMessenger.h"
+#include "communication/IpcMessenger.h"
 #include "persistence/Store.h"
 #include "persistence/Preferences.h"
 

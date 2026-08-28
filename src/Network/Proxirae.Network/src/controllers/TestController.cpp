@@ -1,5 +1,5 @@
 #include "controllers/TestController.h"
-#include "proxy/TestableSocks5Proxy.h"
+#include "proxification/TestableSocks5Proxy.h"
 #include "contracts/test/TestProgressContract.h"
 
 namespace Proxirae {

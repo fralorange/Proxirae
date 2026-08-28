@@ -4,12 +4,12 @@
 #include <chrono>
 #include <string_view>
 
-#include "platform/sock_types.h"
-#include "io/IIoDriver.h"
+#include "environment/sock_types.h"
+#include "asyncio/IIoDriver.h"
 #include "diagnostics/ILogger.h"
 #include "persistence/ConnectionEntry.h"
-#include "packet/Endpoint.h"
-#include "proxy/IProxyFactory.h"
+#include "interception/Endpoint.h"
+#include "proxification/IProxyFactory.h"
 #include "persistence/FiveTuple.h"
 #include "contracts/flow/FlowContract.h"
 
