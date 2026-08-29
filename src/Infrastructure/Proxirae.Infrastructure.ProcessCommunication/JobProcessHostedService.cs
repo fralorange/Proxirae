@@ -27,9 +27,9 @@ namespace Proxirae.Infrastructure.ProcessCommunication
                 dir = dir.Parent;
             }
             var solutionRoot = dir?.FullName ?? AppContext.BaseDirectory;
-            var coreExePath = Path.Combine(solutionRoot, "x64/Debug/Proxirae.Network.exe");
+            var coreExePath = Path.Combine(solutionRoot, "build", "Debug", "x64", "Core", "Proxirae.Network.exe");
 #else
-            var coreExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Proxirae.Network.exe"); // TBD
+            var coreExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "ProxiraeCore.exe"); 
 #endif
 
             var startInfo = new ProcessStartInfo

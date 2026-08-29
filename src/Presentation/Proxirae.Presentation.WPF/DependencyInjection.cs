@@ -50,7 +50,7 @@ namespace Proxirae.Presentation.WPF
             services.AddTransient<IPreferencesService, PreferencesService>();
             services.AddHostedService<PreferencesHostedService>();
             services.AddSingleton<ITestService, TestService>();
-            services.AddSingleton<IAutostartService, AutostartService>();
+            services.AddSingleton<IAutostartService, WindowsAutostartService>();
             return services;
         }
 

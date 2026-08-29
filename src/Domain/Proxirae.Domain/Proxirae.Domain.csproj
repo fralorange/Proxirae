@@ -4,7 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <NoWarn>IDE0290</NoWarn>   
+	  <NoWarn>IDE0290</NoWarn>
+	  <Configurations>Debug;Release;Release_Win32</Configurations>   
   </PropertyGroup>
 
 </Project>

@@ -18,7 +18,7 @@ namespace Proxirae.Infrastructure
             var directory = Path.Combine(
                 Environment.GetFolderPath(
                     Environment.SpecialFolder.ApplicationData),
-                "Proxirae");
+                nameof(Proxirae));
 
             Directory.CreateDirectory(directory);
 

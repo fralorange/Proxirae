@@ -10,9 +10,9 @@ class ProxiraeNetwork(ConanFile):
 		self.requires("nlohmann_json/3.12.0")
 
 		if self.settings.os == "Windows":
-            self.requires("windivert/2.2.2")
+			self.requires("windivert/2.2.2")
 		else:
-            self.requires("libuuid/1.0.3")
+			self.requires("libuuid/1.0.3")
 
 	def layout(self):
 		vs_layout(self)

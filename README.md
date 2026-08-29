@@ -1,31 +1,20 @@
-# Proxirae
-A Windows proxy client for the SOCKS5 and HTTP protocols, providing rule-based routing for TCP and UDP traffic
+<p align="center">
+  <img src="docs/assets/logo256.png" alt="Proxirae logo">
+</p>
 
-[TODO: change to Resources that leads to docs]: # 
-## Build from Source
+A Windows proxy client for SOCKS5 and HTTPS protocols, providing rule-based routing for TCP and UDP traffic.
 
-### Prerequisites
+## Installation
 
-- Visual Studio 2022 with C++ desktop development tools
-- Conan 2.31.2 or later
+Download the latest release from the [Releases](https://github.com/fralorange/Proxirae/releases/latest) page.
 
-### Build
+## Credits
 
-1. Install Conan.
+Icons used in Proxirae are sourced from [SVG Repo](https://www.svgrepo.com/) and are released under the [CC0 Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/).
 
-2. Create the local WinDivert package:
+* [Disconnect Icon](https://www.svgrepo.com/svg/308448/broken-link-mistake-error-disconnect)
+* [Terminate Process Icon](https://www.svgrepo.com/svg/170715/window-close)
 
-   ```bash
-   cd deps/windivert
-   conan create .
-   ```
+## License
 
-3. Install the project dependencies:
-
-	```bash
-	cd ../..
-	conan install . -s build_type=Debug -s arch=x86_64 -s compiler.cppstd=20 --build=missing
-	conan install . -s build_type=Release -s arch=x86_64 -s compiler.cppstd=20 --build=missing
-	```
-
-4. Open Proxirae.sln in Visual Studio and build the solution.
+The product is distributed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html).
