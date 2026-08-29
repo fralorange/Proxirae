@@ -1,0 +1,134 @@
+﻿<controls:TitleBarWindow x:Class="Proxirae.Presentation.WPF.Views.ProxyChecker.ProxyCheckerView"
+                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
+                         xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls" 
+                         xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels.ProxyChecker" 
+                         d:DataContext="{d:DesignInstance Type=viewmodels:ProxyCheckerViewModel}"
+                         md:DialogServiceViews.IsRegistered="True"
+                         mc:Ignorable="d"
+                         Title="Proxy Checker"
+                         Background="Transparent"
+                         WindowStartupLocation="CenterOwner"
+                         ShowInTaskbar="False"
+                         Width="420"
+                         SizeToContent="Height"
+                         ResizeMode="NoResize">
+
+    <Grid Background="WhiteSmoke">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Header="Test Proxy" Grid.Row="0" Margin="0 0 0 10" Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid x:Name="ProxyDetailsText" 
+                      Visibility="{Binding IsProxySet, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Hidden'}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="70"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Server:" Margin="0 0 0 4"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="0 0 0 4">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0}:{1}">
+                                <Binding Path="ProxyServer.Address"/>
+                                <Binding Path="ProxyServer.Port"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Protocol:" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ProxyServer.Type}" />
+                </Grid>
+
+                <TextBlock Text="No proxy selected" VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Visibility, ElementName=ProxyDetailsText}" Value="Visible">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <Button Grid.Column="1" Content="Set..." Width="80" Height="26" Margin="10 0 0 0"
+                        VerticalAlignment="Center"
+                        Style="{StaticResource ControlButton}"
+                        Command="{Binding SetProxyServerCommand}"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="Test Target" Grid.Row="1" Margin="0 0 0 10" Padding="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="URL:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0 0 0 5"/>
+                <TextBox Text="{Binding TestAddress, UpdateSourceTrigger=PropertyChanged}" 
+                         Grid.Row="0" Grid.Column="1" Margin="0 0 0 5" Padding="2"/>
+
+                <TextBlock Text="Port:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"/>
+                <TextBox Text="{Binding TestPort, UpdateSourceTrigger=PropertyChanged}" 
+                         Grid.Row="1" Grid.Column="1" Padding="2"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header="Test Results" Grid.Row="2" Margin="0 0 0 15" Padding="10">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 0 0 8">
+                    <TextBlock Text="Status: " />
+                    <TextBlock Text="{Binding StatusMessage}" />
+                </StackPanel>
+
+                <ProgressBar Height="15" Minimum="0" Maximum="3" 
+                             Value="{Binding ProgressValue}" Margin="0 0 0 8"/>
+
+                <Grid MinHeight="16">
+                    <TextBlock Style="{StaticResource LatencyBlock}"
+                               Text="{Binding LatencyMessage, StringFormat='Latency: {0}'}" 
+                               Visibility="{Binding IsSuccess, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                    <TextBlock Style="{StaticResource StatusBlock}"
+                               Text="Proxy check failed." 
+                               Visibility="{Binding IsFailed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </Grid>
+            </StackPanel>
+        </GroupBox>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Test" 
+                    Style="{StaticResource ControlButton}"
+                    IsDefault="True" Width="80" Height="26" Margin="0 0 10 0"
+                    Command="{Binding TestCommand}"/>
+
+            <Button Content="Close" 
+                    Style="{StaticResource ControlButton}"
+                    IsCancel="True" Width="80" Height="26"/>
+        </StackPanel>
+    </Grid>
+</controls:TitleBarWindow>

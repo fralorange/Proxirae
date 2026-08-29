@@ -1,21 +1,59 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Proxirae.Application.Services.Preferences;
+using Proxirae.Infrastructure;
+using Proxirae.Infrastructure.ProcessCommunication;
+using Proxirae.Infrastructure.TransactionControl;
+using System.Windows;
 
 namespace Proxirae.Presentation.WPF
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App : WinApp
     {
-        protected override void OnStartup(StartupEventArgs e)
+        private readonly IHost _host;
+
+        public App()
         {
-            // Disable Tab stop globally
-            Control.IsTabStopProperty.OverrideMetadata(
-                typeof(Control),
-                new FrameworkPropertyMetadata(false));
+            _host = Host.CreateDefaultBuilder()
+                .ConfigureServices(services =>
+                {
+                    services
+                        .AddStartupServices()
+                        .AddServices()
+                        .AddRepositories()
+                        .AddStores()
+                        .AddUnitsOfWork()
+                        .AddMappers()
+                        .AddFacades()
+                        .AddFactories()
+                        .AddViewModels()
+                        .AddCommunication();
+                })
+                .Build();
+        }
+
+        protected override async void OnStartup(StartupEventArgs e)
+        {
+            await _host.StartAsync();
+
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+            var mainView = _host.Services.GetRequiredService<MainView>();
+            mainView.Show();
+            Current.MainWindow = mainView;
 
             base.OnStartup(e);
+        }
+
+        protected override async void OnExit(ExitEventArgs e)
+        {
+            await _host.StopAsync();
+            _host.Dispose();
+
+            base.OnExit(e);
         }
     }
 

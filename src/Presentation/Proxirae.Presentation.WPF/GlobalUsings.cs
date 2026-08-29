@@ -1,0 +1,1 @@
+﻿global using WinApp = System.Windows.Application;

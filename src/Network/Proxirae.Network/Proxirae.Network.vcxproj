@@ -1,0 +1,362 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{e103af08-2bb2-4b20-a60b-a2af3bc1e77a}</ProjectGuid>
+    <RootNamespace>ProxiraeNetwork</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="conan\conantoolchain.props" Condition="Exists('conan\conantoolchain.props')" />
+    <Import Project="conan\conandeps.props" Condition="Exists('conan\conandeps.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)build\$(Configuration)\$(Platform)\Core\</OutDir>
+    <TargetName>ProxiraeCore</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)build\$(Configuration)\$(Platform)\Core\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)build\$(Configuration)\$(Platform)\Core\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>ProxiraeCore</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)build\$(Configuration)\$(Platform)\Core\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>echo Copying WinDivert binaries from: $(ConanwindivertRootFolder)\bin
+xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.dll" "$(OutDir)"
+xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>echo Copying WinDivert binaries from: $(ConanwindivertRootFolder)\bin
+xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.dll" "$(OutDir)"
+xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>echo Copying WinDivert binaries from: $(ConanwindivertRootFolder)\bin
+xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.dll" "$(OutDir)"
+xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>echo Copying WinDivert binaries from: $(ConanwindivertRootFolder)\bin
+xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.dll" "$(OutDir)"
+xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="include\contracts\flow\FlowDisconnectContract.h" />
+    <ClCompile Include="include\communication\FlowPipeHandler.h" />
+    <ClCompile Include="include\proxification\ProxyTestStage.h" />
+    <ClCompile Include="include\utils\UuidUtils.h" />
+    <ClCompile Include="src\interception\PacketFilterBuilder.cpp" />
+    <ClCompile Include="src\runtime\Host.cpp" />
+    <ClCompile Include="src\controllers\SessionController.cpp" />
+    <ClCompile Include="src\controllers\TestController.cpp" />
+    <ClCompile Include="src\communication\FlowPipeHandler.cpp" />
+    <ClCompile Include="src\communication\PreferencesPipeHandler.cpp" />
+    <ClCompile Include="src\communication\TestPipeHandler.cpp" />
+    <ClCompile Include="src\monitoring\Monitor.cpp" />
+    <ClCompile Include="src\contracts\rule\RuleContract.cpp" />
+    <ClCompile Include="src\diagnostics\JournalLogger.cpp" />
+    <ClCompile Include="src\asyncio\win\IocpContext.cpp" />
+    <ClCompile Include="src\communication\ConfigurationPipeHandler.cpp" />
+    <ClCompile Include="src\communication\IpcChannel.cpp" />
+    <ClCompile Include="src\communication\PipeMessage.cpp" />
+    <ClCompile Include="src\communication\IpcMessenger.cpp" />
+    <ClCompile Include="src\communication\win\WinPipeServer.cpp" />
+    <ClCompile Include="src\interception\Endpoint.cpp" />
+    <ClCompile Include="src\runtime\Daemon.cpp" />
+    <ClCompile Include="src\asyncio\win\IocpDriver.cpp" />
+    <ClCompile Include="src\interception\PacketDispatcher.cpp" />
+    <ClCompile Include="src\interception\PacketRouter.cpp" />
+    <ClCompile Include="src\interception\win\PacketWinDiverter.cpp" />
+    <ClCompile Include="src\interception\win\WinTcpCorrelator.cpp" />
+    <ClCompile Include="src\persistence\ConfigurationLoader.cpp" />
+    <ClCompile Include="src\persistence\PreferencesLoader.cpp" />
+    <ClCompile Include="src\processes\win\WinProcessManager.cpp" />
+    <ClCompile Include="src\proxification\ProxyFactory.cpp" />
+    <ClCompile Include="src\persistence\FiveTupleHash.cpp" />
+    <ClCompile Include="src\persistence\AssociationTable.cpp" />
+    <ClCompile Include="src\persistence\ThreeTupleHash.cpp" />
+    <ClCompile Include="src\proxification\TestableSocks5Proxy.cpp" />
+    <ClCompile Include="src\transport\TcpListener.cpp" />
+    <ClCompile Include="src\transport\TcpSession.cpp" />
+    <ClCompile Include="src\proxification\Socks5Proxy.cpp" />
+    <ClCompile Include="src\interception\TcpHandler.cpp" />
+    <ClCompile Include="src\diagnostics\ConsoleLogger.cpp" />
+    <ClCompile Include="src\diagnostics\ILogger.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="include\persistence\ThreeTuple.h" />
+    <ClCompile Include="src\interception\win\WinPacketContext.cpp" />
+    <ClCompile Include="src\persistence\ConnectionTable.cpp" />
+    <ClCompile Include="src\runtime\Engine.cpp" />
+    <ClCompile Include="src\environment\sock.cpp" />
+    <ClCompile Include="src\processes\CachedProcessResolver.cpp" />
+    <ClCompile Include="src\processes\win\WinProcessResolver.cpp" />
+    <ClCompile Include="src\interception\HostCriteria.cpp" />
+    <ClCompile Include="src\interception\PortCriteria.cpp" />
+    <ClCompile Include="src\interception\ProcessCriteria.cpp" />
+    <ClCompile Include="src\interception\RuleEvaluator.cpp" />
+    <ClCompile Include="src\utils\JsonUtils.cpp" />
+    <ClCompile Include="src\utils\PathUtils.cpp" />
+    <ClCompile Include="src\utils\StringUtils.cpp" />
+    <ClCompile Include="src\utils\UuidUtils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\contracts\flow\FlowDestroyContract.h" />
+    <ClInclude Include="include\contracts\proxy\ProxyTestContract.h" />
+    <ClInclude Include="include\contracts\test\TestContract.h" />
+    <ClInclude Include="include\contracts\test\TestProgressContract.h" />
+    <ClInclude Include="include\controllers\SessionController.h" />
+    <ClInclude Include="include\controllers\TestController.h" />
+    <ClInclude Include="include\communication\PreferencesPipeHandler.h" />
+    <ClInclude Include="include\communication\TestPipeHandler.h" />
+    <ClInclude Include="include\interception\PacketFilterBuilder.h" />
+    <ClInclude Include="include\monitoring\IFlowMonitor.h" />
+    <ClInclude Include="include\monitoring\IRoutingMonitor.h" />
+    <ClInclude Include="include\monitoring\Monitor.h" />
+    <ClInclude Include="include\contracts\flow\FlowContract.h" />
+    <ClInclude Include="include\contracts\flow\FlowStatus.h" />
+    <ClInclude Include="include\contracts\log\LogContract.h" />
+    <ClInclude Include="include\contracts\log\LogLevelContract.h" />
+    <ClInclude Include="include\contracts\proxy\ProxyContract.h" />
+    <ClInclude Include="include\contracts\proxy\ProxyType.h" />
+    <ClInclude Include="include\contracts\rule\RuleAction.h" />
+    <ClInclude Include="include\contracts\rule\RuleActionContract.h" />
+    <ClInclude Include="include\contracts\rule\RuleContract.h" />
+    <ClInclude Include="include\contracts\rule\RuleProtocol.h" />
+    <ClInclude Include="include\runtime\Daemon.h" />
+    <ClInclude Include="include\runtime\Host.h" />
+    <ClInclude Include="include\contracts\route\RouteContract.h" />
+    <ClInclude Include="include\diagnostics\JournalLogger.h" />
+    <ClInclude Include="include\communication\ConfigurationPipeHandler.h" />
+    <ClInclude Include="include\communication\IpcChannel.h" />
+    <ClInclude Include="include\communication\IpcMessenger.h" />
+    <ClInclude Include="include\communication\IPipeMessageHandler.h" />
+    <ClInclude Include="include\communication\IPipeServer.h" />
+    <ClInclude Include="include\communication\IDispatchChannel.h" />
+    <ClInclude Include="include\communication\IReceiveChannel.h" />
+    <ClInclude Include="include\communication\ISendChannel.h" />
+    <ClInclude Include="include\communication\PipeMessage.h" />
+    <ClInclude Include="include\communication\PipeMessageHeader.h" />
+    <ClInclude Include="include\communication\PipeMessageType.h" />
+    <ClInclude Include="include\communication\win\WinPipeServer.h" />
+    <ClInclude Include="include\interception\Endpoint.h" />
+    <ClInclude Include="include\runtime\Engine.h" />
+    <ClInclude Include="include\asyncio\IIoDriver.h" />
+    <ClInclude Include="include\asyncio\IoCallback.h" />
+    <ClInclude Include="include\asyncio\IoResult.h" />
+    <ClInclude Include="include\asyncio\win\IocpContext.h" />
+    <ClInclude Include="include\asyncio\win\IocpDriver.h" />
+    <ClInclude Include="include\asyncio\win\IoOperation.h" />
+    <ClInclude Include="include\interception\IPacketContext.h" />
+    <ClInclude Include="include\interception\IPacketDiverter.h" />
+    <ClInclude Include="include\interception\IPacketHandler.h" />
+    <ClInclude Include="include\interception\Packet.h" />
+    <ClInclude Include="include\interception\PacketDispatchContext.h" />
+    <ClInclude Include="include\interception\PacketMetadata.h" />
+    <ClInclude Include="include\interception\PacketRouter.h" />
+    <ClInclude Include="include\interception\win\WinTcpCorrelator.h" />
+    <ClInclude Include="include\persistence\ConfigurationLoader.h" />
+    <ClInclude Include="include\persistence\LoadTarget.h" />
+    <ClInclude Include="include\persistence\PreferencesLoader.h" />
+    <ClInclude Include="include\processes\IProcessManager.h" />
+    <ClInclude Include="include\processes\win\WinProcessManager.h" />
+    <ClInclude Include="include\proxification\IProxy.h" />
+    <ClInclude Include="include\interception\PacketDispatcher.h" />
+    <ClInclude Include="include\interception\win\PacketWinDiverter.h" />
+    <ClInclude Include="include\proxification\IProxyFactory.h" />
+    <ClInclude Include="include\proxification\ProxyFactory.h" />
+    <ClInclude Include="include\persistence\AssociationEntry.h" />
+    <ClInclude Include="include\persistence\Configuration.h" />
+    <ClInclude Include="include\persistence\Store.h" />
+    <ClInclude Include="include\persistence\FiveTuple.h" />
+    <ClInclude Include="include\persistence\FiveTupleHash.h" />
+    <ClInclude Include="include\persistence\AssociationTable.h" />
+    <ClInclude Include="include\proxification\TestableSocks5Proxy.h" />
+    <ClInclude Include="include\transport\TcpListener.h" />
+    <ClInclude Include="include\transport\TcpSession.h" />
+    <ClInclude Include="include\proxification\Socks5Proxy.h" />
+    <ClInclude Include="include\interception\TcpHandler.h" />
+    <ClInclude Include="include\diagnostics\ConsoleLogger.h" />
+    <ClInclude Include="include\diagnostics\ILogger.h" />
+    <ClInclude Include="include\diagnostics\LogLevel.h" />
+    <ClInclude Include="include\interception\win\WinPacketContext.h" />
+    <ClInclude Include="include\persistence\ConnectionEntry.h" />
+    <ClInclude Include="include\persistence\ThreeTupleHash.h" />
+    <ClInclude Include="include\persistence\ConnectionTable.h" />
+    <ClInclude Include="include\environment\inet.h" />
+    <ClInclude Include="include\environment\sock.h" />
+    <ClInclude Include="include\environment\sock_types.h" />
+    <ClInclude Include="include\processes\CachedProcessResolver.h" />
+    <ClInclude Include="include\processes\IProcessGuard.h" />
+    <ClInclude Include="include\processes\IProcessResolver.h" />
+    <ClInclude Include="include\processes\ProcessInfo.h" />
+    <ClInclude Include="include\processes\win\WinProcessResolver.h" />
+    <ClInclude Include="include\interception\HostCriteria.h" />
+    <ClInclude Include="include\interception\PortCriteria.h" />
+    <ClInclude Include="include\interception\ProcessCriteria.h" />
+    <ClInclude Include="include\interception\RuleEvaluator.h" />
+    <ClInclude Include="include\utils\JsonUtils.h" />
+    <ClInclude Include="include\utils\PathUtils.h" />
+    <ClInclude Include="include\utils\StringUtils.h" />
+    <ClInclude Include="include\persistence\Preferences.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="conanfile.py" />
+    <None Include="deps\windivert\conanfile.py" />
+    <None Include="src\communication\IpcMessenger.inl" />
+    <None Include="src\persistence\Store.inl" />
+    <None Include="src\proxification\TestableSocks5Proxy.inl" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

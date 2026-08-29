@@ -56,3 +56,9 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 .vs/
+src/Network/Proxirae.Network/external/
+src/Network/Proxirae.Network/build/
+Proxirae.slnLaunch.user
+src/Network/Proxirae.Network/conan/
+*.user
+installer/
