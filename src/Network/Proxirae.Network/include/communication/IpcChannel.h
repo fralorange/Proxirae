@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <mutex>
+#include <stop_token>
 
 #include "communication/ISendChannel.h"
 #include "communication/IReceiveChannel.h"
@@ -13,7 +14,7 @@ namespace Proxirae {
 	public:
 		explicit IpcChannel(IPipeServer& pipe);
 
-		bool Accept() override;
+		bool Accept(std::stop_token token) override;
 
 		bool Send(const PipeMessage& msg) override;
 		void Receive(MessageCallback onMessage, ErrorCallback onError) override;

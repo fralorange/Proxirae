@@ -1,5 +1,6 @@
 ﻿using Proxirae.Presentation.WPF.Controls;
 using Proxirae.Presentation.WPF.ViewModels;
+using System.ComponentModel;
 
 namespace Proxirae.Presentation.WPF
 {
@@ -13,6 +14,13 @@ namespace Proxirae.Presentation.WPF
             DataContext = viewModel;
 
             InitializeComponent();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            e.Cancel = true;
+            Hide();
+            base.OnClosing(e);
         }
     }
 }

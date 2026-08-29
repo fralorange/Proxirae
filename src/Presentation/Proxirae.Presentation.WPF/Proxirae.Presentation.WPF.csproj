@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
 	<NoWarn>IDE0290, IDE0305</NoWarn>
+	<ApplicationIcon>Resources\Icons\icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,8 +16,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Icons\icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="DotNetProjects.SVGImage" Version="5.2.13" />
+    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.3.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.11" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.11" />
@@ -43,6 +49,10 @@
     <Compile Update="Views\ProxyServers\EditProxyServerView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Icons\icon.ico" />
   </ItemGroup>
 
 </Project>

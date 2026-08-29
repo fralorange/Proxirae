@@ -30,7 +30,7 @@ namespace Proxirae.Presentation.WPF
                         .AddFacades()
                         .AddFactories()
                         .AddViewModels()
-                        .AddPipes();
+                        .AddCommunication();
                 })
                 .Build();
         }
@@ -38,6 +38,8 @@ namespace Proxirae.Presentation.WPF
         protected override async void OnStartup(StartupEventArgs e)
         {
             await _host.StartAsync();
+
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
             var mainView = _host.Services.GetRequiredService<MainView>();
             mainView.Show();

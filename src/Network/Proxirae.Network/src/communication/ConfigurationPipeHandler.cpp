@@ -2,8 +2,8 @@
 #include "communication/PipeMessageType.h"
 
 namespace Proxirae {
-	ConfigurationPipeHandler::ConfigurationPipeHandler(ConfigurationLoader& loader)
-		: m_loader(loader) { }
+	ConfigurationPipeHandler::ConfigurationPipeHandler(ConfigurationLoader& loader, IPacketDiverter& diverter)
+		: m_loader(loader), m_diverter(diverter) { }
 
 	void ConfigurationPipeHandler::Handle(const PipeMessage& msg)
 	{
@@ -13,5 +13,7 @@ namespace Proxirae {
 		else {
 			m_loader.Load(LoadTarget::Rules);
 		}
+
+		m_diverter.Reload();
 	}
 }

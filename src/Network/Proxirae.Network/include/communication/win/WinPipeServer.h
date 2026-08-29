@@ -11,7 +11,7 @@ namespace Proxirae {
 		WinPipeServer(IIoDriver& driver);
 		~WinPipeServer();
 
-		bool Accept() override;
+		bool Accept(std::stop_token token) override;
 
 		void AsyncRead(std::span<std::byte> buffer, IoCallback callback) override;
 		void AsyncWrite(std::span<const std::byte> buffer, IoCallback callback) override;

@@ -15,4 +15,5 @@
                                     CriticalBrush="{DynamicResource LogCriticalBrush}"/>
     <local:UtcToLocalTimeConverter x:Key="UtcToLocalTimeConverter"/>
     <local:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+    <local:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter"/>
 </ResourceDictionary>

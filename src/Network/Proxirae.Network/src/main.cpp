@@ -77,7 +77,7 @@ int main() {
 	WinProcessResolver processResolver;
 	WinProcessManager processManager;
 	WinTcpCorrelator tcpCorrelator(processResolver, associations);
-	PacketWinDiverter diverter(tcpCorrelator, logger);
+	PacketWinDiverter diverter(tcpCorrelator, configStore, logger);
 #endif 
 	ConnectionTable connections;
 
@@ -112,7 +112,7 @@ int main() {
 	SessionController sessionController(daemon, processManager);
 	TestController testController(messenger, driver, logger);
 
-	ConfigurationPipeHandler confHandler(configLoader);
+	ConfigurationPipeHandler confHandler(configLoader, diverter);
 	PreferencesPipeHandler prefHandler(prefsLoader);
 	FlowPipeHandler flowHandler(sessionController);
 	TestPipeHandler testHandler(testController);

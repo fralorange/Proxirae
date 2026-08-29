@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <stop_token>
 
 #include "communication/PipeMessage.h"
 
@@ -11,7 +12,7 @@ namespace Proxirae {
 	public:
 		virtual ~IReceiveChannel() = default;
 
-		virtual bool Accept() = 0;
+		virtual bool Accept(std::stop_token token) = 0;
 
 		virtual void Receive(MessageCallback onMessage, ErrorCallback onError) = 0;
 	};

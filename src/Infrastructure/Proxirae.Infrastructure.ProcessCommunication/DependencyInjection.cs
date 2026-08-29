@@ -13,8 +13,10 @@ namespace Proxirae.Infrastructure.ProcessCommunication
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddPipes(this IServiceCollection services)
+        public static IServiceCollection AddCommunication(this IServiceCollection services)
         {
+            services.AddHostedService<JobProcessHostedService>();
+
             services.AddSingleton<IPipeClient, PipeClient>();
 
             services.AddSingleton<IpcChannel>();

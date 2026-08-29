@@ -10,6 +10,7 @@ using Proxirae.Application.Services.Clipboard;
 using Proxirae.Application.Services.Flows;
 using Proxirae.Application.Services.Logs;
 using Proxirae.Application.Services.Preferences;
+using Proxirae.Application.Services.Preferences.Autostart;
 using Proxirae.Application.Services.Proxies;
 using Proxirae.Application.Services.Routes;
 using Proxirae.Application.Services.Rules;
@@ -49,6 +50,7 @@ namespace Proxirae.Presentation.WPF
             services.AddTransient<IPreferencesService, PreferencesService>();
             services.AddHostedService<PreferencesHostedService>();
             services.AddSingleton<ITestService, TestService>();
+            services.AddSingleton<IAutostartService, AutostartService>();
             return services;
         }
 

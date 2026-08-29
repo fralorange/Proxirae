@@ -8,16 +8,7 @@ namespace Proxirae {
 		: m_receiver(receiver), m_dispatcher(dispatcher), m_source(source) { }
 
 	void Host::Run() {
-		bool connected = false;
-		while (!m_source.stop_requested()) {
-			if (m_receiver.Accept()) {
-				connected = true;
-				break;
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		}
-
-		if (!connected || m_source.stop_requested()) {
+		if (!m_receiver.Accept(m_source.get_token())) {
 			return;
 		}
 
@@ -33,10 +24,10 @@ namespace Proxirae {
 			}
 		);
 
-		while (!sessionsDone->try_acquire_for(std::chrono::milliseconds(50))) {
-			if (m_source.stop_requested()) {
-				break;
-			}
-		}
+		std::stop_callback stopCallback(m_source.get_token(), [sessionsDone]() {
+			sessionsDone->release();
+		});
+
+		sessionsDone->acquire();
 	}
 }

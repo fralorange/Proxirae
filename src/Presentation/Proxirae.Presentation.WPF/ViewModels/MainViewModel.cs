@@ -8,6 +8,7 @@ using Proxirae.Application.Services.Clipboard;
 using Proxirae.Application.Services.Flows;
 using Proxirae.Application.Services.Logs;
 using Proxirae.Application.Services.Preferences;
+using Proxirae.Application.Services.Preferences.Autostart;
 using Proxirae.Application.Services.Routes;
 using Proxirae.Contracts.DTOs.Flows;
 using Proxirae.Contracts.DTOs.Logs;
@@ -21,6 +22,7 @@ using Proxirae.Presentation.WPF.ViewModels.ProxyServers;
 using Proxirae.Presentation.WPF.ViewModels.Routes;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Proxirae.Presentation.WPF.ViewModels
 {
@@ -35,6 +37,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
         private readonly ILogService _logService;
         private readonly IRouteService _routeService;
         private readonly IPreferencesService _preferencesService;
+        private readonly IAutostartService _autostartService;
 
         [ObservableProperty]
         private int _selectedTabIndex;
@@ -57,6 +60,14 @@ namespace Proxirae.Presentation.WPF.ViewModels
         [ObservableProperty]
         private LogLevelDto _selectedLogLevel;
 
+        [ObservableProperty]
+        private bool _autostart;
+
+        private CancellationTokenSource? _tabsHeightDebouceToken;
+
+        [ObservableProperty]
+        private double _tabsHeight;
+
         public MainViewModel(
             IApplicationService applicationService,
             IClipboardService clipboardService,
@@ -66,7 +77,8 @@ namespace Proxirae.Presentation.WPF.ViewModels
             IFlowService flowService,
             ILogService logService,
             IRouteService routeService,
-            IPreferencesService preferencesService)
+            IPreferencesService preferencesService,
+            IAutostartService autostartService)
         {
             _applicationService = applicationService;
             _clipboardService = clipboardService;
@@ -77,6 +89,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
             _logService = logService;
             _routeService = routeService;
             _preferencesService = preferencesService;
+            _autostartService = autostartService;
 
             _flowService.FlowsUpdated += OnFlowsUpdated;
             _flowService.FlowClosed += OnFlowDeleted;
@@ -94,6 +107,28 @@ namespace Proxirae.Presentation.WPF.ViewModels
             _routeService.RouteReceived += OnRouteReceived;
 
             _selectedLogLevel = Enum.Parse<LogLevelDto>(_preferencesService.Current.Engine.LogLevel);
+            _autostart = _preferencesService.Current.System.IsAutostartEnabled;
+            _tabsHeight = _preferencesService.Current.Appearance.TabsHeight;
+        }
+
+        partial void OnTabsHeightChanged(double value)
+        {
+            _tabsHeightDebouceToken?.Cancel();
+            _tabsHeightDebouceToken = new CancellationTokenSource();
+
+            var token = _tabsHeightDebouceToken.Token;
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(500, token);
+
+                    var preferences = _preferencesService.Current.Appearance with { TabsHeight = value };
+                    await _preferencesService.UpdateAsync(preferences, token);
+                }
+                catch (TaskCanceledException) { }
+            }, token);
         }
 
         private void OnRouteReceived(RouteDto route)
@@ -162,6 +197,15 @@ namespace Proxirae.Presentation.WPF.ViewModels
                     Flows.Remove(target);
                 }
             });
+        }
+
+        [RelayCommand]
+        private async Task UpdateAutostartAsync(CancellationToken cancellationToken)
+        {
+            var preferences = _preferencesService.Current.System with { IsAutostartEnabled = Autostart };
+
+            _autostartService.SetAutostart(Autostart);
+            await _preferencesService.UpdateAsync(preferences, cancellationToken);
         }
 
         [RelayCommand(CanExecute = nameof(CanDisconnect))]
@@ -241,6 +285,12 @@ namespace Proxirae.Presentation.WPF.ViewModels
             var preferences = _preferencesService.Current.Engine with { LogLevel = target.ToString()! };
 
             await _preferencesService.UpdateAsync(preferences, cancellationToken);
+        }
+
+        [RelayCommand]
+        private void Restore()
+        {
+            _applicationService.Restore();
         }
 
         [RelayCommand]

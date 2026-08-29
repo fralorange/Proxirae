@@ -12,6 +12,7 @@ namespace Proxirae {
 		virtual bool Open() = 0;
 		virtual void Close() = 0;
 
+		virtual void Reload() = 0;
 		virtual void Interrupt() = 0;
 
 		virtual bool Receive(const std::function<void(IPacketContext&)>& callback) = 0; 

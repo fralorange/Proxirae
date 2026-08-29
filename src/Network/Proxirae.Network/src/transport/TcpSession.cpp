@@ -99,7 +99,7 @@ namespace Proxirae {
 
 				proxy->Send(payload, [this, self, bytes = res.bytesTransferred](const IoResult& wRes) {
 					if (!wRes.success) {
-						logger.LogError(std::format("[TcpSession] Failed to send data to proxy: error {}", wRes.errorCode));
+						if (!isStopping) logger.LogError(std::format("[TcpSession] Failed to send data to proxy: error {}", wRes.errorCode));
 						self->Terminate();
 
 						return;
@@ -129,7 +129,7 @@ namespace Proxirae {
 
 				driver.AsyncWrite(client, payload, [this, self, bytes = res.bytesTransferred](const IoResult& wRes) {
 					if (!wRes.success) {
-						logger.LogError(std::format("[TcpSession] Failed to send data to client: error {}", wRes.errorCode));
+						if (!isStopping) logger.LogError(std::format("[TcpSession] Failed to send data to client: error {}", wRes.errorCode));
 						self->Terminate();
 
 						return;

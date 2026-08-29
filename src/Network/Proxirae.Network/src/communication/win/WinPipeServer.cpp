@@ -24,9 +24,13 @@ namespace Proxirae {
 		}
 	}
 
-	bool WinPipeServer::Accept()
+	bool WinPipeServer::Accept(std::stop_token token)
 	{
 		if (m_pipe == INVALID_HANDLE_VALUE) {
+			return false;
+		}
+
+		if (token.stop_requested()) {
 			return false;
 		}
 
@@ -44,6 +48,10 @@ namespace Proxirae {
 				connected = true;
 			}
 			else if (err == ERROR_IO_PENDING) {
+				std::stop_callback stopCallback(token, [this, &overlapped]() {
+					CancelIoEx(m_pipe, &overlapped);
+				});
+
 				DWORD bytes = 0;
 				connected = GetOverlappedResult(m_pipe, &overlapped, &bytes, TRUE);
 			}

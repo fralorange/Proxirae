@@ -254,14 +254,29 @@ namespace Proxirae.Presentation.WPF.Controls
             windowIcon = new Image
             {
                 Focusable = false,
-                Style = GetResource<Style>("IconImage"),
+
+                Width = 24,
+                Height = 24,
+
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Left,
+
+                Margin = new Thickness(3, 0, 5, 0),
+
+                UseLayoutRounding = true,
+                SnapsToDevicePixels = true
             };
+
+            RenderOptions.SetBitmapScalingMode(windowIcon, BitmapScalingMode.HighQuality);
+
             windowIcon.SetBinding(Image.SourceProperty, new Binding(nameof(Icon)) { Source = this });
             windowIcon.MouseDown += OnIconMouseDown;
+
             titleBar.Children.Add(windowIcon);
             Grid.SetColumn(windowIcon, 0);
             Panel.SetZIndex(windowIcon, 1);
             WindowChrome.SetIsHitTestVisibleInChrome(windowIcon, true);
+
             UpdateIconVisibility();
         }
 

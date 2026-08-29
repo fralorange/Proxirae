@@ -183,6 +183,9 @@
     <ClCompile Include="src\controllers\TestController.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\interception\PacketFilterBuilder.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\interception\win\WinPacketContext.h">
@@ -474,6 +477,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\contracts\proxy\ProxyTestContract.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\interception\PacketFilterBuilder.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

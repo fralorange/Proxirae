@@ -1,9 +1,11 @@
-#include <format>
 #include <windivert.h>
+#include <format>
 #include <vector>
+#include <functional>
 
 #include "interception/win/WinPacketContext.h"
 #include "interception/win/PacketWinDiverter.h"
+#include "interception/PacketFilterBuilder.h"
 
 namespace Proxirae {
 	class PacketWinDiverter::DivertChannel {
@@ -19,7 +21,8 @@ namespace Proxirae {
 		std::vector<std::uint8_t> buffer;
 		std::uint32_t packetLen{ 0 };
 
-		DivertChannel(size_t bufferSize = 0) {
+		DivertChannel(size_t bufferSize = 0)
+		{
 			if (bufferSize > 0) {
 				buffer.resize(bufferSize);
 			}
@@ -88,28 +91,39 @@ namespace Proxirae {
 		}
 	};
 
-	PacketWinDiverter::PacketWinDiverter(WinTcpCorrelator& tcpCorrelator, ILogger& logger)
-		: m_tcpCorrelator(tcpCorrelator), 
-		  m_logger(logger), 
+	PacketWinDiverter::PacketWinDiverter(WinTcpCorrelator& tcpCorrelator, Store<Configuration>& store, ILogger& logger)
+		: m_tcpCorrelator(tcpCorrelator),
+		  m_store(store),
+		  m_logger(logger),
 		  m_network(std::make_unique<DivertChannel>(65535)),
-		  m_socket(std::make_unique<DivertChannel>(0)) { }
+		  m_socket(std::make_unique<DivertChannel>(0)) 
+	{
+		m_reload = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	}
 
 	PacketWinDiverter::~PacketWinDiverter()
 	{
 		Close();
+
+		if (m_reload) {
+			CloseHandle(m_reload);
+			m_reload = nullptr;
+		}
 	}
 
 	bool PacketWinDiverter::Open()
 	{
-		const char* networkFilter = "ip and tcp and tcp.SrcPort != 25344 and tcp.DstPort != 25344 and tcp.SrcPort != 10808 and tcp.DstPort != 10808";
-		const char* socketFilter = "tcp and (event == CONNECT or event == CLOSE)";
+		auto config = m_store.Get();
 
-		if (!m_network->Open(networkFilter, WINDIVERT_LAYER_NETWORK, 10, 0))
+		auto networkFilter = PacketFilterBuilder::BuildNetworkFilter(config);
+		auto socketFilter = PacketFilterBuilder::BuildSocketFilter();
+
+		if (!m_network->Open(networkFilter.c_str(), WINDIVERT_LAYER_NETWORK, 10, 0))
 		{
 			return false;
 		}
 
-		if (!m_socket->Open(socketFilter, WINDIVERT_LAYER_SOCKET, 100, WINDIVERT_FLAG_RECV_ONLY | WINDIVERT_FLAG_SNIFF))
+		if (!m_socket->Open(socketFilter.c_str(), WINDIVERT_LAYER_SOCKET, 100, WINDIVERT_FLAG_RECV_ONLY | WINDIVERT_FLAG_SNIFF))
 		{
 			m_network->Close();
 
@@ -137,6 +151,13 @@ namespace Proxirae {
 		m_socket->Close();
 	}
 
+	void PacketWinDiverter::Reload()
+	{
+		if (m_reload) {
+			SetEvent(m_reload);
+		}
+	}
+
 	void PacketWinDiverter::Interrupt()
 	{
 		m_network->Interrupt();
@@ -145,9 +166,9 @@ namespace Proxirae {
 
 	bool PacketWinDiverter::Receive(const std::function<void(IPacketContext&)>& callback)
 	{
-		HANDLE events[2] = { m_network->event, m_socket->event };
+		HANDLE events[3] = { m_network->event, m_socket->event, m_reload };
 
-		std::uint32_t result = static_cast<std::uint32_t>(WaitForMultipleObjects(2, events, FALSE, INFINITE));
+		std::uint32_t result = static_cast<std::uint32_t>(WaitForMultipleObjects(3, events, FALSE, INFINITE));
 
 		if (result == WAIT_OBJECT_0) {
 			DWORD bytesTransferred = 0;
@@ -191,6 +212,14 @@ namespace Proxirae {
 			m_socket->StartReceive();
 
 			return true;
+		}
+
+		if (result == WAIT_OBJECT_0 + 2) {
+			Close();
+
+			m_logger.LogInfo("[WinDivert] Configuration updated, reloading filters...");
+
+			Open();
 		}
 
 		return false;

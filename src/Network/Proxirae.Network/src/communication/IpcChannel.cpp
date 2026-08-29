@@ -7,9 +7,9 @@ namespace Proxirae {
 	IpcChannel::IpcChannel(IPipeServer& pipe)
 		: m_pipe(pipe) { }
 
-	bool IpcChannel::Accept()
+	bool IpcChannel::Accept(std::stop_token token)
 	{
-		return m_pipe.Accept();
+		return m_pipe.Accept(token);
 	}
 
 	bool IpcChannel::Send(const PipeMessage& msg)

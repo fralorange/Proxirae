@@ -2,6 +2,7 @@
 {
     public interface IApplicationService
     {
+        void Restore();
         void Shutdown();
     }
 }

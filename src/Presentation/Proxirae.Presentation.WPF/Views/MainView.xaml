@@ -4,6 +4,7 @@
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                          xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
+                         xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
                          xmlns:svg="https://github.com/dotnetprojects/SVGImage"
                          xmlns:local="clr-namespace:Proxirae.Presentation.WPF"
                          xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
@@ -17,7 +18,8 @@
                          MinHeight="500"
                          Background="Transparent"
                          ShowCenteredTitle="True"
-                         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
+                         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+                         Icon="/Resources/Icons/icon.ico">
     <controls:TitleBarWindow.TitleBarMenuContent>
         <Menu Background="WhiteSmoke" 
               Margin="0 5 0 5">
@@ -29,7 +31,9 @@
                 <MenuItem Header="Export Logs History..."/>
                 <Separator/>
                 <MenuItem Header="Autostart"
-                          IsCheckable="True"/>
+                          IsCheckable="True"
+                          IsChecked="{Binding Autostart, Mode=TwoWay}"
+                          Command="{Binding UpdateAutostartCommand}"/>
                 <Separator/>
                 <MenuItem Header="Exit" 
                           Command="{Binding ExitCommand}"/>
@@ -59,10 +63,27 @@
 
     <Grid Background="WhiteSmoke">
         <Grid.RowDefinitions>
-            <RowDefinition Height="3*" MinHeight="200" MaxHeight="650"/>
+            <RowDefinition Height="3*" 
+                           MinHeight="200"/>
             <RowDefinition Height="5"/>
-            <RowDefinition Height="*" />
+            <RowDefinition Height="{Binding TabsHeight, Mode=TwoWay, Converter={StaticResource DoubleToGridLengthConverter}}"
+                           MinHeight="100"/>
         </Grid.RowDefinitions>
+
+        <tb:TaskbarIcon x:Name="TrayIcon"
+                        ToolTipText="Proxirae"
+                        IconSource="/Resources/Icons/icon.ico"
+                        DoubleClickCommand="{Binding RestoreCommand}">
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Open"
+                              Command="{Binding RestoreCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Exit"
+                              Command="{Binding ExitCommand}"/>
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
 
         <DockPanel Grid.Row="0" 
                    Style="{StaticResource ProcessPanel}">
