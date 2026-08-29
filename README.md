@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/logo256.png" alt="Proxirae logo">
+  <img src="docs/assets/logo-512.png" alt="Proxirae logo" width="384">
 </p>
 
 A Windows proxy client for SOCKS5 and HTTPS protocols, providing rule-based routing for TCP and UDP traffic.
