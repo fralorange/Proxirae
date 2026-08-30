@@ -7,11 +7,16 @@ namespace Proxirae {
 	{
 		std::ostringstream filter;
 
-		filter << "ip and tcp";
+		filter << "ip and tcp and udp";
 
 		for (const auto& proxy : config->proxies) {
-			filter << " and tcp.SrcPort != " << proxy.second.port
-				   << " and tcp.DstPort != " << proxy.second.port;
+			const auto& p = proxy.second;
+
+			filter << " and not (ip.DstAddr == '" << p.address << "' and "
+				   << "(tcp.DstPort == " << p.port << " or udp.DstPort == " << p.port << "))";
+
+			filter << " and not (ip.SrcAddr == '" << p.address << "' and "
+				   << "(tcp.SrcPort == " << p.port << " or udp.SrcPort == " << p.port << "))";
 		}
 
 		return filter.str();

@@ -196,6 +196,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="include\proxification\ProxyTestStage.h" />
     <ClCompile Include="include\utils\UuidUtils.h" />
     <ClCompile Include="src\interception\PacketFilterBuilder.cpp" />
+    <ClCompile Include="src\interception\UdpHandler.cpp" />
     <ClCompile Include="src\runtime\Host.cpp" />
     <ClCompile Include="src\controllers\SessionController.cpp" />
     <ClCompile Include="src\controllers\TestController.cpp" />
@@ -259,6 +260,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\communication\PreferencesPipeHandler.h" />
     <ClInclude Include="include\communication\TestPipeHandler.h" />
     <ClInclude Include="include\interception\PacketFilterBuilder.h" />
+    <ClInclude Include="include\interception\UdpHandler.h" />
     <ClInclude Include="include\monitoring\IFlowMonitor.h" />
     <ClInclude Include="include\monitoring\IRoutingMonitor.h" />
     <ClInclude Include="include\monitoring\Monitor.h" />

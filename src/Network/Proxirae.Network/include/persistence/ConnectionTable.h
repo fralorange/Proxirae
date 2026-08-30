@@ -25,6 +25,9 @@ namespace Proxirae {
 
 		std::optional<FiveTuple> FindKey(const ThreeTuple& key);
 
+		void KeepAlive(const FiveTuple& key, std::uint64_t timestamp);
+		void KeepAlive(const ThreeTuple& key, std::uint64_t timestamp);
+
 		bool ConnectionExists(const FiveTuple& key) const;
 
 	private:
