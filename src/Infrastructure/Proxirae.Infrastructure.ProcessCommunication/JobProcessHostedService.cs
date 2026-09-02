@@ -13,6 +13,10 @@ namespace Proxirae.Infrastructure.ProcessCommunication
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+#if DEBUG
+            return Task.CompletedTask;
+#endif
+
             _jobObject = new();
 
             _jobObject.SetLimits(new JobObjectLimits
@@ -20,17 +24,7 @@ namespace Proxirae.Infrastructure.ProcessCommunication
                 Flags = JobObjectLimitFlags.KillOnJobClose
             });
 
-#if DEBUG
-            var dir = new DirectoryInfo(AppContext.BaseDirectory);
-            while (dir != null && dir.GetFiles("*.sln").Length == 0)
-            {
-                dir = dir.Parent;
-            }
-            var solutionRoot = dir?.FullName ?? AppContext.BaseDirectory;
-            var coreExePath = Path.Combine(solutionRoot, "build", "Debug", "x64", "Core", "Proxirae.Network.exe");
-#else
-            var coreExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "ProxiraeCore.exe"); 
-#endif
+            var coreExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Core", "ProxiraeCore.exe");
 
             var startInfo = new ProcessStartInfo
             {

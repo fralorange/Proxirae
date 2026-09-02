@@ -7,7 +7,8 @@
 #include "runtime/Engine.h"
 #include "runtime/Daemon.h"
 #include "runtime/Host.h"
-#include "interception/TcpHandler.h"
+#include "interception/handling/TcpHandler.h"
+#include "interception/handling/UdpHandler.h"
 #include "transport/TcpListener.h"
 #include "persistence/ConfigurationLoader.h"
 #include "persistence/PreferencesLoader.h"
@@ -20,12 +21,16 @@
 #include "communication/TestPipeHandler.h"
 #include "communication/PipeMessageType.h"
 #include "monitoring/Monitor.h"
+#include "interception/correlation/DispatcherCorrelator.h"
+#include "interception/handling/DispatcherHandler.h"
 
 #ifdef _WIN32
 #include <WinSock2.h>
 #pragma comment(lib, "Ws2_32.lib")
 #include "asyncio/win/IocpDriver.h"
-#include "interception/win/PacketWinDiverter.h"
+#include "interception/diversion/win/WinPacketDiverter.h"
+#include "interception/correlation/win/WinTcpCorrelator.h"
+#include "interception/correlation/win/WinUdpCorrelator.h"
 #include "processes/win/WinProcessResolver.h"
 #include "processes/win/WinProcessManager.h"
 #include "communication/win/WinPipeServer.h"
@@ -64,6 +69,8 @@ int main() {
 	prefsLoader.Load();
 
 	AssociationTable associations;
+
+	DispatcherCorrelator correlator;
 	
 #ifdef _WIN32
 	WSAData wsaData;
@@ -77,7 +84,12 @@ int main() {
 	WinProcessResolver processResolver;
 	WinProcessManager processManager;
 	WinTcpCorrelator tcpCorrelator(processResolver, associations);
-	PacketWinDiverter diverter(tcpCorrelator, configStore, logger);
+	WinUdpCorrelator udpCorrelator(processResolver, associations);
+
+	correlator.Register(tcpCorrelator);
+	correlator.Register(udpCorrelator);
+
+	WinPacketDiverter diverter(correlator, configStore, logger);
 #endif 
 	ConnectionTable connections;
 
@@ -85,7 +97,7 @@ int main() {
 
 	Monitor monitor(messenger);
 
-	PacketDispatcher dispatcher;
+	DispatcherHandler handler;
 	PacketRouter router(processResolver, evaluator, configStore, connections, monitor);
 
 	if (!driver.Start(6)) {
@@ -96,17 +108,22 @@ int main() {
 	ProxyFactory factory(configStore, driver, logger);
 
 	TcpListener listener(driver, logger, factory);
-	std::uint16_t port = listener.Bind();
+	std::uint16_t tcpPort = listener.Bind();
 
-	if (port == 0) {
+	if (tcpPort == 0) {
 		logger.LogCritical("[Main] Failed to bind redirect TCP listener port");
 		return -1;
 	}
 
-	TcpHandler tcpHandler(port, connections, logger);
-	dispatcher.RegisterHandler(tcpHandler);
+	std::uint16_t udpPort = 33999; // stub
 
-	Engine engine(diverter, dispatcher, router, stopSource.get_token());
+	TcpHandler tcpHandler(tcpPort, connections, logger);
+	UdpHandler udpHandler(udpPort, connections, logger);
+
+	handler.RegisterHandler(tcpHandler);
+	handler.RegisterHandler(udpHandler);
+
+	Engine engine(diverter, handler, router, stopSource.get_token());
 	Daemon daemon(listener, connections, logger, monitor, stopSource.get_token());
 
 	SessionController sessionController(daemon, processManager);
@@ -129,8 +146,8 @@ int main() {
 	std::promise<bool> listenPromise;
 	std::future<bool> listenFuture = listenPromise.get_future();
 
-	std::thread daemonThread([&daemon, port, &listenPromise]() {
-		daemon.Run(port, [&listenPromise](bool success) {
+	std::thread daemonThread([&daemon, tcpPort, &listenPromise]() {
+		daemon.Run(tcpPort, [&listenPromise](bool success) {
 			listenPromise.set_value(success);
 		});
 	});

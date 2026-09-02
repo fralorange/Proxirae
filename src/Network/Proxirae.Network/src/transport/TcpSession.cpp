@@ -171,7 +171,7 @@ namespace Proxirae {
 		return m_bridge->endpoint.GetPort();
 	}
 
-	void TcpSession::Establish(const FiveTuple& key, const ConnectionEntry& entry, std::function<void(std::shared_ptr<TcpSession>)> onTerminated)
+	void TcpSession::Establish(const FiveTuple& key, const ConnectionEntry& entry, TerminationCallback onTerminated)
 	{
 		m_start = std::chrono::steady_clock::now();
 

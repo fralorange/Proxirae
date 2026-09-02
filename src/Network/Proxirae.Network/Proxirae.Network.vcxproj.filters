@@ -36,22 +36,22 @@
     <ClCompile Include="src\diagnostics\ILogger.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\interception\win\WinPacketContext.cpp">
+    <ClCompile Include="src\interception\diversion\win\WinPacketContext.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\interception\Endpoint.cpp">
+    <ClCompile Include="src\interception\diversion\Endpoint.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\proxification\Socks5Proxy.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\interception\TcpHandler.cpp">
+    <ClCompile Include="src\interception\handling\TcpHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\interception\win\PacketWinDiverter.cpp">
+    <ClCompile Include="src\interception\diversion\win\WinPacketDiverter.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\interception\PacketDispatcher.cpp">
+    <ClCompile Include="src\interception\handling\DispatcherHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\transport\TcpSession.cpp">
@@ -69,7 +69,7 @@
     <ClCompile Include="src\persistence\ThreeTupleHash.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\interception\PacketRouter.cpp">
+    <ClCompile Include="src\interception\routing\PacketRouter.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\persistence\FiveTupleHash.cpp">
@@ -78,7 +78,7 @@
     <ClCompile Include="src\persistence\AssociationTable.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\interception\win\WinTcpCorrelator.cpp">
+    <ClCompile Include="src\interception\correlation\win\WinTcpCorrelator.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\processes\CachedProcessResolver.cpp">
@@ -93,16 +93,16 @@
     <ClCompile Include="src\utils\StringUtils.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\interception\ProcessCriteria.cpp">
+    <ClCompile Include="src\interception\routing\ProcessCriteria.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\interception\PortCriteria.cpp">
+    <ClCompile Include="src\interception\routing\PortCriteria.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\interception\HostCriteria.cpp">
+    <ClCompile Include="src\interception\routing\HostCriteria.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\interception\RuleEvaluator.cpp">
+    <ClCompile Include="src\interception\routing\RuleEvaluator.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\proxification\ProxyFactory.cpp">
@@ -183,15 +183,21 @@
     <ClCompile Include="src\controllers\TestController.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\interception\PacketFilterBuilder.cpp">
+    <ClCompile Include="src\interception\routing\PacketFilter.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\interception\UdpHandler.cpp">
+    <ClCompile Include="src\interception\handling\UdpHandler.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interception\correlation\DispatcherCorrelator.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interception\correlation\win\WinUdpCorrelator.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\interception\win\WinPacketContext.h">
+    <ClInclude Include="include\interception\diversion\win\WinPacketContext.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\persistence\ConnectionEntry.h">
@@ -215,7 +221,7 @@
     <ClInclude Include="include\diagnostics\ConsoleLogger.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\Endpoint.h">
+    <ClInclude Include="include\interception\diversion\Endpoint.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\proxification\IProxy.h">
@@ -227,16 +233,16 @@
     <ClInclude Include="include\runtime\Engine.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\IPacketHandler.h">
+    <ClInclude Include="include\interception\handling\IPacketHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\win\PacketWinDiverter.h">
+    <ClInclude Include="include\interception\diversion\win\WinPacketDiverter.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\TcpHandler.h">
+    <ClInclude Include="include\interception\handling\TcpHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\PacketDispatcher.h">
+    <ClInclude Include="include\interception\handling\DispatcherHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\transport\TcpSession.h">
@@ -266,10 +272,10 @@
     <ClInclude Include="include\environment\inet.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\IPacketContext.h">
+    <ClInclude Include="include\interception\diversion\IPacketContext.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\IPacketDiverter.h">
+    <ClInclude Include="include\interception\diversion\IPacketDiverter.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\environment\sock_types.h">
@@ -296,7 +302,7 @@
     <ClInclude Include="include\contracts\rule\RuleActionContract.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\PacketRouter.h">
+    <ClInclude Include="include\interception\routing\PacketRouter.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\persistence\FiveTuple.h">
@@ -311,13 +317,13 @@
     <ClInclude Include="include\persistence\AssociationTable.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\win\WinTcpCorrelator.h">
+    <ClInclude Include="include\interception\correlation\win\WinTcpCorrelator.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\PacketMetadata.h">
+    <ClInclude Include="include\interception\diversion\PacketMetadata.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\Packet.h">
+    <ClInclude Include="include\interception\diversion\Packet.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\processes\IProcessResolver.h">
@@ -335,22 +341,22 @@
     <ClInclude Include="include\processes\IProcessGuard.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\RuleEvaluator.h">
+    <ClInclude Include="include\interception\routing\RuleEvaluator.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\ProcessCriteria.h">
+    <ClInclude Include="include\interception\routing\ProcessCriteria.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\PortCriteria.h">
+    <ClInclude Include="include\interception\routing\PortCriteria.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\HostCriteria.h">
+    <ClInclude Include="include\interception\routing\HostCriteria.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\utils\StringUtils.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\PacketDispatchContext.h">
+    <ClInclude Include="include\interception\handling\HandleContext.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\proxification\IProxyFactory.h">
@@ -482,10 +488,25 @@
     <ClInclude Include="include\contracts\proxy\ProxyTestContract.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\PacketFilterBuilder.h">
+    <ClInclude Include="include\interception\routing\PacketFilter.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\UdpHandler.h">
+    <ClInclude Include="include\interception\handling\UdpHandler.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\interception\correlation\IPacketCorrelator.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\interception\correlation\DispatcherCorrelator.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\interception\correlation\win\WinUdpCorrelator.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\transport\IListener.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\transport\ISession.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "communication/IPipeMessageHandler.h"
-#include "interception/IPacketDiverter.h"
+#include "interception/diversion/IPacketDiverter.h"
 #include "persistence/ConfigurationLoader.h"
 
 namespace Proxirae {
