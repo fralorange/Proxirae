@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include <TlHelp32.h>
 
 #include "processes/win/WinProcessResolver.h"
 #include "utils/StringUtils.h"
@@ -27,28 +28,45 @@ namespace Proxirae {
 	{
 		HANDLE process = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, static_cast<DWORD>(pid));
 
-		if (process == nullptr) {
+		if (process != nullptr) {
+			wchar_t buffer[MAX_PATH];
+			DWORD size = MAX_PATH;
+
+			const BOOL success = QueryFullProcessImageNameW(process, 0, buffer, &size);
+			CloseHandle(process);
+
+			if (success) {
+				std::filesystem::path path(buffer);
+				return ProcessInfo{
+					.name = StringUtils::ToUTF8(path.filename()),
+					.path = StringUtils::ToUTF8(path)
+				};
+			}
+		}
+
+		HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+		if (snapshot == INVALID_HANDLE_VALUE) {
 			return std::nullopt;
 		}
 
-		wchar_t buffer[MAX_PATH];
-		DWORD size = MAX_PATH;
+		PROCESSENTRY32W entry{};
+		entry.dwSize = sizeof(entry);
 
-		const BOOL success = QueryFullProcessImageNameW(process, 0, buffer, &size);
+		if (Process32FirstW(snapshot, &entry)) {
+			do {
+				if (entry.th32ProcessID == pid) {
+					CloseHandle(snapshot);
+					std::filesystem::path path(entry.szExeFile);
 
-		CloseHandle(process);
-
-		if (!success) {
-			return std::nullopt;
+					return ProcessInfo{
+						.name = StringUtils::ToUTF8(path.filename()),
+						.path = StringUtils::ToUTF8(path)
+					};
+				}
+			} while (Process32NextW(snapshot, &entry));
 		}
 
-		std::filesystem::path path(buffer);
-
-		ProcessInfo info{
-			.name = StringUtils::ToUTF8(path.filename()),
-			.path = StringUtils::ToUTF8(path)
-		};
-
-		return info;
+		CloseHandle(snapshot);
+		return std::nullopt;
 	}
 }

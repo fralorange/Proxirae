@@ -1,8 +1,8 @@
 #include "communication/win/WinPipeServer.h"
 
 namespace Proxirae {
-	WinPipeServer::WinPipeServer(IIoDriver& driver)
-		: m_driver(driver)
+	WinPipeServer::WinPipeServer(IAsyncDriver& driver, IIoStreamAdapter& adapter)
+		: m_driver(driver), m_adapter(adapter)
 	{
 		m_pipe = CreateNamedPipeW(
 			LR"(\\.\pipe\Proxirae.Network)",
@@ -73,7 +73,7 @@ namespace Proxirae {
 			return;
 		}
 
-		m_driver.AsyncRead(reinterpret_cast<NativeHandle>(m_pipe), buffer, std::move(callback));
+		m_adapter.AsyncRead(reinterpret_cast<NativeHandle>(m_pipe), buffer, std::move(callback));
 	}
 
 	void WinPipeServer::AsyncWrite(std::span<const std::byte> buffer, IoCallback callback)
@@ -83,6 +83,6 @@ namespace Proxirae {
 			return;
 		}
 
-		m_driver.AsyncWrite(reinterpret_cast<NativeHandle>(m_pipe), buffer, std::move(callback));
+		m_adapter.AsyncWrite(reinterpret_cast<NativeHandle>(m_pipe), buffer, std::move(callback));
 	}
 }

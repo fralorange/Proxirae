@@ -6,8 +6,8 @@
 #include "interception/diversion/Endpoint.h"
 
 namespace Proxirae {
-	TcpListener::TcpListener(IIoDriver& driver, ILogger& logger, IProxyFactory& factory)
-		: m_driver(driver), m_logger(logger), m_proxyFactory(factory) {}
+	TcpListener::TcpListener(IAsyncDriver& driver, IIoStreamAdapter& adapter, ILogger& logger, IProxyFactory& factory)
+		: m_driver(driver), m_adapter(adapter), m_logger(logger), m_proxyFactory(factory) {}
 
 	TcpListener::~TcpListener()
 	{
@@ -43,7 +43,7 @@ namespace Proxirae {
 		}
 
 		struct sockaddr_in boundAddr {};
-		SocketLen len = sizeof(boundAddr);
+		NativeSocketLen len = sizeof(boundAddr);
 		if (getsockname(listener, reinterpret_cast<struct sockaddr*>(&boundAddr), &len) == SocketError) {
 			m_logger.LogError(std::format("[TcpListener] getsockname failed: error {}", GetSocketError()));
 			CloseSocket(listener);
@@ -72,7 +72,7 @@ namespace Proxirae {
 	std::shared_ptr<TcpSession> TcpListener::Accept()
 	{
 		struct sockaddr_in clientAddr{};
-		SocketLen clientAddrSize = sizeof(clientAddr);
+		NativeSocketLen clientAddrSize = sizeof(clientAddr);
 
 		NativeSocket client = accept(m_listener, reinterpret_cast<struct sockaddr*>(&clientAddr), &clientAddrSize);
 
@@ -97,7 +97,7 @@ namespace Proxirae {
 
 		m_logger.LogDebug(std::format("[TcpListener] Client connected from {}", endpoint.ToString()));
 
-		return std::make_shared<TcpSession>(client, endpoint, m_driver, m_logger, m_proxyFactory);
+		return std::make_shared<TcpSession>(client, endpoint, m_adapter, m_logger, m_proxyFactory);
 	}
 
 	void TcpListener::Close() {

@@ -11,11 +11,11 @@ namespace Proxirae {
 		NativeSocket client;
 		Endpoint endpoint;
 
-		IIoDriver& driver;
+		IIoStreamAdapter& adapter;
 		ILogger& logger;
 		IProxyFactory& proxyFactory;
 
-		std::unique_ptr<IProxy> proxy;
+		std::unique_ptr<IStreamProxy> proxy;
 
 		std::function<void(std::shared_ptr<TcpSession>)> onTerminated;
 		std::atomic_bool isStopping{ false };
@@ -31,8 +31,8 @@ namespace Proxirae {
 		std::atomic<std::uint64_t> bytesSent{ 0 };
 		std::atomic<std::uint64_t> bytesReceived{ 0 };
 
-		TcpBridge(NativeSocket client, Endpoint endpoint, IIoDriver& driver, ILogger& logger, IProxyFactory& factory)
-			: client(client), endpoint(endpoint), driver(driver), logger(logger), proxyFactory(factory) {
+		TcpBridge(NativeSocket client, Endpoint endpoint, IIoStreamAdapter& adapter, ILogger& logger, IProxyFactory& factory)
+			: client(client), endpoint(endpoint), adapter(adapter), logger(logger), proxyFactory(factory) {
 			clientBuffer.resize(4096);
 			proxyBuffer.resize(4096);
 		}
@@ -44,7 +44,7 @@ namespace Proxirae {
 				return false;
 			}
 
-			proxy = proxyFactory.Create(*entry.proxyId);
+			proxy = proxyFactory.CreateStream(*entry.proxyId);
 
 			char targetHost[INET_ADDRSTRLEN];
 			inet_ntop(AF_INET, &key.dstAddress, targetHost, sizeof(targetHost));
@@ -87,7 +87,7 @@ namespace Proxirae {
 				return;
 			}
 
-			driver.AsyncRead(client, std::span(clientBuffer), [this, self](const IoResult& res) {
+			adapter.AsyncRead(client, std::span(clientBuffer), [this, self](const IoResult& res) {
 				if (!res.success || res.bytesTransferred == 0) {
 					if (!isStopping) logger.LogDebug(std::format("[TcpSession] Client connection closed ({}:{})", endpoint.GetAddress(), endpoint.GetPort()));
 					self->Terminate();
@@ -127,7 +127,7 @@ namespace Proxirae {
 
 				auto payload = std::span<const std::byte>(proxyBuffer.data(), res.bytesTransferred);
 
-				driver.AsyncWrite(client, payload, [this, self, bytes = res.bytesTransferred](const IoResult& wRes) {
+				adapter.AsyncWrite(client, payload, [this, self, bytes = res.bytesTransferred](const IoResult& wRes) {
 					if (!wRes.success) {
 						if (!isStopping) logger.LogError(std::format("[TcpSession] Failed to send data to client: error {}", wRes.errorCode));
 						self->Terminate();
@@ -145,8 +145,8 @@ namespace Proxirae {
 		}
 	};
 
-	TcpSession::TcpSession(NativeSocket client, Endpoint endpoint, IIoDriver& driver, ILogger& logger, IProxyFactory& factory)
-		: m_bridge(std::make_unique<TcpBridge>(client, endpoint, driver, logger, factory)) 
+	TcpSession::TcpSession(NativeSocket client, Endpoint endpoint, IIoStreamAdapter& adapter, ILogger& logger, IProxyFactory& factory)
+		: m_bridge(std::make_unique<TcpBridge>(client, endpoint, adapter, logger, factory))
 	{
 		m_id = UuidUtils::GenerateUUID();
 	}
@@ -154,21 +154,6 @@ namespace Proxirae {
 	TcpSession::~TcpSession() 
 	{
 		Terminate();
-	}
-
-	std::string_view TcpSession::GetId() const
-	{
-		return m_id;
-	}
-
-	std::uint32_t TcpSession::GetAddress() const
-	{
-		return m_bridge->endpoint.GetAddress();
-	}
-
-	std::uint16_t TcpSession::GetPort() const
-	{
-		return m_bridge->endpoint.GetPort();
 	}
 
 	void TcpSession::Establish(const FiveTuple& key, const ConnectionEntry& entry, TerminationCallback onTerminated)
@@ -180,7 +165,7 @@ namespace Proxirae {
 		}
 	}
 
-	void TcpSession::Terminate() 
+	void TcpSession::Terminate()
 	{
 		std::shared_ptr<TcpSession> self = nullptr;
 		try {
@@ -206,5 +191,20 @@ namespace Proxirae {
 			.bytesReceived = m_bridge->bytesReceived.load(std::memory_order_relaxed),
 			.status = m_bridge->isStopping ? FlowStatus::Closing : FlowStatus::Active
 		};
+	}
+
+	std::string_view TcpSession::GetId() const
+	{
+		return m_id;
+	}
+
+	std::uint32_t TcpSession::GetAddress() const
+	{
+		return m_bridge->endpoint.GetAddress();
+	}
+
+	std::uint16_t TcpSession::GetPort() const
+	{
+		return m_bridge->endpoint.GetPort();
 	}
 }

@@ -56,24 +56,6 @@ namespace Proxirae {
 		return std::nullopt;
 	}
 
-	void ConnectionTable::KeepAlive(const FiveTuple& key, std::uint64_t timestamp)
-	{
-		auto it = m_connections.find(key);
-
-		if (it != m_connections.end()) {
-			it->second.lastSeen = timestamp;
-		}
-	}
-
-	void ConnectionTable::KeepAlive(const ThreeTuple& key, std::uint64_t timestamp)
-	{
-		auto it = m_indexes.find(key);
-
-		if (it != m_indexes.end()) {
-			KeepAlive(it->second, timestamp);
-		}
-	}
-
 	bool ConnectionTable::ConnectionExists(const FiveTuple& key) const {
 		return m_connections.contains(key);
 	}

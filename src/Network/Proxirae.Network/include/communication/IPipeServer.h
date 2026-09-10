@@ -2,7 +2,7 @@
 #include <span>
 #include <stop_token>
 
-#include "asyncio/IoCallback.h"
+#include "asyncio/io/IoCallback.h"
 
 namespace Proxirae {
     class IPipeServer {

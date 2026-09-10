@@ -33,8 +33,6 @@ namespace Proxirae {
 						packetCtx.GetSourceEndpoint().ToString(),
 						packetCtx.GetDestinationEndpoint().ToString()
 					));
-
-					m_connections.KeepAlive(key, GetTickCount64());
 				}
 			}
 			else {
@@ -61,9 +59,6 @@ namespace Proxirae {
 						packetCtx.GetSourceEndpoint().ToString(),
 						packetCtx.GetDestinationEndpoint().ToString()
 					));
-				}
-				else {
-					m_connections.KeepAlive(key, GetTickCount64());
 				}
 
 				packetCtx.SetDestination(packetCtx.GetSourceAddress(), WinDivertHelperHtons(m_redirectPort));

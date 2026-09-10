@@ -5,7 +5,8 @@
 #include "interception/diversion/win/WinPacketContext.h"
 #include "environment/inet.h"
 
-// TODO: Refactor?
+// TODO: Refactor. Add a dedicated UdpClassificator (or similar) that creates/updates
+// UDP connection states in ConnectionTable based on elapsed timeouts, on a background thread.
 namespace Proxirae {
 	class WinUdpCorrelator::PendingPacketCache {
 	public:

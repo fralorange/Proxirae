@@ -1,29 +1,29 @@
 #pragma once
 
-#include "IListener.h"
 #include "environment/sock_types.h"
 #include "diagnostics/ILogger.h"
 #include "transport/TcpSession.h"
-#include "asyncio/IIoDriver.h"
+#include "asyncio/async/IAsyncDriver.h"
 #include "proxification/IProxyFactory.h"
+#include "asyncio/io/stream/IIoStreamAdapter.h"
 
 namespace Proxirae {
-	class TcpListener : public IListener<TcpSession> {
+	class TcpListener {
 	public:
-		TcpListener(IIoDriver& driver, ILogger& logger, IProxyFactory& factory);
-		~TcpListener() override;
+		TcpListener(IAsyncDriver& driver, IIoStreamAdapter& adapter, ILogger& logger, IProxyFactory& factory);
+		~TcpListener();
 
-		std::uint16_t Bind() override;
-		bool Listen(std::uint16_t port) override;
+		std::uint16_t Bind();
+		bool Listen(std::uint16_t port);
 
-		std::shared_ptr<TcpSession> Accept() override;
+		std::shared_ptr<TcpSession> Accept();
 
-		void Close() override;
-
+		void Close();
 	private:
 		NativeSocket m_listener{ InvalidNativeSocket };
 
-		IIoDriver& m_driver;
+		IAsyncDriver& m_driver;
+		IIoStreamAdapter& m_adapter;
 		ILogger& m_logger;
 		IProxyFactory& m_proxyFactory;
 	};

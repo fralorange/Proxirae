@@ -95,7 +95,7 @@ namespace Proxirae {
 		: m_correlator(correlator),
 		  m_store(store),
 		  m_logger(logger),
-		  m_network(std::make_unique<DivertChannel>(65535)),
+		  m_network(std::make_unique<DivertChannel>(65536)),
 		  m_socket(std::make_unique<DivertChannel>(0)) 
 	{
 		m_reload = CreateEvent(nullptr, FALSE, FALSE, nullptr);

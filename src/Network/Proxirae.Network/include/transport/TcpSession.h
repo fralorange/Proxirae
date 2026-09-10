@@ -4,9 +4,8 @@
 #include <chrono>
 #include <string_view>
 
-#include "ISession.h"
+#include "asyncio/io/stream/IIoStreamAdapter.h"
 #include "environment/sock_types.h"
-#include "asyncio/IIoDriver.h"
 #include "diagnostics/ILogger.h"
 #include "persistence/ConnectionEntry.h"
 #include "interception/diversion/Endpoint.h"
@@ -14,20 +13,24 @@
 #include "persistence/FiveTuple.h"
 #include "contracts/flow/FlowContract.h"
 
+// TODO: TcpSession is in the transport layer and must not depend on interception.
+// Extract Endpoint into a shared namespace/directory.
 namespace Proxirae {
-	class TcpSession : public ISession, public std::enable_shared_from_this<TcpSession> {
+	class TcpSession : public std::enable_shared_from_this<TcpSession> {
 	public:
-		TcpSession(NativeSocket client, Endpoint endpoint, IIoDriver& driver, ILogger& logger, IProxyFactory& factory);
-		~TcpSession() override;
+		using TerminationCallback = std::function<void(std::shared_ptr<TcpSession>)>;
 
-		void Establish(const FiveTuple& key, const ConnectionEntry& entry, TerminationCallback onTerminated) override;
-		void Terminate() override;
+		TcpSession(NativeSocket client, Endpoint endpoint, IIoStreamAdapter& adapter, ILogger& logger, IProxyFactory& factory);
+		~TcpSession();
 
-		FlowContract GetFlow() const override;
+		void Establish(const FiveTuple& key, const ConnectionEntry& entry, TerminationCallback onTerminated);
+		void Terminate();
 
-		std::string_view GetId() const override;
-		std::uint32_t GetAddress() const override;
-		std::uint16_t GetPort() const override;
+		FlowContract GetFlow() const;
+
+		std::string_view GetId() const;
+		std::uint32_t GetAddress() const;
+		std::uint16_t GetPort() const;
 
 	private:
 		class TcpBridge;

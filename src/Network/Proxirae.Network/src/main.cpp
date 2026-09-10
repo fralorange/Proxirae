@@ -23,17 +23,23 @@
 #include "monitoring/Monitor.h"
 #include "interception/correlation/DispatcherCorrelator.h"
 #include "interception/handling/DispatcherHandler.h"
+#include "transport/TcpMultiplexer.h"
+#include "transport/UdpMultiplexer.h"
+#include "transport/UdpBinder.h"
+#include "transport/DispatcherMultiplexer.h"
 
 #ifdef _WIN32
 #include <WinSock2.h>
 #pragma comment(lib, "Ws2_32.lib")
-#include "asyncio/win/IocpDriver.h"
+#include "asyncio/async/win/IocpDriver.h"
 #include "interception/diversion/win/WinPacketDiverter.h"
 #include "interception/correlation/win/WinTcpCorrelator.h"
 #include "interception/correlation/win/WinUdpCorrelator.h"
 #include "processes/win/WinProcessResolver.h"
 #include "processes/win/WinProcessManager.h"
 #include "communication/win/WinPipeServer.h"
+#include "asyncio/io/stream/win/IocpStreamAdapter.h"
+#include "asyncio/io/datagram/win/IocpDatagramAdapter.h"
 #endif 
 
 using namespace Proxirae;
@@ -53,7 +59,9 @@ int main() {
 
 #ifdef _WIN32
 	IocpDriver driver;
-	WinPipeServer pipe(driver);
+	IocpStreamAdapter streamAdapter;
+	IocpDatagramAdapter datagramAdapter;
+	WinPipeServer pipe(driver, streamAdapter);
 #endif 
 	IpcChannel channel(pipe);
 	IpcMessenger messenger(channel);
@@ -105,17 +113,23 @@ int main() {
 		return 1;
 	}
 
-	ProxyFactory factory(configStore, driver, logger);
+	ProxyFactory factory(configStore, driver, streamAdapter, datagramAdapter, logger);
 
-	TcpListener listener(driver, logger, factory);
-	std::uint16_t tcpPort = listener.Bind();
+	TcpListener tcpListener(driver, streamAdapter, logger, factory);
+	std::uint16_t tcpPort = tcpListener.Bind();
 
 	if (tcpPort == 0) {
 		logger.LogCritical("[Main] Failed to bind redirect TCP listener port");
 		return -1;
 	}
 
-	std::uint16_t udpPort = 33999; // stub
+	UdpBinder udpBinder(driver, logger);
+	std::uint16_t udpPort = udpBinder.Bind();
+
+	if (udpPort == 0) {
+		logger.LogCritical("[Main] Failed to bind redirect UDP binder port");
+		return -1;
+	}
 
 	TcpHandler tcpHandler(tcpPort, connections, logger);
 	UdpHandler udpHandler(udpPort, connections, logger);
@@ -123,11 +137,18 @@ int main() {
 	handler.RegisterHandler(tcpHandler);
 	handler.RegisterHandler(udpHandler);
 
+	TcpMultiplexer tcpMultiplexer(tcpListener, connections, monitor, logger, tcpPort);
+	UdpMultiplexer udpMultiplexer(udpBinder, datagramAdapter, connections, monitor, factory, logger);
+
+	DispatcherMultiplexer multiplexer;
+	multiplexer.Register(tcpMultiplexer);
+	multiplexer.Register(udpMultiplexer);
+
 	Engine engine(diverter, handler, router, stopSource.get_token());
-	Daemon daemon(listener, connections, logger, monitor, stopSource.get_token());
+	Daemon daemon(multiplexer, logger, monitor, stopSource.get_token());
 
 	SessionController sessionController(daemon, processManager);
-	TestController testController(messenger, driver, logger);
+	TestController testController(messenger, driver, streamAdapter, logger);
 
 	ConfigurationPipeHandler confHandler(configLoader, diverter);
 	PreferencesPipeHandler prefHandler(prefsLoader);
@@ -146,8 +167,8 @@ int main() {
 	std::promise<bool> listenPromise;
 	std::future<bool> listenFuture = listenPromise.get_future();
 
-	std::thread daemonThread([&daemon, tcpPort, &listenPromise]() {
-		daemon.Run(tcpPort, [&listenPromise](bool success) {
+	std::thread daemonThread([&daemon, &listenPromise]() {
+		daemon.Run([&listenPromise](bool success) {
 			listenPromise.set_value(success);
 		});
 	});

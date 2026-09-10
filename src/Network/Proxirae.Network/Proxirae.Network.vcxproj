@@ -191,14 +191,16 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="include\contracts\flow\FlowDisconnectContract.h" />
-    <ClCompile Include="include\communication\FlowPipeHandler.h" />
+    <ClCompile Include="src\asyncio\io\datagram\win\IocpDatagramAdapter.cpp" />
+    <ClCompile Include="src\asyncio\io\datagram\win\IocpDatagramContext.cpp" />
+    <ClCompile Include="src\asyncio\io\stream\win\IocpStreamContext.cpp" />
+    <ClCompile Include="src\asyncio\io\stream\win\IocpStreamAdapter.cpp" />
     <ClCompile Include="src\interception\correlation\win\WinUdpCorrelator.cpp" />
-    <ClCompile Include="include\proxification\ProxyTestStage.h" />
-    <ClCompile Include="include\utils\UuidUtils.h" />
     <ClCompile Include="src\interception\correlation\DispatcherCorrelator.cpp" />
     <ClCompile Include="src\interception\routing\PacketFilter.cpp" />
     <ClCompile Include="src\interception\handling\UdpHandler.cpp" />
+    <ClCompile Include="src\proxification\Socks5ProxyBase.cpp" />
+    <ClCompile Include="src\proxification\UdpSocks5Proxy.cpp" />
     <ClCompile Include="src\runtime\Host.cpp" />
     <ClCompile Include="src\controllers\SessionController.cpp" />
     <ClCompile Include="src\controllers\TestController.cpp" />
@@ -208,7 +210,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\monitoring\Monitor.cpp" />
     <ClCompile Include="src\contracts\rule\RuleContract.cpp" />
     <ClCompile Include="src\diagnostics\JournalLogger.cpp" />
-    <ClCompile Include="src\asyncio\win\IocpContext.cpp" />
+    <ClCompile Include="src\asyncio\async\win\IocpContext.cpp" />
     <ClCompile Include="src\communication\ConfigurationPipeHandler.cpp" />
     <ClCompile Include="src\communication\IpcChannel.cpp" />
     <ClCompile Include="src\communication\PipeMessage.cpp" />
@@ -216,7 +218,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\communication\win\WinPipeServer.cpp" />
     <ClCompile Include="src\interception\diversion\Endpoint.cpp" />
     <ClCompile Include="src\runtime\Daemon.cpp" />
-    <ClCompile Include="src\asyncio\win\IocpDriver.cpp" />
+    <ClCompile Include="src\asyncio\async\win\IocpDriver.cpp" />
     <ClCompile Include="src\interception\handling\DispatcherHandler.cpp" />
     <ClCompile Include="src\interception\routing\PacketRouter.cpp" />
     <ClCompile Include="src\interception\diversion\win\WinPacketDiverter.cpp" />
@@ -228,15 +230,16 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\persistence\FiveTupleHash.cpp" />
     <ClCompile Include="src\persistence\AssociationTable.cpp" />
     <ClCompile Include="src\persistence\ThreeTupleHash.cpp" />
-    <ClCompile Include="src\proxification\TestableSocks5Proxy.cpp" />
+    <ClCompile Include="src\proxification\TestableTcpSocks5Proxy.cpp" />
+    <ClCompile Include="src\transport\DispatcherMultiplexer.cpp" />
     <ClCompile Include="src\transport\TcpListener.cpp" />
+    <ClCompile Include="src\transport\TcpMultiplexer.cpp" />
     <ClCompile Include="src\transport\TcpSession.cpp" />
-    <ClCompile Include="src\proxification\Socks5Proxy.cpp" />
+    <ClCompile Include="src\proxification\TcpSocks5Proxy.cpp" />
     <ClCompile Include="src\interception\handling\TcpHandler.cpp" />
     <ClCompile Include="src\diagnostics\ConsoleLogger.cpp" />
     <ClCompile Include="src\diagnostics\ILogger.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="include\persistence\ThreeTuple.h" />
     <ClCompile Include="src\interception\diversion\win\WinPacketContext.cpp" />
     <ClCompile Include="src\persistence\ConnectionTable.cpp" />
     <ClCompile Include="src\runtime\Engine.cpp" />
@@ -247,12 +250,23 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\interception\routing\PortCriteria.cpp" />
     <ClCompile Include="src\interception\routing\ProcessCriteria.cpp" />
     <ClCompile Include="src\interception\routing\RuleEvaluator.cpp" />
+    <ClCompile Include="src\transport\UdpMultiplexer.cpp" />
+    <ClCompile Include="src\transport\UdpSession.cpp" />
     <ClCompile Include="src\utils\JsonUtils.cpp" />
     <ClCompile Include="src\utils\PathUtils.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
     <ClCompile Include="src\utils\UuidUtils.cpp" />
+    <ClCompile Include="src\transport\UdpBinder.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\asyncio\io\datagram\IIoDatagramAdapter.h" />
+    <ClInclude Include="include\asyncio\io\datagram\IoDatagramCallback.h" />
+    <ClInclude Include="include\asyncio\io\datagram\IoDatagramResult.h" />
+    <ClInclude Include="include\asyncio\io\datagram\win\IocpDatagramAdapter.h" />
+    <ClInclude Include="include\asyncio\io\datagram\win\IocpDatagramContext.h" />
+    <ClInclude Include="include\asyncio\io\stream\IIoStreamAdapter.h" />
+    <ClInclude Include="include\asyncio\io\stream\win\IocpStreamContext.h" />
+    <ClInclude Include="include\asyncio\io\stream\win\IocpStreamAdapter.h" />
     <ClInclude Include="include\contracts\flow\FlowDestroyContract.h" />
     <ClInclude Include="include\contracts\proxy\ProxyTestContract.h" />
     <ClInclude Include="include\contracts\test\TestContract.h" />
@@ -261,6 +275,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\controllers\TestController.h" />
     <ClInclude Include="include\communication\PreferencesPipeHandler.h" />
     <ClInclude Include="include\communication\TestPipeHandler.h" />
+    <ClInclude Include="include\environment\handle_types.h" />
     <ClInclude Include="include\interception\correlation\DispatcherCorrelator.h" />
     <ClInclude Include="include\interception\correlation\IPacketCorrelator.h" />
     <ClInclude Include="include\interception\correlation\win\WinUdpCorrelator.h" />
@@ -279,6 +294,9 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\contracts\rule\RuleActionContract.h" />
     <ClInclude Include="include\contracts\rule\RuleContract.h" />
     <ClInclude Include="include\contracts\rule\RuleProtocol.h" />
+    <ClInclude Include="include\proxification\datagram\IDatagramProxy.h" />
+    <ClInclude Include="include\proxification\Socks5ProxyBase.h" />
+    <ClInclude Include="include\proxification\datagram\UdpSocks5Proxy.h" />
     <ClInclude Include="include\runtime\Daemon.h" />
     <ClInclude Include="include\runtime\Host.h" />
     <ClInclude Include="include\contracts\route\RouteContract.h" />
@@ -297,12 +315,12 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\communication\win\WinPipeServer.h" />
     <ClInclude Include="include\interception\diversion\Endpoint.h" />
     <ClInclude Include="include\runtime\Engine.h" />
-    <ClInclude Include="include\asyncio\IIoDriver.h" />
-    <ClInclude Include="include\asyncio\IoCallback.h" />
-    <ClInclude Include="include\asyncio\IoResult.h" />
-    <ClInclude Include="include\asyncio\win\IocpContext.h" />
-    <ClInclude Include="include\asyncio\win\IocpDriver.h" />
-    <ClInclude Include="include\asyncio\win\IoOperation.h" />
+    <ClInclude Include="include\asyncio\async\IAsyncDriver.h" />
+    <ClInclude Include="include\asyncio\io\IoCallback.h" />
+    <ClInclude Include="include\asyncio\io\IoResult.h" />
+    <ClInclude Include="include\asyncio\async\win\IocpContext.h" />
+    <ClInclude Include="include\asyncio\async\win\IocpDriver.h" />
+    <ClInclude Include="include\asyncio\io\IoOperation.h" />
     <ClInclude Include="include\interception\diversion\IPacketContext.h" />
     <ClInclude Include="include\interception\diversion\IPacketDiverter.h" />
     <ClInclude Include="include\interception\handling\IPacketHandler.h" />
@@ -316,7 +334,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\persistence\PreferencesLoader.h" />
     <ClInclude Include="include\processes\IProcessManager.h" />
     <ClInclude Include="include\processes\win\WinProcessManager.h" />
-    <ClInclude Include="include\proxification\IProxy.h" />
+    <ClInclude Include="include\proxification\stream\IStreamProxy.h" />
     <ClInclude Include="include\interception\handling\DispatcherHandler.h" />
     <ClInclude Include="include\interception\diversion\win\WinPacketDiverter.h" />
     <ClInclude Include="include\proxification\IProxyFactory.h" />
@@ -327,12 +345,13 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\persistence\FiveTuple.h" />
     <ClInclude Include="include\persistence\FiveTupleHash.h" />
     <ClInclude Include="include\persistence\AssociationTable.h" />
-    <ClInclude Include="include\proxification\TestableSocks5Proxy.h" />
-    <ClInclude Include="include\transport\IListener.h" />
-    <ClInclude Include="include\transport\ISession.h" />
+    <ClInclude Include="include\proxification\stream\TestableTcpSocks5Proxy.h" />
+    <ClInclude Include="include\transport\DispatcherMultiplexer.h" />
+    <ClInclude Include="include\transport\IMultiplexer.h" />
     <ClInclude Include="include\transport\TcpListener.h" />
+    <ClInclude Include="include\transport\TcpMultiplexer.h" />
     <ClInclude Include="include\transport\TcpSession.h" />
-    <ClInclude Include="include\proxification\Socks5Proxy.h" />
+    <ClInclude Include="include\proxification\stream\TcpSocks5Proxy.h" />
     <ClInclude Include="include\interception\handling\TcpHandler.h" />
     <ClInclude Include="include\diagnostics\ConsoleLogger.h" />
     <ClInclude Include="include\diagnostics\ILogger.h" />
@@ -353,17 +372,25 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\interception\routing\PortCriteria.h" />
     <ClInclude Include="include\interception\routing\ProcessCriteria.h" />
     <ClInclude Include="include\interception\routing\RuleEvaluator.h" />
+    <ClInclude Include="include\transport\UdpBinder.h" />
+    <ClInclude Include="include\transport\UdpMultiplexer.h" />
+    <ClInclude Include="include\transport\UdpSession.h" />
     <ClInclude Include="include\utils\JsonUtils.h" />
     <ClInclude Include="include\utils\PathUtils.h" />
     <ClInclude Include="include\utils\StringUtils.h" />
     <ClInclude Include="include\persistence\Preferences.h" />
+    <ClCompile Include="include\persistence\ThreeTuple.h" />
+    <ClCompile Include="include\proxification\stream\TestStage.h" />
+    <ClCompile Include="include\utils\UuidUtils.h" />
+    <ClCompile Include="include\contracts\flow\FlowDisconnectContract.h" />
+    <ClCompile Include="include\communication\FlowPipeHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="conanfile.py" />
     <None Include="deps\windivert\conanfile.py" />
     <None Include="src\communication\IpcMessenger.inl" />
     <None Include="src\persistence\Store.inl" />
-    <None Include="src\proxification\TestableSocks5Proxy.inl" />
+    <None Include="src\proxification\TestableTcpSocks5Proxy.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

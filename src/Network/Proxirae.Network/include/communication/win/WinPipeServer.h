@@ -3,12 +3,13 @@
 #include <Windows.h>
 
 #include "communication/IPipeServer.h"
-#include "asyncio/IIoDriver.h"
+#include "asyncio/async/IAsyncDriver.h"
+#include "asyncio/io/stream/IIoStreamAdapter.h"
 
 namespace Proxirae {
 	class WinPipeServer : public IPipeServer {
 	public:
-		WinPipeServer(IIoDriver& driver);
+		WinPipeServer(IAsyncDriver& driver, IIoStreamAdapter& adapter);
 		~WinPipeServer();
 
 		bool Accept(std::stop_token token) override;
@@ -18,6 +19,8 @@ namespace Proxirae {
 
 	private:
 		HANDLE m_pipe = INVALID_HANDLE_VALUE;
-		IIoDriver& m_driver;
+
+		IAsyncDriver& m_driver;
+		IIoStreamAdapter& m_adapter;
 	};
 }
