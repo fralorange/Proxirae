@@ -14,6 +14,8 @@ using Proxirae.Contracts.DTOs.Flows;
 using Proxirae.Contracts.DTOs.Logs;
 using Proxirae.Contracts.DTOs.Routes;
 using Proxirae.Presentation.WPF.Facades.Dialog;
+using Proxirae.Presentation.WPF.Factories.Flow;
+using Proxirae.Presentation.WPF.Factories.Routes;
 using Proxirae.Presentation.WPF.ViewModels.Flows;
 using Proxirae.Presentation.WPF.ViewModels.Logs;
 using Proxirae.Presentation.WPF.ViewModels.ProxyChecker;
@@ -22,7 +24,6 @@ using Proxirae.Presentation.WPF.ViewModels.ProxyServers;
 using Proxirae.Presentation.WPF.ViewModels.Routes;
 using System.Collections;
 using System.Collections.ObjectModel;
-using System.Windows;
 
 namespace Proxirae.Presentation.WPF.ViewModels
 {
@@ -31,8 +32,8 @@ namespace Proxirae.Presentation.WPF.ViewModels
         private readonly IApplicationService _applicationService;
         private readonly IClipboardService _clipboardService;
         private readonly DialogFacade _dialogFacade;
-        private readonly ActionFacade _actionFacade;
-        private readonly RouteFacade _routeFacade;
+        private readonly IRouteViewModelFactory _routeViewModelFactory;
+        private readonly IFlowViewModelFactory _flowViewModelFactory;
         private readonly IFlowService _flowService;
         private readonly ILogService _logService;
         private readonly IRouteService _routeService;
@@ -72,8 +73,8 @@ namespace Proxirae.Presentation.WPF.ViewModels
             IApplicationService applicationService,
             IClipboardService clipboardService,
             DialogFacade dialogFacade,
-            ActionFacade actionFacade,
-            RouteFacade routeFacade,
+            IRouteViewModelFactory routeViewModelFactory,
+            IFlowViewModelFactory flowViewModelFactory,
             IFlowService flowService,
             ILogService logService,
             IRouteService routeService,
@@ -83,8 +84,8 @@ namespace Proxirae.Presentation.WPF.ViewModels
             _applicationService = applicationService;
             _clipboardService = clipboardService;
             _dialogFacade = dialogFacade;
-            _actionFacade = actionFacade;
-            _routeFacade = routeFacade;
+            _routeViewModelFactory = routeViewModelFactory;
+            _flowViewModelFactory = flowViewModelFactory;
             _flowService = flowService;
             _logService = logService;
             _routeService = routeService;
@@ -131,18 +132,17 @@ namespace Proxirae.Presentation.WPF.ViewModels
             }, token);
         }
 
-        private void OnRouteReceived(RouteDto route)
+        private async void OnRouteReceived(RouteDto route)
         {
-            WinApp.Current.Dispatcher.Invoke(async () =>
+            var routeViewModel = await _routeViewModelFactory.CreateAsync(route, CancellationToken.None);
+
+            if (routeViewModel is null)
             {
-                var actionName = await _routeFacade.GetActionNameAsync(route.RuleId, CancellationToken.None);
+                return;
+            }
 
-                if (actionName == null)
-                {
-                    return;
-                }
-
-                var routeViewModel = new RouteViewModel(route, actionName);
+            WinApp.Current.Dispatcher.Invoke(() =>
+            {
                 _routesBuffer.AddLast(routeViewModel);
             });
         }
@@ -155,34 +155,38 @@ namespace Proxirae.Presentation.WPF.ViewModels
             });
         }
 
-        private void OnFlowsUpdated(IEnumerable<FlowDto> flows)
+        private async void OnFlowsUpdated(IEnumerable<FlowDto> flows)
         {
             var activeIds = flows.Select(f => f.Id).ToHashSet();
 
-            WinApp.Current.Dispatcher.InvokeAsync(async () =>
+            var existingIds = Flows.Select(x => x.Id).ToHashSet();
+            var newFlowDtos = flows.Where(f => !existingIds.Contains(f.Id)).ToList();
+
+            var newViewModels = new List<FlowViewModel>();
+
+            foreach (var flow in newFlowDtos)
+            {
+                var vm = await _flowViewModelFactory.CreateAsync(flow, CancellationToken.None);
+                if (vm != null) newViewModels.Add(vm);
+            }
+
+            WinApp.Current.Dispatcher.Invoke(() =>
             {
                 var ghosts = Flows.Where(f => !activeIds.Contains(f.Id)).ToList();
-                foreach (var ghost in ghosts)
-                {
-                    Flows.Remove(ghost);
+                foreach (var ghost in ghosts) 
+                { 
+                    Flows.Remove(ghost); 
                 }
 
                 foreach (var flow in flows)
                 {
-                    var existing = Enumerable.FirstOrDefault(Flows, x => x.Id == flow.Id);
-                    if (existing is not null)
-                    {
-                        existing.Update(flow);
-                    }
-                    else
-                    {
-                        var action = await _actionFacade.GetActionAsync(flow.ProxyId, CancellationToken.None);
+                    var existing = Flows.FirstOrDefault(x => x.Id == flow.Id);
+                    existing?.Update(flow);
+                }
 
-                        if (!Flows.Any(x => x.Id == flow.Id))
-                        {
-                            Flows.Add(new FlowViewModel(flow, action.Name));
-                        }
-                    }
+                foreach (var vm in newViewModels)
+                {
+                    Flows.Add(vm);
                 }
             });
         }
