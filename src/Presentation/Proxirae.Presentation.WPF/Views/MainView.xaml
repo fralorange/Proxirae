@@ -123,9 +123,9 @@
                                     <Image Width="16" 
                                            Height="16" 
                                            Margin="0 0 6 0"
-                                           Source="{Binding ProcessId, Converter={StaticResource ProcessIdToIconConverter}, IsAsync=True}"/>
+                                           Source="{Binding ProcessIcon, IsAsync=True}"/>
 
-                                    <TextBlock Text="{Binding ProcessId, Converter={StaticResource ProcessIdToNameConverter}, IsAsync=True}"
+                                    <TextBlock Text="{Binding ProcessName, IsAsync=True}"
                                                VerticalAlignment="Center"/>
                                 </StackPanel>
                             </DataTemplate>
@@ -256,7 +256,7 @@
                                 <TextBlock Grid.Column="1" TextTrimming="CharacterEllipsis">
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="{}{0} ({1})">
-                                            <Binding Path="ProcessId" Converter="{StaticResource ProcessIdToNameConverter}"/>
+                                            <Binding Path="ProcessName"/>
                                             <Binding Path="ProcessId"/>
                                         </MultiBinding>
                                     </TextBlock.Text>

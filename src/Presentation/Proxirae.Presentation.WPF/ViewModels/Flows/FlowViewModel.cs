@@ -1,18 +1,24 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Proxirae.Contracts.DTOs.Flows;
 using Proxirae.Presentation.WPF.Models.Endpoint;
+using Proxirae.Presentation.WPF.Models.Process;
+using System.Windows.Media;
 
 namespace Proxirae.Presentation.WPF.ViewModels.Flows
 {
     public partial class FlowViewModel : ObservableObject
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
+        public long ProcessId { get; init; }
 
         [ObservableProperty]
         private Endpoint _target = null!;
 
         [ObservableProperty]
-        private long _processId;
+        private string _processName;
+
+        [ObservableProperty]
+        private ImageSource? _processIcon;
 
         [ObservableProperty]
         private ulong _secondsPassed;
@@ -29,9 +35,12 @@ namespace Proxirae.Presentation.WPF.ViewModels.Flows
         [ObservableProperty]
         private string _actionName;
 
-        public FlowViewModel(FlowDto dto, string actionName)
+        public FlowViewModel(FlowDto dto, ProcessInfo processInfo, string actionName)
         {
             Id = dto.Id;
+            ProcessId = dto.ProcessId;
+            ProcessName = processInfo.Name;
+            ProcessIcon = processInfo.Icon;
             ActionName = actionName;
 
             Update(dto);
@@ -40,7 +49,6 @@ namespace Proxirae.Presentation.WPF.ViewModels.Flows
         public void Update(FlowDto dto)
         {
             Target = new Endpoint(dto.TargetAddress, dto.TargetPort);
-            ProcessId = dto.ProcessId;
             SecondsPassed = dto.SecondsPassed;
             BytesSent = dto.BytesSent;
             BytesReceived = dto.BytesReceived;

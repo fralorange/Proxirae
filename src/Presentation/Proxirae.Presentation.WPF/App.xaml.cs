@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Proxirae.Application.Services.Preferences;
 using Proxirae.Infrastructure;
 using Proxirae.Infrastructure.ProcessCommunication;
 using Proxirae.Infrastructure.TransactionControl;
@@ -22,6 +21,7 @@ namespace Proxirae.Presentation.WPF
                 {
                     services
                         .AddStartupServices()
+                        .AddCache()
                         .AddServices()
                         .AddRepositories()
                         .AddStores()

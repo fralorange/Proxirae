@@ -22,7 +22,8 @@ namespace Proxirae.Infrastructure.ProcessCommunication.Pipes.Message.Handlers.Fl
                 if (flows.Count == 1 && flows.FirstOrDefault() is { Status: FlowStatusDto.Closed } flow)
                 {
                     _flowService.NotifyFlowClosed(flow);
-                } else
+                }
+                else
                 {
                     _flowService.NotifyFlowsUpdated(flows);
                 }

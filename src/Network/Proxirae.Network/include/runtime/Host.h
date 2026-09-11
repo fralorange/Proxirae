@@ -2,8 +2,8 @@
 
 #include <stop_token>
 
-#include "communication/IReceiveChannel.h"
-#include "communication/IDispatchChannel.h"
+#include "communication/channels/IReceiveChannel.h"
+#include "communication/channels/IDispatchChannel.h"
 
 namespace Proxirae {
 	class Host {

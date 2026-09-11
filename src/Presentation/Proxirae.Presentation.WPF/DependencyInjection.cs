@@ -18,9 +18,12 @@ using Proxirae.Application.Services.Test;
 using Proxirae.Infrastructure.Mappers.Rule;
 using Proxirae.Infrastructure.Mappers.Rule.Action;
 using Proxirae.Presentation.WPF.Facades.Dialog;
+using Proxirae.Presentation.WPF.Factories.Flow;
 using Proxirae.Presentation.WPF.Factories.ProxyChecker;
+using Proxirae.Presentation.WPF.Factories.Routes;
 using Proxirae.Presentation.WPF.Services.Application;
 using Proxirae.Presentation.WPF.Services.Clipboard;
+using Proxirae.Presentation.WPF.Services.Process;
 using Proxirae.Presentation.WPF.ViewModels;
 using Proxirae.Presentation.WPF.ViewModels.ProxyChecker;
 using Proxirae.Presentation.WPF.ViewModels.ProxyRules;
@@ -51,6 +54,7 @@ namespace Proxirae.Presentation.WPF
             services.AddHostedService<PreferencesHostedService>();
             services.AddSingleton<ITestService, TestService>();
             services.AddSingleton<IAutostartService, WindowsAutostartService>();
+            services.AddSingleton<IProcessInfoService, ProcessInfoService>();
             return services;
         }
 
@@ -75,6 +79,8 @@ namespace Proxirae.Presentation.WPF
         public static IServiceCollection AddFactories(this IServiceCollection services)
         {
             services.AddTransient<IProxyCheckerViewModelFactory, ProxyCheckerViewModelFactory>();
+            services.AddTransient<IFlowViewModelFactory, FlowViewModelFactory>();
+            services.AddTransient<IRouteViewModelFactory, RouteViewModelFactory>();
             return services;
         }
 
@@ -85,6 +91,16 @@ namespace Proxirae.Presentation.WPF
             services.AddTransient<ProxyRulesViewModel>();
             services.AddTransient<AddProxyRuleViewModel>();
             services.AddTransient<ProxyCheckerViewModel>();
+            return services;
+        }
+
+        public static IServiceCollection AddCache(this IServiceCollection services)
+        {
+            services.AddMemoryCache(options =>
+            {
+                options.SizeLimit = 500;
+            });
+
             return services;
         }
     }

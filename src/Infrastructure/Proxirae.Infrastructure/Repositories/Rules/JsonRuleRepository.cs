@@ -12,42 +12,56 @@ namespace Proxirae.Infrastructure.Repositories.Rules
         {
             await EnsureLoadedAsync(token);
 
-            return _items.AsReadOnly();
+            lock (_items)
+            {
+                return _items.ToList();
+            }
         }
 
         public async Task<RuleData?> GetByIdAsync(Guid id, CancellationToken token)
         {
             await EnsureLoadedAsync(token);
 
-            return _items.FirstOrDefault(p => p.Id == id);
+            lock (_items)
+            {
+                return _items.FirstOrDefault(p => p.Id == id);
+            }
         }
 
         public async Task AddAsync(RuleData rule, CancellationToken token)
         {
             await EnsureLoadedAsync(token);
 
-            _items.Add(rule);
+            lock (_items)
+            {
+                _items.Add(rule);
+            }
         }
 
         public async Task<bool> UpdateAsync(RuleData rule, CancellationToken token)
         {
             await EnsureLoadedAsync(token);
 
-            var index = _items.FindIndex(p => p.Id == rule.Id);
+            lock (_items)
+            {
+                var index = _items.FindIndex(p => p.Id == rule.Id);
 
-            if (index == -1)
-                return false;
+                if (index == -1)
+                    return false;
 
-            _items[index] = rule;
-
-            return true;
+                _items[index] = rule;
+                return true;
+            }
         }
 
         public async Task<bool> DeleteAsync(Guid id, CancellationToken token)
         {
             await EnsureLoadedAsync(token);
 
-            return _items.RemoveAll(p => p.Id == id) > 0;
+            lock (_items)
+            {
+                return _items.RemoveAll(p => p.Id == id) > 0;
+            }
         }
     }
 }
