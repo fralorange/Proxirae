@@ -5,8 +5,6 @@
 #include "interception/diversion/win/WinPacketContext.h"
 #include "environment/inet.h"
 
-// TODO: Refactor. Add a dedicated UdpClassificator (or similar) that creates/updates
-// UDP connection states in ConnectionTable based on elapsed timeouts, on a background thread.
 namespace Proxirae {
 	class WinUdpCorrelator::PendingPacketCache {
 	public:
@@ -15,7 +13,7 @@ namespace Proxirae {
 		void Enqueue(const FiveTuple& key, const Packet& packet, const std::function<void(IPacketContext&)>& callback) {
 			std::lock_guard<std::mutex> lock(m_mutex);
 			if (m_map.size() < MAX_PENDING_PACKETS) {
-				m_map.emplace(key, PendingPacket{ packet, std::chrono::steady_clock::now() });	
+				m_map.emplace(key, PendingPacket{ packet, std::chrono::steady_clock::now() });
 			}
 			else {
 				auto ctxOpt = WinPacketContext::TryCreate(packet.data.data(), packet.length, packet.metadata);
@@ -60,7 +58,7 @@ namespace Proxirae {
 		}
 
 	private:
-		struct PendingPacket{
+		struct PendingPacket {
 			Packet packet;
 			std::chrono::steady_clock::time_point timestamp;
 		};
@@ -172,7 +170,7 @@ namespace Proxirae {
 					}
 
 					return false;
-				});
+					});
 			}
 
 			return true;

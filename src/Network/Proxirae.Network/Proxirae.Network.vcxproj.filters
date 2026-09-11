@@ -18,7 +18,7 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="include\persistence\ThreeTuple.h">
+    <ClCompile Include="include\primitives\tuples\ThreeTuple.h">
       <Filter>Файлы заголовков</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\Engine.cpp">
@@ -39,7 +39,7 @@
     <ClCompile Include="src\interception\diversion\win\WinPacketContext.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\interception\diversion\Endpoint.cpp">
+    <ClCompile Include="src\primitives\endpoints\Endpoint.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\proxification\stream\TcpSocks5Proxy.cpp">
@@ -66,13 +66,13 @@
     <ClCompile Include="src\contracts\rule\RuleContract.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\persistence\ThreeTupleHash.cpp">
+    <ClCompile Include="src\primitives\tuples\ThreeTupleHash.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\interception\routing\PacketRouter.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\persistence\FiveTupleHash.cpp">
+    <ClCompile Include="src\primitives\tuples\FiveTupleHash.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\persistence\associations\AssociationTable.cpp">
@@ -236,7 +236,7 @@
     <ClInclude Include="include\persistence\connections\ConnectionEntry.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\persistence\ThreeTupleHash.h">
+    <ClInclude Include="include\primitives\tuples\ThreeTupleHash.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\persistence\connections\ConnectionTable.h">
@@ -254,7 +254,7 @@
     <ClInclude Include="include\diagnostics\console\ConsoleLogger.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\interception\diversion\Endpoint.h">
+    <ClInclude Include="include\primitives\endpoints\Endpoint.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\proxification\stream\IStreamProxy.h">
@@ -338,10 +338,10 @@
     <ClInclude Include="include\interception\routing\PacketRouter.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\persistence\FiveTuple.h">
+    <ClInclude Include="include\primitives\tuples\FiveTuple.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\persistence\FiveTupleHash.h">
+    <ClInclude Include="include\primitives\tuples\FiveTupleHash.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\persistence\associations\AssociationEntry.h">
@@ -588,6 +588,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\asyncio\io\datagram\win\IocpDatagramContext.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\persistence\connections\ConnectionState.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

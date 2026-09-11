@@ -11,6 +11,7 @@ namespace Proxirae.Infrastructure.TransactionControl.UnitsOfWork.Proxies
         private readonly IPersistence<Proxy> _proxyPersistence;
 
         private readonly List<TrackedEntity<Proxy>> _buffer = [];
+        private readonly object _syncLock = new();
         private bool _isLoadedAll = false;
 
         public ProxyUnitOfWork(ICrudRepository<Proxy> proxyRepository, IPersistence<Proxy> proxyPersistence)
@@ -25,32 +26,46 @@ namespace Proxirae.Infrastructure.TransactionControl.UnitsOfWork.Proxies
             {
                 var proxies = await _proxyRepository.GetAsync(token);
 
-                foreach (var proxy in proxies)
+                lock (_syncLock)
                 {
-                    var tracked = _buffer.FirstOrDefault(x => x.Entity.Id == proxy.Id);
-
-                    if (tracked is null)
+                    if (!_isLoadedAll)
                     {
-                        _buffer.Add(new TrackedEntity<Proxy>
+                        foreach (var proxy in proxies)
                         {
-                            Entity = proxy,
-                            State = EntityState.Unchanged
-                        });
+                            var tracked = _buffer.FirstOrDefault(x => x.Entity.Id == proxy.Id);
+
+                            if (tracked is null)
+                            {
+                                _buffer.Add(new TrackedEntity<Proxy>
+                                {
+                                    Entity = proxy,
+                                    State = EntityState.Unchanged
+                                });
+                            }
+                        }
+
+                        _isLoadedAll = true;
                     }
                 }
-
-                _isLoadedAll = true;
             }
 
-            return _buffer
-                .Where(x => x.State != EntityState.Deleted)
-                .Select(te => te.Entity)
-                .ToList();
+            lock (_syncLock)
+            {
+                return _buffer
+                    .Where(x => x.State != EntityState.Deleted)
+                    .Select(te => te.Entity)
+                    .ToList();
+            }
         }
 
         public async Task<Proxy?> GetByIdAsync(Guid id, CancellationToken token)
         {
-            var tracked = _buffer.FirstOrDefault(p => p.Entity.Id == id);
+            TrackedEntity<Proxy>? tracked;
+
+            lock (_syncLock)
+            {
+                tracked = _buffer.FirstOrDefault(p => p.Entity.Id == id);
+            }
 
             if (tracked is not null)
             {
@@ -60,76 +75,100 @@ namespace Proxirae.Infrastructure.TransactionControl.UnitsOfWork.Proxies
             var proxy = await _proxyRepository.GetByIdAsync(id, token);
             if (proxy is null) return null;
 
-            _buffer.Add(new TrackedEntity<Proxy>
+            lock (_syncLock)
             {
-                Entity = proxy,
-                State = EntityState.Unchanged
-            });
+                tracked = _buffer.FirstOrDefault(p => p.Entity.Id == id);
+                if (tracked is null)
+                {
+                    _buffer.Add(new TrackedEntity<Proxy>
+                    {
+                        Entity = proxy,
+                        State = EntityState.Unchanged
+                    });
+                    return proxy;
+                }
 
-            return proxy;
+                return tracked.State == EntityState.Deleted ? null : tracked.Entity;
+            }
         }
 
         public void Add(Proxy proxyServer)
         {
-            _buffer.Add(new TrackedEntity<Proxy>
-            {
-                Entity = proxyServer,
-                State = EntityState.Added
-            });
-        }
-
-        public bool Update(Proxy proxyServer)
-        {
-            var item = _buffer.FirstOrDefault(x => x.Entity.Id == proxyServer.Id);
-
-            if (item is null)
+            lock (_syncLock)
             {
                 _buffer.Add(new TrackedEntity<Proxy>
                 {
                     Entity = proxyServer,
-                    State = EntityState.Modified
+                    State = EntityState.Added
                 });
+            }
+        }
+
+        public bool Update(Proxy proxyServer)
+        {
+            lock (_syncLock)
+            {
+                var item = _buffer.FirstOrDefault(x => x.Entity.Id == proxyServer.Id);
+
+                if (item is null)
+                {
+                    _buffer.Add(new TrackedEntity<Proxy>
+                    {
+                        Entity = proxyServer,
+                        State = EntityState.Modified
+                    });
+                    return true;
+                }
+
+                if (item.State == EntityState.Deleted)
+                    return false;
+
+                item.Entity = proxyServer;
+                if (item.State != EntityState.Added)
+                    item.State = EntityState.Modified;
+
                 return true;
             }
-
-            if (item.State == EntityState.Deleted)
-                return false;
-
-            item.Entity = proxyServer;
-            if (item.State != EntityState.Added)
-                item.State = EntityState.Modified;
-
-            return true;
         }
 
         public bool Delete(Guid id)
         {
-            var item = _buffer.FirstOrDefault(x => x.Entity.Id == id);
-
-            if (item is null)
+            lock (_syncLock)
             {
-                var stubEntity = new Proxy { Id = id };
-                _buffer.Add(new TrackedEntity<Proxy>
+                var item = _buffer.FirstOrDefault(x => x.Entity.Id == id);
+
+                if (item is null)
                 {
-                    Entity = stubEntity,
-                    State = EntityState.Deleted
-                });
+                    var stubEntity = new Proxy { Id = id };
+                    _buffer.Add(new TrackedEntity<Proxy>
+                    {
+                        Entity = stubEntity,
+                        State = EntityState.Deleted
+                    });
+                    return true;
+                }
+
+                if (item.State == EntityState.Added)
+                {
+                    _buffer.Remove(item);
+                    return true;
+                }
+
+                item.State = EntityState.Deleted;
                 return true;
             }
-
-            if (item.State == EntityState.Added)
-            {
-                _buffer.Remove(item);
-                return true;
-            }
-
-            item.State = EntityState.Deleted;
-            return true;
         }
 
         public async Task SaveChangesAsync(CancellationToken token)
         {
-            foreach (var item in _buffer)
+            List<TrackedEntity<Proxy>> snapshot;
+
+            lock (_syncLock)
+            {
+                snapshot = _buffer.ToList();
+            }
+
+            foreach (var item in snapshot)
             {
                 switch (item.State)
                 {
@@ -147,10 +186,13 @@ namespace Proxirae.Infrastructure.TransactionControl.UnitsOfWork.Proxies
 
             await _proxyPersistence.SaveAsync(token);
 
-            _buffer.RemoveAll(x => x.State == EntityState.Deleted);
+            lock (_syncLock)
+            {
+                _buffer.RemoveAll(x => x.State == EntityState.Deleted);
 
-            foreach (var item in _buffer)
-                item.State = EntityState.Unchanged;
+                foreach (var item in _buffer)
+                    item.State = EntityState.Unchanged;
+            }
         }
     }
 }

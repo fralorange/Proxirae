@@ -2,7 +2,7 @@
 
 #include <optional>
 
-#include "interception/diversion/Endpoint.h"
+#include "primitives/endpoints/Endpoint.h"
 #include "interception/diversion/PacketMetadata.h"
 
 namespace Proxirae {

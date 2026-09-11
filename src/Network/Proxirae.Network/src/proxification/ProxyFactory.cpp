@@ -22,9 +22,6 @@ namespace Proxirae {
 			case ProxyType::HTTPS:
 				// No implementation, yet
 				break;
-			case ProxyType::SOCKS4:
-				// No implementation, yet
-				break;
 			case ProxyType::SOCKS5:
 				return std::make_unique<TcpSocks5Proxy>(contract.address, contract.port, contract.username, contract.password, m_driver, m_streamAdapter, m_logger);
 		}
@@ -45,9 +42,6 @@ namespace Proxirae {
 
 		switch (contract.type) {
 		case ProxyType::HTTPS:
-			// No implementation, yet
-			break;
-		case ProxyType::SOCKS4:
 			// No implementation, yet
 			break;
 		case ProxyType::SOCKS5:

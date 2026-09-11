@@ -12,7 +12,7 @@ namespace Proxirae {
 			return existingActionOpt.value();
 		}
 		
-		RuleActionContract returnAction{ RuleAction::Direct, "" };
+		RuleActionContract returnAction{ RuleAction::Direct, std::nullopt };
 
 		RouteContract route{
 			.timestamp = std::chrono::system_clock::now(),

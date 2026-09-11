@@ -156,13 +156,17 @@ namespace Proxirae {
 		Terminate();
 	}
 
-	void TcpSession::Establish(const FiveTuple& key, const ConnectionEntry& entry, TerminationCallback onTerminated)
+	bool TcpSession::Establish(const FiveTuple& key, const ConnectionEntry& entry, TerminationCallback onTerminated)
 	{
 		m_start = std::chrono::steady_clock::now();
 
 		if (!m_bridge->Open(shared_from_this(), key, entry, std::move(onTerminated))) {
 			Terminate();
+
+			return false;
 		}
+
+		return true;
 	}
 
 	void TcpSession::Terminate()

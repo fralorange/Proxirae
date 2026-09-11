@@ -1,8 +1,8 @@
+#include <mutex>
+
 #include "transport/datagram/UdpMultiplexer.h"
 #include "environment/sock.h"
 
-// TODO: Refactor. Add a dedicated UdpClassificator (or similar) that creates/updates
-// UDP connection states in ConnectionTable based on elapsed timeouts, on a background thread.
 namespace Proxirae {
 	class UdpMultiplexer::UdpProcessor {
 	public:
@@ -136,7 +136,9 @@ namespace Proxirae {
 					return;
 				}
 
-				session->Establish(*optKey, *optEntry);
+				if (!session->Establish(*optKey, *optEntry)) {
+					return;
+				}
 
 				std::lock_guard<std::mutex> lock(sessionsMtx);
 				sessions.push_back(session);
@@ -176,6 +178,8 @@ namespace Proxirae {
 					if (optKey.has_value()) {
 						connections.RemoveConnection(*optKey);
 					}
+
+					session->Terminate();
 				}
 			}
 		}

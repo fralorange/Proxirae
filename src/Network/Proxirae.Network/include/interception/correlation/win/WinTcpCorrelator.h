@@ -4,8 +4,8 @@
 
 #include "interception/correlation/IPacketCorrelator.h"
 #include "persistence/associations/AssociationTable.h"
-#include "persistence/FiveTuple.h"
-#include "persistence/FiveTupleHash.h"
+#include "primitives/tuples/FiveTuple.h"
+#include "primitives/tuples/FiveTupleHash.h"
 #include "interception/diversion/IPacketContext.h"
 #include "interception/diversion/Packet.h"
 #include "processes/resolver/IProcessGuard.h"

@@ -70,6 +70,8 @@ namespace Proxirae {
 			if (!isStopping.compare_exchange_strong(expected, true)) {
 				return;
 			}
+
+			proxy->Disconnect();
 		}
 
 		void ForwardToProxy(std::shared_ptr<UdpSession> self, std::span<const std::byte> payload) {
@@ -104,7 +106,6 @@ namespace Proxirae {
 					return;
 				}
 
-				lastSeen = std::chrono::steady_clock::now();
 				bytesReceived.fetch_add(res.bytesTransferred, std::memory_order_relaxed);
 
 				struct sockaddr_in clientAddr {};
@@ -144,13 +145,17 @@ namespace Proxirae {
 		Terminate();
 	}
 
-	void UdpSession::Establish(const FiveTuple& key, const ConnectionEntry& entry)
+	bool UdpSession::Establish(const FiveTuple& key, const ConnectionEntry& entry)
 	{
 		m_start = std::chrono::steady_clock::now();
 
 		if (!m_bridge->Open(shared_from_this(), key, entry)) {
 			Terminate();
+
+			return false;
 		}
+
+		return true;
 	}
 
 	void UdpSession::Terminate()
@@ -160,6 +165,10 @@ namespace Proxirae {
 
 	bool UdpSession::IsExpired(std::chrono::seconds timeout) const
 	{
+		if (m_bridge->isStopping) {
+			return true;
+		}
+
 		return m_bridge->lastSeen + timeout < std::chrono::steady_clock::now();
 	}
 

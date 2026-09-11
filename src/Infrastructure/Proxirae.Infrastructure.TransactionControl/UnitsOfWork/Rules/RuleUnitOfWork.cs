@@ -14,6 +14,7 @@ namespace Proxirae.Infrastructure.TransactionControl.UnitsOfWork.Rules
         private readonly IRuleDataMapper _ruleDataMapper;
 
         private readonly List<TrackedEntity<Rule>> _buffer = [];
+        private readonly object _syncLock = new();
         private bool _isLoadedAll = false;
 
         public RuleUnitOfWork(ICrudRepository<RuleData> ruleRepository, IPersistence<RuleData> rulePersistence, IRuleDataMapper ruleDataMapper)
@@ -29,33 +30,46 @@ namespace Proxirae.Infrastructure.TransactionControl.UnitsOfWork.Rules
             {
                 var rules = await _ruleRepository.GetAsync(token);
 
-                foreach (var data in rules)
+                lock (_syncLock) 
                 {
-                    var entity = _ruleDataMapper.MapToDomain(data);
-                    var tracked = _buffer.FirstOrDefault(x => x.Entity.Id == entity.Id);
-
-                    if (tracked is null)
+                    if (!_isLoadedAll) 
                     {
-                        _buffer.Add(new TrackedEntity<Rule>
+                        foreach (var data in rules)
                         {
-                            Entity = entity,
-                            State = EntityState.Unchanged
-                        });
+                            var entity = _ruleDataMapper.MapToDomain(data);
+                            var tracked = _buffer.FirstOrDefault(x => x.Entity.Id == entity.Id);
+
+                            if (tracked is null)
+                            {
+                                _buffer.Add(new TrackedEntity<Rule>
+                                {
+                                    Entity = entity,
+                                    State = EntityState.Unchanged
+                                });
+                            }
+                        }
+                        _isLoadedAll = true;
                     }
                 }
-
-                _isLoadedAll = true;
             }
 
-            return _buffer
-                .Where(x => x.State != EntityState.Deleted)
-                .Select(te => te.Entity)
-                .ToList();
+            lock (_syncLock) 
+            {
+                return _buffer
+                    .Where(x => x.State != EntityState.Deleted)
+                    .Select(te => te.Entity)
+                    .ToList();
+            }
         }
 
         public async Task<Rule?> GetByIdAsync(Guid id, CancellationToken token)
         {
-            var tracked = _buffer.FirstOrDefault(r => r.Entity.Id == id);
+            TrackedEntity<Rule>? tracked;
+
+            lock (_syncLock)
+            {
+                tracked = _buffer.FirstOrDefault(r => r.Entity.Id == id);
+            }
 
             if (tracked is not null)
             {
@@ -67,76 +81,99 @@ namespace Proxirae.Infrastructure.TransactionControl.UnitsOfWork.Rules
 
             var rule = _ruleDataMapper.MapToDomain(data);
 
-            _buffer.Add(new TrackedEntity<Rule>
+            lock (_syncLock)
             {
-                Entity = rule,
-                State = EntityState.Unchanged
-            });
-
-            return rule;
+                tracked = _buffer.FirstOrDefault(r => r.Entity.Id == id);
+                if (tracked is null)
+                {
+                    _buffer.Add(new TrackedEntity<Rule>
+                    {
+                        Entity = rule,
+                        State = EntityState.Unchanged
+                    });
+                    return rule;
+                }
+                return tracked.State == EntityState.Deleted ? null : tracked.Entity;
+            }
         }
 
         public void Add(Rule rule)
         {
-            _buffer.Add(new TrackedEntity<Rule>
-            {
-                Entity = rule,
-                State = EntityState.Added
-            });
-        }
-
-        public bool Update(Rule rule)
-        {
-            var item = _buffer.FirstOrDefault(x => x.Entity.Id == rule.Id);
-
-            if (item is null)
+            lock (_syncLock)
             {
                 _buffer.Add(new TrackedEntity<Rule>
                 {
                     Entity = rule,
-                    State = EntityState.Modified
+                    State = EntityState.Added
                 });
+            }
+        }
+
+        public bool Update(Rule rule)
+        {
+            lock (_syncLock)
+            {
+                var item = _buffer.FirstOrDefault(x => x.Entity.Id == rule.Id);
+
+                if (item is null)
+                {
+                    _buffer.Add(new TrackedEntity<Rule>
+                    {
+                        Entity = rule,
+                        State = EntityState.Modified
+                    });
+                    return true;
+                }
+
+                if (item.State == EntityState.Deleted)
+                    return false;
+
+                item.Entity = rule;
+                if (item.State != EntityState.Added)
+                    item.State = EntityState.Modified;
+
                 return true;
             }
-
-            if (item.State == EntityState.Deleted)
-                return false;
-
-            item.Entity = rule;
-            if (item.State != EntityState.Added)
-                item.State = EntityState.Modified;
-
-            return true;
         }
 
         public bool Delete(Guid id)
         {
-            var item = _buffer.FirstOrDefault(x => x.Entity.Id == id);
-
-            if (item is null)
+            lock (_syncLock)
             {
-                var stubEntity = new Rule { Id = id };
-                _buffer.Add(new TrackedEntity<Rule>
+                var item = _buffer.FirstOrDefault(x => x.Entity.Id == id);
+
+                if (item is null)
                 {
-                    Entity = stubEntity,
-                    State = EntityState.Deleted
-                });
+                    var stubEntity = new Rule { Id = id };
+                    _buffer.Add(new TrackedEntity<Rule>
+                    {
+                        Entity = stubEntity,
+                        State = EntityState.Deleted
+                    });
+                    return true;
+                }
+
+                if (item.State == EntityState.Added)
+                {
+                    _buffer.Remove(item);
+                    return true;
+                }
+
+                item.State = EntityState.Deleted;
                 return true;
             }
-
-            if (item.State == EntityState.Added)
-            {
-                _buffer.Remove(item);
-                return true;
-            }
-
-            item.State = EntityState.Deleted;
-            return true;
         }
 
         public async Task SaveChangesAsync(CancellationToken token)
         {
-            foreach (var item in _buffer)
+            List<TrackedEntity<Rule>> snapshot;
+
+            lock (_syncLock)
+            {
+                snapshot = _buffer.ToList();
+            }
+
+            foreach (var item in snapshot)
             {
                 switch (item.State)
                 {
@@ -154,10 +191,13 @@ namespace Proxirae.Infrastructure.TransactionControl.UnitsOfWork.Rules
 
             await _rulePersistence.SaveAsync(token);
 
-            _buffer.RemoveAll(x => x.State == EntityState.Deleted);
+            lock (_syncLock)
+            {
+                _buffer.RemoveAll(x => x.State == EntityState.Deleted);
 
-            foreach (var item in _buffer)
-                item.State = EntityState.Unchanged;
+                foreach (var item in _buffer)
+                    item.State = EntityState.Unchanged;
+            }
         }
     }
 }

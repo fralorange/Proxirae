@@ -1,6 +1,6 @@
 #include <functional>
 
-#include "persistence/FiveTupleHash.h"
+#include "primitives/tuples/FiveTupleHash.h"
 
 namespace Proxirae {
 	std::size_t FiveTupleHash::operator()(const FiveTuple& key) const

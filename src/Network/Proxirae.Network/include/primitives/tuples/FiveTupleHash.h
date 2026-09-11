@@ -1,6 +1,6 @@
 #pragma once
 
-#include "persistence/FiveTuple.h"
+#include "primitives/tuples/FiveTuple.h"
 
 namespace Proxirae {
 	struct FiveTupleHash {

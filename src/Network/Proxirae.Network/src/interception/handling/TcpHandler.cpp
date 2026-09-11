@@ -54,8 +54,6 @@ namespace Proxirae {
 		};
 
 		ConnectionEntry entry{
-			.createdAt = GetTickCount64(),
-			.lastSeen = GetTickCount64(),
 			.proxyId = ctx.proxyId,
 			.processId = packetCtx.GetProcessId()
 		};

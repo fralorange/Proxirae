@@ -216,7 +216,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\communication\channels\messages\PipeMessage.cpp" />
     <ClCompile Include="src\communication\channels\messengers\IpcMessenger.cpp" />
     <ClCompile Include="src\communication\pipes\win\WinPipeServer.cpp" />
-    <ClCompile Include="src\interception\diversion\Endpoint.cpp" />
+    <ClCompile Include="src\primitives\endpoints\Endpoint.cpp" />
     <ClCompile Include="src\runtime\Daemon.cpp" />
     <ClCompile Include="src\asyncio\async\win\IocpDriver.cpp" />
     <ClCompile Include="src\interception\handling\DispatcherHandler.cpp" />
@@ -227,9 +227,9 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\persistence\preferences\PreferencesLoader.cpp" />
     <ClCompile Include="src\processes\manager\win\WinProcessManager.cpp" />
     <ClCompile Include="src\proxification\ProxyFactory.cpp" />
-    <ClCompile Include="src\persistence\FiveTupleHash.cpp" />
+    <ClCompile Include="src\primitives\tuples\FiveTupleHash.cpp" />
     <ClCompile Include="src\persistence\associations\AssociationTable.cpp" />
-    <ClCompile Include="src\persistence\ThreeTupleHash.cpp" />
+    <ClCompile Include="src\primitives\tuples\ThreeTupleHash.cpp" />
     <ClCompile Include="src\proxification\stream\TestableTcpSocks5Proxy.cpp" />
     <ClCompile Include="src\transport\DispatcherMultiplexer.cpp" />
     <ClCompile Include="src\transport\stream\TcpListener.cpp" />
@@ -294,6 +294,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\contracts\rule\RuleActionContract.h" />
     <ClInclude Include="include\contracts\rule\RuleContract.h" />
     <ClInclude Include="include\contracts\rule\RuleProtocol.h" />
+    <ClInclude Include="include\persistence\connections\ConnectionState.h" />
     <ClInclude Include="include\proxification\datagram\IDatagramProxy.h" />
     <ClInclude Include="include\proxification\Socks5ProxyBase.h" />
     <ClInclude Include="include\proxification\datagram\UdpSocks5Proxy.h" />
@@ -313,7 +314,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\communication\channels\messages\PipeMessageHeader.h" />
     <ClInclude Include="include\communication\channels\messages\PipeMessageType.h" />
     <ClInclude Include="include\communication\pipes\win\WinPipeServer.h" />
-    <ClInclude Include="include\interception\diversion\Endpoint.h" />
+    <ClInclude Include="include\primitives\endpoints\Endpoint.h" />
     <ClInclude Include="include\runtime\Engine.h" />
     <ClInclude Include="include\asyncio\async\IAsyncDriver.h" />
     <ClInclude Include="include\asyncio\io\IoCallback.h" />
@@ -342,8 +343,8 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\persistence\associations\AssociationEntry.h" />
     <ClInclude Include="include\persistence\configuration\Configuration.h" />
     <ClInclude Include="include\persistence\Store.h" />
-    <ClInclude Include="include\persistence\FiveTuple.h" />
-    <ClInclude Include="include\persistence\FiveTupleHash.h" />
+    <ClInclude Include="include\primitives\tuples\FiveTuple.h" />
+    <ClInclude Include="include\primitives\tuples\FiveTupleHash.h" />
     <ClInclude Include="include\persistence\associations\AssociationTable.h" />
     <ClInclude Include="include\proxification\stream\TestableTcpSocks5Proxy.h" />
     <ClInclude Include="include\transport\DispatcherMultiplexer.h" />
@@ -358,7 +359,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\diagnostics\LogLevel.h" />
     <ClInclude Include="include\interception\diversion\win\WinPacketContext.h" />
     <ClInclude Include="include\persistence\connections\ConnectionEntry.h" />
-    <ClInclude Include="include\persistence\ThreeTupleHash.h" />
+    <ClInclude Include="include\primitives\tuples\ThreeTupleHash.h" />
     <ClInclude Include="include\persistence\connections\ConnectionTable.h" />
     <ClInclude Include="include\environment\inet.h" />
     <ClInclude Include="include\environment\sock.h" />
@@ -379,7 +380,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\utils\PathUtils.h" />
     <ClInclude Include="include\utils\StringUtils.h" />
     <ClInclude Include="include\persistence\preferences\Preferences.h" />
-    <ClCompile Include="include\persistence\ThreeTuple.h" />
+    <ClCompile Include="include\primitives\tuples\ThreeTuple.h" />
     <ClCompile Include="include\proxification\stream\TestStage.h" />
     <ClCompile Include="include\utils\UuidUtils.h" />
     <ClCompile Include="include\contracts\flow\FlowDisconnectContract.h" />

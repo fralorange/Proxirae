@@ -3,8 +3,8 @@
 #include <unordered_map>
 #include <optional>
 
-#include "persistence/FiveTuple.h"
-#include "persistence/FiveTupleHash.h"
+#include "primitives/tuples/FiveTuple.h"
+#include "primitives/tuples/FiveTupleHash.h"
 #include "persistence/associations/AssociationEntry.h"
 
 namespace Proxirae {

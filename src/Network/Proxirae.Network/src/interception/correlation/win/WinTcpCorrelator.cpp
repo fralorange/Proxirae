@@ -47,7 +47,7 @@ namespace Proxirae {
 				std::vector<std::uint8_t>(rawData, rawData + dataLen),
 				dataLen,
 				context.GetMetadata()
-				});
+			});
 		}
 
 		return true;

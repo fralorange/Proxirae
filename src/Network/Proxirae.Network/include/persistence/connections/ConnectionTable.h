@@ -6,10 +6,10 @@
 #include <functional>
 #include <string_view>
 
-#include "persistence/FiveTuple.h"
-#include "persistence/FiveTupleHash.h"
-#include "persistence/ThreeTuple.h"
-#include "persistence/ThreeTupleHash.h"
+#include "primitives/tuples/FiveTuple.h"
+#include "primitives/tuples/FiveTupleHash.h"
+#include "primitives/tuples/ThreeTuple.h"
+#include "primitives/tuples/ThreeTupleHash.h"
 #include "persistence/connections/ConnectionEntry.h"
 
 namespace Proxirae {

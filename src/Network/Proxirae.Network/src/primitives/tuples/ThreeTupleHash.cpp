@@ -1,6 +1,6 @@
 #include <functional>
 
-#include "persistence/ThreeTupleHash.h"
+#include "primitives/tuples/ThreeTupleHash.h"
 
 namespace Proxirae {
 	std::size_t ThreeTupleHash::operator()(const ThreeTuple& key) const

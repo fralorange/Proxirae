@@ -2,7 +2,7 @@
 #include <format>
 
 #include "transport/stream/TcpMultiplexer.h"
-#include "persistence/ThreeTuple.h"
+#include "primitives/tuples/ThreeTuple.h"
 #include "environment/inet.h"
 
 namespace Proxirae {
@@ -83,12 +83,7 @@ namespace Proxirae {
 				continue;
 			}
 
-			{
-				std::lock_guard<std::mutex> lock(m_sessionsMtx);
-				m_sessions.push_back(session);
-			}
-
-			session->Establish(*optKey, *optEntry, [this](auto s) {
+			auto established = session->Establish(*optKey, *optEntry, [this](auto s) {
 				if (auto tcpSession = std::dynamic_pointer_cast<TcpSession>(s)) {
 					m_monitor.ReportFlowClosed(tcpSession->GetFlow());
 
@@ -112,6 +107,15 @@ namespace Proxirae {
 					}
 				}
 			});
+
+			if (!established) {
+				continue;
+			}
+
+			{
+				std::lock_guard<std::mutex> lock(m_sessionsMtx);
+				m_sessions.push_back(session);
+			}
 		}
 	}
 

@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-#include "persistence/ThreeTuple.h"
+#include "primitives/tuples/ThreeTuple.h"
 
 namespace Proxirae {
 	struct ThreeTupleHash {

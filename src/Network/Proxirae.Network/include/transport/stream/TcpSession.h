@@ -8,13 +8,11 @@
 #include "environment/sock_types.h"
 #include "diagnostics/ILogger.h"
 #include "persistence/connections/ConnectionEntry.h"
-#include "interception/diversion/Endpoint.h"
+#include "primitives/endpoints/Endpoint.h"
 #include "proxification/IProxyFactory.h"
-#include "persistence/FiveTuple.h"
+#include "primitives/tuples/FiveTuple.h"
 #include "contracts/flow/FlowContract.h"
 
-// TODO: TcpSession is in the transport layer and must not depend on interception.
-// Extract Endpoint into a shared namespace/directory.
 namespace Proxirae {
 	class TcpSession : public std::enable_shared_from_this<TcpSession> {
 	public:
@@ -23,7 +21,7 @@ namespace Proxirae {
 		TcpSession(NativeSocket client, Endpoint endpoint, IIoStreamAdapter& adapter, ILogger& logger, IProxyFactory& factory);
 		~TcpSession();
 
-		void Establish(const FiveTuple& key, const ConnectionEntry& entry, TerminationCallback onTerminated);
+		bool Establish(const FiveTuple& key, const ConnectionEntry& entry, TerminationCallback onTerminated);
 		void Terminate();
 
 		FlowContract GetFlow() const;

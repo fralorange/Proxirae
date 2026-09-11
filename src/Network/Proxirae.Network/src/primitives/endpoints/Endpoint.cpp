@@ -1,7 +1,7 @@
 #include <format>
 
 #include "environment/inet.h"
-#include "interception/diversion/Endpoint.h"
+#include "primitives/endpoints/Endpoint.h"
 
 namespace Proxirae {
 	// address and port must be in network byte order

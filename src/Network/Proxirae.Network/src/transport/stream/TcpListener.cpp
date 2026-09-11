@@ -3,7 +3,7 @@
 
 #include "environment/sock.h"
 #include "transport/stream/TcpListener.h"
-#include "interception/diversion/Endpoint.h"
+#include "primitives/endpoints/Endpoint.h"
 
 namespace Proxirae {
 	TcpListener::TcpListener(IAsyncDriver& driver, IIoStreamAdapter& adapter, ILogger& logger, IProxyFactory& factory)

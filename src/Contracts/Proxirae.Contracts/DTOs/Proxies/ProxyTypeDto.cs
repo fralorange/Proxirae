@@ -3,7 +3,6 @@
     public enum ProxyTypeDto
     {
         HTTPS,
-        SOCKS4,
         SOCKS5
     }
 }

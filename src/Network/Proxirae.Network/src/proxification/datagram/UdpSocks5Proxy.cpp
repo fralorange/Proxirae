@@ -84,38 +84,58 @@ namespace Proxirae {
             return;
         }
 
-        auto packet = std::make_shared<std::vector<std::byte>>();
-        packet->reserve(262 + buffer.size());
+        std::size_t addrLen = 0;
+        std::byte atyp;
+        struct in_addr addr4 {};
+        struct in6_addr addr6 {};
 
-        packet->push_back(std::byte{ 0x00 }); // RSV
-        packet->push_back(std::byte{ 0x00 }); // RSV
-        packet->push_back(std::byte{ 0x00 }); // FRAG 
+        std::string addressStr(targetAddress);
 
-        std::string targetStr(targetAddress);
-        struct in_addr ipv4Addr {};
-        struct in6_addr ipv6Addr {};
+        bool isIpv4 = (inet_pton(AF_INET, addressStr.c_str(), &addr4) == 1);
+        bool isIpv6 = !isIpv4 && (inet_pton(AF_INET6, addressStr.c_str(), &addr6) == 1);
 
-        if (inet_pton(AF_INET, targetStr.c_str(), &ipv4Addr) == 1) {
-            packet->push_back(std::byte{ 0x01 }); // IPv4
-            const auto* ipBytes = reinterpret_cast<const std::byte*>(&ipv4Addr.s_addr);
-            packet->insert(packet->end(), ipBytes, ipBytes + 4);
+        if (isIpv4) {
+            atyp = std::byte{ 0x01 };
+            addrLen = 4;
         }
-        else if (inet_pton(AF_INET6, targetStr.c_str(), &ipv6Addr) == 1) {
-            packet->push_back(std::byte{ 0x04 }); // IPv6
-            const auto* ipBytes = reinterpret_cast<const std::byte*>(&ipv6Addr.s6_addr);
-            packet->insert(packet->end(), ipBytes, ipBytes + 16);
+        else if (isIpv6) {
+            atyp = std::byte{ 0x04 };
+            addrLen = 16;
         }
         else {
-            packet->push_back(std::byte{ 0x03 }); // Domain
-            packet->push_back(static_cast<std::byte>(targetStr.length()));
-            const auto* strBytes = reinterpret_cast<const std::byte*>(targetStr.data());
-            packet->insert(packet->end(), strBytes, strBytes + targetStr.length());
+            atyp = std::byte{ 0x03 };
+            addrLen = 1 + targetAddress.length();
         }
 
-        packet->push_back(static_cast<std::byte>((targetPort >> 8) & 0xFF));
-        packet->push_back(static_cast<std::byte>(targetPort & 0xFF));
+        std::size_t headerSize = 3 + 1 + addrLen + 2;
 
-        packet->insert(packet->end(), buffer.begin(), buffer.end());
+        auto sendBuffer = std::make_shared<std::vector<std::byte>>();
+        sendBuffer->reserve(headerSize + buffer.size());
+
+        sendBuffer->push_back(std::byte{ 0x00 }); // RSV
+        sendBuffer->push_back(std::byte{ 0x00 }); // RSV
+        sendBuffer->push_back(std::byte{ 0x00 }); // FRAG
+        sendBuffer->push_back(atyp);
+
+        if (isIpv4) {
+            const auto* bytes = reinterpret_cast<const std::byte*>(&addr4.s_addr);
+            sendBuffer->insert(sendBuffer->end(), bytes, bytes + 4);
+        }
+        else if (isIpv6) {
+            const auto* bytes = reinterpret_cast<const std::byte*>(&addr6.s6_addr);
+            sendBuffer->insert(sendBuffer->end(), bytes, bytes + 16);
+        }
+        else {
+            sendBuffer->push_back(static_cast<std::byte>(targetAddress.length()));
+            const auto* bytes = reinterpret_cast<const std::byte*>(targetAddress.data());
+            sendBuffer->insert(sendBuffer->end(), bytes, bytes + targetAddress.length());
+        }
+
+        std::uint16_t networkPort = htons(targetPort);
+        const auto* portBytes = reinterpret_cast<const std::byte*>(&networkPort);
+        sendBuffer->insert(sendBuffer->end(), portBytes, portBytes + 2);
+
+        sendBuffer->insert(sendBuffer->end(), buffer.begin(), buffer.end());
 
         struct sockaddr_in relayAddr {};
         relayAddr.sin_family = AF_INET;
@@ -126,8 +146,8 @@ namespace Proxirae {
             m_udpData,
             reinterpret_cast<const sockaddr*>(&relayAddr),
             sizeof(relayAddr),
-            *packet,
-            [packet, callback = std::move(callback)](const IoDatagramResult& res) {
+            *sendBuffer,
+            [sendBuffer, callback = std::move(callback)](const IoDatagramResult& res) {
                 callback(res);
             }
         );
@@ -142,63 +162,90 @@ namespace Proxirae {
             return;
         }
 
-        m_adapter.AsyncRecvFrom(m_udpData, m_internalRecvBuffer, [this, buffer, callback = std::move(callback)](const IoDatagramResult& res) {
+        auto recvBuffer = std::make_shared<std::vector<std::byte>>(65536);
+
+        m_adapter.AsyncRecvFrom(m_udpData, *recvBuffer, [this, buffer, recvBuffer, callback = std::move(callback)](const IoDatagramResult& res) {
             if (!res.success || res.bytesTransferred < 10) {
                 callback(res, "", 0);
                 return;
             }
 
-            std::size_t offset = 0;
-            auto* data = m_internalRecvBuffer.data();
+            const auto* data = recvBuffer->data();
 
-            offset += 3; // RSV + RSV + FRAG
-
-            std::byte atyp = data[offset++];
-            std::string sourceAddr;
-            std::size_t addrLen = 0;
-
-            if (atyp == std::byte{ 0x01 }) { // IPv4
-                char ipStr[INET_ADDRSTRLEN];
-                inet_ntop(AF_INET, &data[offset], ipStr, sizeof(ipStr));
-                sourceAddr = ipStr;
-                addrLen = 4;
-            }
-            else if (atyp == std::byte{ 0x03 }) { // Domain
-                std::size_t domainLen = static_cast<std::size_t>(data[offset]);
-                offset++;
-                sourceAddr = std::string(reinterpret_cast<const char*>(&data[offset]), domainLen);
-                addrLen = domainLen;
-            }
-            else if (atyp == std::byte{ 0x04 }) { // IPv6
-                char ipStr[INET6_ADDRSTRLEN];
-                inet_ntop(AF_INET6, &data[offset], ipStr, sizeof(ipStr));
-                sourceAddr = ipStr;
-                addrLen = 16;
-            }
-            else {
-                m_logger.LogError("[SOCKS5] Unknown address type in received packet");
+            if (res.bytesTransferred < 4) {
                 callback(IoResult{ false, 0, 0 }, "", 0);
                 return;
             }
 
-            offset += addrLen;
+            if (data[2] != std::byte{ 0x00 }) {
+                callback(IoResult{ false, 0, 0 }, "", 0);
+                return;
+            }
 
-            std::uint16_t sourcePort = (static_cast<std::uint16_t>(data[offset]) << 8) |
-                static_cast<std::uint16_t>(data[offset + 1]);
+            std::size_t offset = 3;
+            std::byte atyp = data[offset++];
+            std::size_t addrLen = 0;
+            std::string sourceAddr;
+
+            if (atyp == std::byte{ 0x01 }) { // IPv4
+                addrLen = 4;
+                if (res.bytesTransferred < offset + addrLen + 2) {
+                    callback(IoResult{ false, 0, 0 }, "", 0);
+                    return;
+                }
+
+                char ip[INET_ADDRSTRLEN];
+                inet_ntop(AF_INET, &data[offset], ip, sizeof(ip));
+                sourceAddr = ip;
+                offset += addrLen;
+            }
+            else if (atyp == std::byte{ 0x03 }) { // Domain Name
+                if (res.bytesTransferred < offset + 1) {
+                    callback(IoResult{ false, 0, 0 }, "", 0);
+                    return;
+                }
+
+                std::size_t domainLen = static_cast<std::size_t>(data[offset]);
+                offset++;
+                addrLen = domainLen;
+
+                if (res.bytesTransferred < offset + addrLen + 2) {
+                    callback(IoResult{ false, 0, 0 }, "", 0);
+                    return;
+                }
+
+                sourceAddr = std::string(reinterpret_cast<const char*>(&data[offset]), addrLen);
+                offset += addrLen;
+            }
+            else if (atyp == std::byte{ 0x04 }) { // IPv6
+                addrLen = 16;
+                if (res.bytesTransferred < offset + addrLen + 2) {
+                    callback(IoResult{ false, 0, 0 }, "", 0);
+                    return;
+                }
+
+                char ip[INET6_ADDRSTRLEN];
+                inet_ntop(AF_INET6, &data[offset], ip, sizeof(ip));
+                sourceAddr = ip;
+                offset += addrLen;
+            }
+            else {
+                callback(IoResult{ false, 0, 0 }, "", 0);
+                return;
+            }
+
+            std::uint16_t sourcePort;
+            std::memcpy(&sourcePort, &data[offset], sizeof(sourcePort));
+            sourcePort = ntohs(sourcePort);
             offset += 2;
 
             std::size_t payloadSize = res.bytesTransferred - offset;
+            std::size_t toCopy = (std::min)(payloadSize, buffer.size());
 
-            if (payloadSize > buffer.size()) {
-                m_logger.LogWarning("[SOCKS5] Dropped packet: user buffer too small");
-                callback(IoResult{ false, 0, 0 }, "", 0);
-                return;
-            }
+            std::memcpy(buffer.data(), &data[offset], toCopy);
 
-            std::copy_n(data + offset, payloadSize, buffer.data());
-
-            callback(IoResult{ true, payloadSize, res.errorCode }, sourceAddr, sourcePort);
-            });
+            callback(IoResult{ true, toCopy, 0 }, sourceAddr, sourcePort);
+        });
     }
 
     bool UdpSocks5Proxy::RequestUdpAssociate(NativeSocket sock)
@@ -254,18 +301,37 @@ namespace Proxirae {
 
     NativeSocket UdpSocks5Proxy::ConnectToRelay(NativeSocket sock)
     {
-        NativeSocket relaySocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-        if (relaySocket == InvalidNativeSocket) {
+        struct sockaddr_storage bindAddr {};
+        socklen_t addrLen = 0;
+        int domain = AF_INET;
+
+        if (inet_pton(AF_INET, m_bindAddress.c_str(), &reinterpret_cast<struct sockaddr_in*>(&bindAddr)->sin_addr) == 1) {
+            domain = AF_INET;
+            auto* addr4 = reinterpret_cast<struct sockaddr_in*>(&bindAddr);
+            addr4->sin_family = AF_INET;
+            addr4->sin_port = htons(m_bindPort);
+            addrLen = sizeof(struct sockaddr_in);
+        }
+        else if (inet_pton(AF_INET6, m_bindAddress.c_str(), &reinterpret_cast<struct sockaddr_in6*>(&bindAddr)->sin6_addr) == 1) {
+            domain = AF_INET6;
+            auto* addr6 = reinterpret_cast<struct sockaddr_in6*>(&bindAddr);
+            addr6->sin6_family = AF_INET6;
+            addr6->sin6_port = htons(m_bindPort);
+            addrLen = sizeof(struct sockaddr_in6);
+        }
+        else {
+            m_logger.LogError(std::format("[SOCKS5] Invalid relay address: {}", m_bindAddress));
             CloseSocket(sock);
-            return InvalidNativeSocket; 
+            return InvalidNativeSocket;
         }
 
-        struct sockaddr_in bindAddr {};
-        inet_pton(AF_INET, m_bindAddress.c_str(), &bindAddr.sin_addr.s_addr);
-        bindAddr.sin_port = htons(m_bindPort);
-        bindAddr.sin_family = AF_INET;
+        NativeSocket relaySocket = socket(domain, SOCK_DGRAM, IPPROTO_UDP);
+        if (relaySocket == InvalidNativeSocket) {
+            CloseSocket(sock);
+            return InvalidNativeSocket;
+        }
 
-        if (connect(relaySocket, reinterpret_cast<struct sockaddr*>(&bindAddr), sizeof(bindAddr)) == SocketError) {
+        if (connect(relaySocket, reinterpret_cast<struct sockaddr*>(&bindAddr), addrLen) == SocketError) {
             m_logger.LogError("[SOCKS5] Failed to connect local UDP socket to proxy bind address.");
             CloseSocket(sock);
             CloseSocket(relaySocket);
@@ -273,6 +339,7 @@ namespace Proxirae {
         }
 
         if (!m_driver.Attach(relaySocket)) {
+            m_logger.LogError("[SOCKS5] Failed to attach relay socket to driver.");
             CloseSocket(sock);
             CloseSocket(relaySocket);
             return InvalidNativeSocket;
