@@ -93,6 +93,11 @@ namespace Proxirae {
 						// IPv6 ...
 					}
 				}
+				else if (!res.success) {
+					if (res.errorCode != WSAECONNRESET && res.errorCode != WSAEMSGSIZE) {
+						return; 
+					}
+				}
 
 				StartAsyncReceive();
 			});
