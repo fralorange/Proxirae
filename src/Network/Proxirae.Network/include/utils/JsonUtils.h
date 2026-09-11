@@ -9,7 +9,7 @@
 #include "contracts/flow/FlowContract.h"
 #include "contracts/log/LogContract.h"
 #include "contracts/route/RouteContract.h"
-#include "persistence/Preferences.h"
+#include "persistence/preferences/Preferences.h"
 #include "contracts/flow/FlowDisconnectContract.h"
 #include "contracts/flow/FlowDestroyContract.h"
 #include "contracts/test/TestContract.h"

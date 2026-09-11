@@ -3,12 +3,12 @@
 #include <unordered_map>
 
 #include "interception/correlation/IPacketCorrelator.h"
-#include "persistence/AssociationTable.h"
+#include "persistence/associations/AssociationTable.h"
 #include "persistence/FiveTuple.h"
 #include "persistence/FiveTupleHash.h"
 #include "interception/diversion/IPacketContext.h"
 #include "interception/diversion/Packet.h"
-#include "processes/IProcessGuard.h"
+#include "processes/resolver/IProcessGuard.h"
 
 namespace Proxirae {
 	class WinTcpCorrelator : public IPacketCorrelator {

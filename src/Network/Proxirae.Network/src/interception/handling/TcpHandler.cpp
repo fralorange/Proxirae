@@ -2,7 +2,7 @@
 
 #include "environment/inet.h"
 #include "interception/handling/TcpHandler.h"
-#include "persistence/ConnectionTable.h"
+#include "persistence/connections/ConnectionTable.h"
 
 namespace Proxirae {
 	TcpHandler::TcpHandler(std::uint16_t redirectPort, ConnectionTable& connections, ILogger& logger)

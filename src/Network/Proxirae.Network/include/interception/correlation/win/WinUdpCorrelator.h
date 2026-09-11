@@ -3,10 +3,10 @@
 #include <memory>
 
 #include "interception/correlation/IPacketCorrelator.h"
-#include "persistence/AssociationTable.h"
+#include "persistence/associations/AssociationTable.h"
 #include "interception/diversion/IPacketContext.h"
 #include "interception/diversion/Packet.h"
-#include "processes/IProcessGuard.h"
+#include "processes/resolver/IProcessGuard.h"
 
 namespace Proxirae {
 	class WinUdpCorrelator : public IPacketCorrelator {

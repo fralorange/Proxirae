@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include "processes/ProcessInfo.h"
+#include "processes/resolver/ProcessInfo.h"
 
 namespace Proxirae {
     class ProcessCriteria {

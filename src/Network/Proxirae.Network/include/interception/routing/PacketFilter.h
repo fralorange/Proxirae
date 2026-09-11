@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 
-#include "persistence/Configuration.h"
+#include "persistence/configuration/Configuration.h"
 
 namespace Proxirae {
 	class PacketFilter {

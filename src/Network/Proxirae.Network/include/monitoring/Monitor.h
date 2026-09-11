@@ -2,11 +2,11 @@
 
 #include <vector>
 
-#include "monitoring/IFlowMonitor.h"
-#include "monitoring/IRoutingMonitor.h"
+#include "monitoring/flow/IFlowMonitor.h"
+#include "monitoring/route/IRoutingMonitor.h"
 #include "contracts/flow/FlowContract.h"
 #include "contracts/route/RouteContract.h"
-#include "communication/IpcMessenger.h"
+#include "communication/channels/messengers/IpcMessenger.h"
 
 namespace Proxirae {
 	class Monitor : public IFlowMonitor, public IRoutingMonitor {

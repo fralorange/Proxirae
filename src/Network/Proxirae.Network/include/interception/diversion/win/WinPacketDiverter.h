@@ -3,7 +3,7 @@
 #include "interception/diversion/IPacketDiverter.h"
 #include "diagnostics/ILogger.h"
 #include "interception/correlation/IPacketCorrelator.h"
-#include "persistence/Configuration.h"
+#include "persistence/configuration/Configuration.h"
 #include "persistence/Store.h"
 
 namespace Proxirae {

@@ -5,7 +5,7 @@
 
 #include "proxification/IProxyFactory.h"
 #include "persistence/Store.h"
-#include "persistence/Configuration.h"
+#include "persistence/configuration/Configuration.h"
 #include "asyncio/async/IAsyncDriver.h"
 #include "asyncio/io/stream/IIoStreamAdapter.h"
 #include "asyncio/io/datagram/IIoDatagramAdapter.h"

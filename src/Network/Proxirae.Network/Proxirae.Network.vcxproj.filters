@@ -24,13 +24,13 @@
     <ClCompile Include="src\runtime\Engine.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\persistence\ConnectionTable.cpp">
+    <ClCompile Include="src\persistence\connections\ConnectionTable.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\Daemon.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\diagnostics\ConsoleLogger.cpp">
+    <ClCompile Include="src\diagnostics\console\ConsoleLogger.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\diagnostics\ILogger.cpp">
@@ -42,7 +42,7 @@
     <ClCompile Include="src\interception\diversion\Endpoint.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\proxification\TcpSocks5Proxy.cpp">
+    <ClCompile Include="src\proxification\stream\TcpSocks5Proxy.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\interception\handling\TcpHandler.cpp">
@@ -54,10 +54,10 @@
     <ClCompile Include="src\interception\handling\DispatcherHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\transport\TcpSession.cpp">
+    <ClCompile Include="src\transport\stream\TcpSession.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\transport\TcpListener.cpp">
+    <ClCompile Include="src\transport\stream\TcpListener.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\asyncio\async\win\IocpDriver.cpp">
@@ -75,16 +75,16 @@
     <ClCompile Include="src\persistence\FiveTupleHash.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\persistence\AssociationTable.cpp">
+    <ClCompile Include="src\persistence\associations\AssociationTable.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\interception\correlation\win\WinTcpCorrelator.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\processes\CachedProcessResolver.cpp">
+    <ClCompile Include="src\processes\resolver\CachedProcessResolver.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\processes\win\WinProcessResolver.cpp">
+    <ClCompile Include="src\processes\resolver\win\WinProcessResolver.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\environment\sock.cpp">
@@ -108,13 +108,13 @@
     <ClCompile Include="src\proxification\ProxyFactory.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\communication\win\WinPipeServer.cpp">
+    <ClCompile Include="src\communication\pipes\win\WinPipeServer.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\communication\IpcChannel.cpp">
+    <ClCompile Include="src\communication\channels\IpcChannel.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\communication\PipeMessage.cpp">
+    <ClCompile Include="src\communication\channels\messages\PipeMessage.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\runtime\Host.cpp">
@@ -123,19 +123,19 @@
     <ClCompile Include="src\utils\JsonUtils.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\persistence\ConfigurationLoader.cpp">
+    <ClCompile Include="src\persistence\configuration\ConfigurationLoader.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\utils\PathUtils.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\communication\ConfigurationPipeHandler.cpp">
+    <ClCompile Include="src\communication\channels\handlers\configuration\ConfigurationPipeHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\asyncio\async\win\IocpContext.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\communication\IpcMessenger.cpp">
+    <ClCompile Include="src\communication\channels\messengers\IpcMessenger.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\monitoring\Monitor.cpp">
@@ -147,40 +147,40 @@
     <ClCompile Include="src\utils\UuidUtils.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\diagnostics\JournalLogger.cpp">
+    <ClCompile Include="src\diagnostics\journal\JournalLogger.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\persistence\PreferencesLoader.cpp">
+    <ClCompile Include="src\persistence\preferences\PreferencesLoader.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\communication\PreferencesPipeHandler.cpp">
+    <ClCompile Include="src\communication\channels\handlers\preferences\PreferencesPipeHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="include\contracts\flow\FlowDisconnectContract.h">
       <Filter>Файлы заголовков</Filter>
     </ClCompile>
-    <ClCompile Include="include\communication\FlowPipeHandler.h">
+    <ClCompile Include="include\communication\channels\handlers\flow\FlowPipeHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClCompile>
-    <ClCompile Include="src\communication\FlowPipeHandler.cpp">
+    <ClCompile Include="src\communication\channels\handlers\flow\FlowPipeHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\processes\win\WinProcessManager.cpp">
+    <ClCompile Include="src\processes\manager\win\WinProcessManager.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\controllers\SessionController.cpp">
+    <ClCompile Include="src\controllers\session\SessionController.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\proxification\TestableTcpSocks5Proxy.cpp">
+    <ClCompile Include="src\proxification\stream\TestableTcpSocks5Proxy.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="include\proxification\stream\TestStage.h">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\communication\TestPipeHandler.cpp">
+    <ClCompile Include="src\communication\channels\handlers\test\TestPipeHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\controllers\TestController.cpp">
+    <ClCompile Include="src\controllers\test\TestController.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\interception\routing\PacketFilter.cpp">
@@ -195,22 +195,22 @@
     <ClCompile Include="src\interception\correlation\win\WinUdpCorrelator.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\transport\TcpMultiplexer.cpp">
+    <ClCompile Include="src\transport\stream\TcpMultiplexer.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\transport\DispatcherMultiplexer.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\transport\UdpMultiplexer.cpp">
+    <ClCompile Include="src\transport\datagram\UdpMultiplexer.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\transport\UdpSession.cpp">
+    <ClCompile Include="src\transport\datagram\UdpSession.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\transport\UdpBinder.cpp">
+    <ClCompile Include="src\transport\datagram\UdpBinder.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\proxification\UdpSocks5Proxy.cpp">
+    <ClCompile Include="src\proxification\datagram\UdpSocks5Proxy.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\proxification\Socks5ProxyBase.cpp">
@@ -233,13 +233,13 @@
     <ClInclude Include="include\interception\diversion\win\WinPacketContext.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\persistence\ConnectionEntry.h">
+    <ClInclude Include="include\persistence\connections\ConnectionEntry.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\persistence\ThreeTupleHash.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\persistence\ConnectionTable.h">
+    <ClInclude Include="include\persistence\connections\ConnectionTable.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\runtime\Daemon.h">
@@ -251,7 +251,7 @@
     <ClInclude Include="include\diagnostics\LogLevel.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\diagnostics\ConsoleLogger.h">
+    <ClInclude Include="include\diagnostics\console\ConsoleLogger.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\interception\diversion\Endpoint.h">
@@ -278,10 +278,10 @@
     <ClInclude Include="include\interception\handling\DispatcherHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\transport\TcpSession.h">
+    <ClInclude Include="include\transport\stream\TcpSession.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\transport\TcpListener.h">
+    <ClInclude Include="include\transport\stream\TcpListener.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\asyncio\async\IAsyncDriver.h">
@@ -344,10 +344,10 @@
     <ClInclude Include="include\persistence\FiveTupleHash.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\persistence\AssociationEntry.h">
+    <ClInclude Include="include\persistence\associations\AssociationEntry.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\persistence\AssociationTable.h">
+    <ClInclude Include="include\persistence\associations\AssociationTable.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\interception\correlation\win\WinTcpCorrelator.h">
@@ -359,19 +359,19 @@
     <ClInclude Include="include\interception\diversion\Packet.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\processes\IProcessResolver.h">
+    <ClInclude Include="include\processes\resolver\IProcessResolver.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\processes\ProcessInfo.h">
+    <ClInclude Include="include\processes\resolver\ProcessInfo.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\processes\CachedProcessResolver.h">
+    <ClInclude Include="include\processes\resolver\CachedProcessResolver.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\processes\win\WinProcessResolver.h">
+    <ClInclude Include="include\processes\resolver\win\WinProcessResolver.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\processes\IProcessGuard.h">
+    <ClInclude Include="include\processes\resolver\IProcessGuard.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\interception\routing\RuleEvaluator.h">
@@ -398,58 +398,58 @@
     <ClInclude Include="include\proxification\ProxyFactory.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\persistence\Configuration.h">
+    <ClInclude Include="include\persistence\configuration\Configuration.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\persistence\Store.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\communication\IPipeServer.h">
+    <ClInclude Include="include\communication\pipes\IPipeServer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\communication\win\WinPipeServer.h">
+    <ClInclude Include="include\communication\pipes\win\WinPipeServer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\communication\PipeMessageHeader.h">
+    <ClInclude Include="include\communication\channels\messages\PipeMessageHeader.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\communication\PipeMessage.h">
+    <ClInclude Include="include\communication\channels\messages\PipeMessage.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\communication\ISendChannel.h">
+    <ClInclude Include="include\communication\channels\ISendChannel.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\communication\IDispatchChannel.h">
+    <ClInclude Include="include\communication\channels\IDispatchChannel.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\communication\IPipeMessageHandler.h">
+    <ClInclude Include="include\communication\channels\handlers\IPipeMessageHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\communication\IpcChannel.h">
+    <ClInclude Include="include\communication\channels\IpcChannel.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\runtime\Host.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\communication\IReceiveChannel.h">
+    <ClInclude Include="include\communication\channels\IReceiveChannel.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\utils\JsonUtils.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\persistence\ConfigurationLoader.h">
+    <ClInclude Include="include\persistence\configuration\ConfigurationLoader.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\utils\PathUtils.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\persistence\LoadTarget.h">
+    <ClInclude Include="include\persistence\configuration\LoadTarget.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\communication\PipeMessageType.h">
+    <ClInclude Include="include\communication\channels\messages\PipeMessageType.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\communication\ConfigurationPipeHandler.h">
+    <ClInclude Include="include\communication\channels\handlers\configuration\ConfigurationPipeHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\contracts\flow\FlowContract.h">
@@ -458,13 +458,13 @@
     <ClInclude Include="include\contracts\flow\FlowStatus.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\communication\IpcMessenger.h">
+    <ClInclude Include="include\communication\channels\messengers\IpcMessenger.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\monitoring\Monitor.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\diagnostics\JournalLogger.h">
+    <ClInclude Include="include\diagnostics\journal\JournalLogger.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\contracts\log\LogLevelContract.h">
@@ -476,28 +476,28 @@
     <ClInclude Include="include\contracts\route\RouteContract.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\monitoring\IFlowMonitor.h">
+    <ClInclude Include="include\monitoring\flow\IFlowMonitor.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\monitoring\IRoutingMonitor.h">
+    <ClInclude Include="include\monitoring\route\IRoutingMonitor.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\communication\PreferencesPipeHandler.h">
+    <ClInclude Include="include\communication\channels\handlers\preferences\PreferencesPipeHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\persistence\Preferences.h">
+    <ClInclude Include="include\persistence\preferences\Preferences.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\persistence\PreferencesLoader.h">
+    <ClInclude Include="include\persistence\preferences\PreferencesLoader.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\controllers\SessionController.h">
+    <ClInclude Include="include\controllers\session\SessionController.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\processes\IProcessManager.h">
+    <ClInclude Include="include\processes\manager\IProcessManager.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\processes\win\WinProcessManager.h">
+    <ClInclude Include="include\processes\manager\win\WinProcessManager.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\contracts\flow\FlowDestroyContract.h">
@@ -506,10 +506,10 @@
     <ClInclude Include="include\proxification\stream\TestableTcpSocks5Proxy.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\controllers\TestController.h">
+    <ClInclude Include="include\controllers\test\TestController.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\communication\TestPipeHandler.h">
+    <ClInclude Include="include\communication\channels\handlers\test\TestPipeHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\contracts\test\TestContract.h">
@@ -539,19 +539,19 @@
     <ClInclude Include="include\transport\IMultiplexer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\transport\TcpMultiplexer.h">
+    <ClInclude Include="include\transport\stream\TcpMultiplexer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\transport\UdpBinder.h">
+    <ClInclude Include="include\transport\datagram\UdpBinder.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\transport\DispatcherMultiplexer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\transport\UdpMultiplexer.h">
+    <ClInclude Include="include\transport\datagram\UdpMultiplexer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\transport\UdpSession.h">
+    <ClInclude Include="include\transport\datagram\UdpSession.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\proxification\datagram\IDatagramProxy.h">
@@ -594,11 +594,11 @@
   <ItemGroup>
     <None Include="conanfile.py" />
     <None Include="deps\windivert\conanfile.py" />
-    <None Include="src\communication\IpcMessenger.inl" />
+    <None Include="src\communication\channels\messengers\IpcMessenger.inl" />
     <None Include="src\persistence\Store.inl">
       <Filter>Файлы заголовков</Filter>
     </None>
-    <None Include="src\proxification\TestableTcpSocks5Proxy.inl">
+    <None Include="src\proxification\stream\TestableTcpSocks5Proxy.inl">
       <Filter>Файлы заголовков</Filter>
     </None>
   </ItemGroup>

@@ -2,7 +2,7 @@
 
 #include "contracts/rule/RuleContract.h"
 #include "interception/diversion/IPacketContext.h"
-#include "processes/ProcessInfo.h"
+#include "processes/resolver/ProcessInfo.h"
 
 #include "interception/routing/ProcessCriteria.h"
 #include "interception/routing/PortCriteria.h"

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "interception/handling/IPacketHandler.h"
-#include "persistence/ConnectionTable.h"
+#include "persistence/connections/ConnectionTable.h"
 #include "diagnostics/ILogger.h"
 
 namespace Proxirae {

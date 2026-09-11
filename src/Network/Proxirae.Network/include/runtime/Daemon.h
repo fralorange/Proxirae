@@ -7,7 +7,7 @@
 
 #include "transport/IMultiplexer.h"
 #include "diagnostics/ILogger.h"
-#include "monitoring/IFlowMonitor.h"
+#include "monitoring/flow/IFlowMonitor.h"
 
 namespace Proxirae {
 	class Daemon {

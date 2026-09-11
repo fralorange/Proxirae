@@ -4,12 +4,12 @@
 
 #include "interception/diversion/IPacketContext.h"
 #include "contracts/rule/RuleActionContract.h"
-#include "processes/IProcessResolver.h"
+#include "processes/resolver/IProcessResolver.h"
 #include "interception/routing/RuleEvaluator.h"
-#include "persistence/ConnectionTable.h"
+#include "persistence/connections/ConnectionTable.h"
 #include "persistence/Store.h"
-#include "persistence/Configuration.h"
-#include "monitoring/IRoutingMonitor.h"
+#include "persistence/configuration/Configuration.h"
+#include "monitoring/route/IRoutingMonitor.h"
 
 namespace Proxirae {
 	class PacketRouter {

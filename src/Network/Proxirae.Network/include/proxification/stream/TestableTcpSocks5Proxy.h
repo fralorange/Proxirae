@@ -28,4 +28,4 @@ namespace Proxirae {
 	};
 }
 
-#include "proxification/TestableTcpSocks5Proxy.inl"
+#include "proxification/stream/TestableTcpSocks5Proxy.inl"
