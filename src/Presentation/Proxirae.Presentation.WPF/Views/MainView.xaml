@@ -45,7 +45,8 @@
                           Command="{Binding OpenProxyRulesCommand}"/>
             </MenuItem>
             <MenuItem Header="View">
-                <MenuItem Header="Reset Layout"/>
+                <MenuItem Header="Reset Layout"
+                          Command="{Binding ResetLayoutCommand}"/>
             </MenuItem>
             <MenuItem Header="Tools">
                 <MenuItem Header="Proxy Checker..."

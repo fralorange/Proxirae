@@ -1,8 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ObservableCollections;
-using Proxirae.Application.Facades.Actions;
-using Proxirae.Application.Facades.Routes;
+using Proxirae.Application.Models.Preferences.Appearance;
 using Proxirae.Application.Services.Application;
 using Proxirae.Application.Services.Clipboard;
 using Proxirae.Application.Services.Flows;
@@ -173,9 +172,9 @@ namespace Proxirae.Presentation.WPF.ViewModels
             WinApp.Current.Dispatcher.Invoke(() =>
             {
                 var ghosts = Flows.Where(f => !activeIds.Contains(f.Id)).ToList();
-                foreach (var ghost in ghosts) 
-                { 
-                    Flows.Remove(ghost); 
+                foreach (var ghost in ghosts)
+                {
+                    Flows.Remove(ghost);
                 }
 
                 foreach (var flow in flows)
@@ -319,6 +318,21 @@ namespace Proxirae.Presentation.WPF.ViewModels
         private void OpenProxyChecker()
         {
             _dialogFacade.ShowDialog<ProxyCheckerViewModel>(this);
+        }
+
+        [RelayCommand]
+        private async Task ResetLayoutAsync(CancellationToken cancellationToken)
+        {
+            var defaultAppearance = new AppearancePreferences();
+
+            var updatedAppearance = _preferencesService.Current.Appearance with
+            {
+                TabsHeight = defaultAppearance.TabsHeight
+            };
+
+            await _preferencesService.UpdateAsync(updatedAppearance, cancellationToken);
+
+            TabsHeight = updatedAppearance.TabsHeight;
         }
 
         public void Dispose()
