@@ -6,6 +6,7 @@ using Proxirae.Application.Mappers.Proxies;
 using Proxirae.Application.Mappers.Rules;
 using Proxirae.Application.Mappers.Rules.Actions;
 using Proxirae.Application.Services.Application;
+using Proxirae.Application.Services.Browser;
 using Proxirae.Application.Services.Clipboard;
 using Proxirae.Application.Services.Flows;
 using Proxirae.Application.Services.Logs;
@@ -22,9 +23,11 @@ using Proxirae.Presentation.WPF.Factories.Flow;
 using Proxirae.Presentation.WPF.Factories.ProxyChecker;
 using Proxirae.Presentation.WPF.Factories.Routes;
 using Proxirae.Presentation.WPF.Services.Application;
+using Proxirae.Presentation.WPF.Services.Browser;
 using Proxirae.Presentation.WPF.Services.Clipboard;
 using Proxirae.Presentation.WPF.Services.Process;
 using Proxirae.Presentation.WPF.ViewModels;
+using Proxirae.Presentation.WPF.ViewModels.About;
 using Proxirae.Presentation.WPF.ViewModels.ProxyChecker;
 using Proxirae.Presentation.WPF.ViewModels.ProxyRules;
 using Proxirae.Presentation.WPF.ViewModels.ProxyServers;
@@ -55,6 +58,7 @@ namespace Proxirae.Presentation.WPF
             services.AddSingleton<ITestService, TestService>();
             services.AddSingleton<IAutostartService, WindowsAutostartService>();
             services.AddSingleton<IProcessInfoService, ProcessInfoService>();
+            services.AddTransient<IBrowserService, BrowserService>();
             return services;
         }
 
@@ -91,6 +95,7 @@ namespace Proxirae.Presentation.WPF
             services.AddTransient<ProxyRulesViewModel>();
             services.AddTransient<AddProxyRuleViewModel>();
             services.AddTransient<ProxyCheckerViewModel>();
+            services.AddTransient<AboutViewModel>();
             return services;
         }
 

@@ -11,9 +11,10 @@
                          xmlns:converters="clr-namespace:Proxirae.Presentation.WPF.Converters"
                          xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels"
                          xmlns:behaviors="clr-namespace:Proxirae.Presentation.WPF.Behaviors"
+                         xmlns:root="clr-namespace:Proxirae.Presentation.WPF"
                          md:DialogServiceViews.IsRegistered="True"
                          mc:Ignorable="d"
-                         Title="Proxirae"
+                         Title="{x:Static root:ProgramInfo.AppName}"
                          MinWidth="750"
                          MinHeight="500"
                          Background="Transparent"
@@ -57,7 +58,8 @@
             <MenuItem Header="Help">
                 <MenuItem Header="Check for Updates..."/>
                 <Separator/>
-                <MenuItem Header="About Proxirae..."/>
+                <MenuItem Header="About Proxirae..."
+                          Command="{Binding OpenAboutCommand}"/>
             </MenuItem>
         </Menu>
     </controls:TitleBarWindow.TitleBarMenuContent>
@@ -72,11 +74,11 @@
         </Grid.RowDefinitions>
 
         <tb:TaskbarIcon x:Name="TrayIcon"
-                        ToolTipText="Proxirae"
+                        ToolTipText="{x:Static root:ProgramInfo.AppName}"
                         IconSource="/Resources/Icons/icon.ico"
                         DoubleClickCommand="{Binding RestoreCommand}">
             <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu>
+                <ContextMenu d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
                     <MenuItem Header="Open"
                               Command="{Binding RestoreCommand}"/>
                     <Separator/>

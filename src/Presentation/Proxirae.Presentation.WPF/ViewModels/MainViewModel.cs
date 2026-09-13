@@ -15,6 +15,7 @@ using Proxirae.Contracts.DTOs.Routes;
 using Proxirae.Presentation.WPF.Facades.Dialog;
 using Proxirae.Presentation.WPF.Factories.Flow;
 using Proxirae.Presentation.WPF.Factories.Routes;
+using Proxirae.Presentation.WPF.ViewModels.About;
 using Proxirae.Presentation.WPF.ViewModels.Flows;
 using Proxirae.Presentation.WPF.ViewModels.Logs;
 using Proxirae.Presentation.WPF.ViewModels.ProxyChecker;
@@ -333,6 +334,12 @@ namespace Proxirae.Presentation.WPF.ViewModels
             await _preferencesService.UpdateAsync(updatedAppearance, cancellationToken);
 
             TabsHeight = updatedAppearance.TabsHeight;
+        }
+
+        [RelayCommand]
+        private void OpenAbout()
+        {
+            _dialogFacade.ShowDialog<AboutViewModel>(this);
         }
 
         public void Dispose()
