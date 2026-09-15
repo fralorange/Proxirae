@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Proxirae.Application.Services.Configurator;
+using Proxirae.Application.Services.UI;
 using Proxirae.Infrastructure;
 using Proxirae.Infrastructure.ProcessCommunication;
 using Proxirae.Infrastructure.TransactionControl;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace Proxirae.Presentation.WPF
 {
@@ -27,6 +26,7 @@ namespace Proxirae.Presentation.WPF
                         .AddServices()
                         .AddRepositories()
                         .AddStores()
+                        .AddExporters()
                         .AddUnitsOfWork()
                         .AddMappers()
                         .AddFacades()
@@ -43,7 +43,7 @@ namespace Proxirae.Presentation.WPF
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            var uiConfigurator = _host.Services.GetRequiredService<IConfiguratorService>();
+            var uiConfigurator = _host.Services.GetRequiredService<IUiService>();
             uiConfigurator.ApplyGlobalTweaks();
 
             var mainView = _host.Services.GetRequiredService<MainView>();
@@ -61,5 +61,4 @@ namespace Proxirae.Presentation.WPF
             base.OnExit(e);
         }
     }
-
 }

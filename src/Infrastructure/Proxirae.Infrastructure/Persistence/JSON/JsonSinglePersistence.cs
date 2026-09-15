@@ -49,5 +49,10 @@ namespace Proxirae.Infrastructure.Persistence.JSON
 
             File.Move(tempFilePath, _filePath, overwrite: true);
         }
+
+        public Task ReloadAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

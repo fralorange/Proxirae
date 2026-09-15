@@ -5,7 +5,6 @@ using Proxirae.Application.Services.Proxies;
 using Proxirae.Contracts.DTOs.Proxies;
 using Proxirae.Presentation.WPF.Facades.Dialog;
 using Proxirae.Presentation.WPF.Factories.ProxyChecker;
-using Proxirae.Presentation.WPF.ViewModels.ProxyChecker;
 using System.Collections.ObjectModel;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
@@ -37,7 +36,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         }
 
         [RelayCommand]
-        private async Task LoadProxyServersAsync(CancellationToken cancellationToken)
+        private async Task LoadAsync(CancellationToken cancellationToken)
         {
             var proxyServers = await _proxyService.GetAsync(cancellationToken);
 

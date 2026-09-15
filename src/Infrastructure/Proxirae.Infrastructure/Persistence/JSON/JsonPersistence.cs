@@ -24,32 +24,7 @@ namespace Proxirae.Infrastructure.Persistence.JSON
         protected async Task EnsureLoadedAsync(CancellationToken cancellationToken)
         {
             if (_loaded) return;
-
-            await _semaphore.WaitAsync(cancellationToken);
-            try
-            {
-                if (_loaded) return;
-
-                if (!File.Exists(_filePath))
-                {
-                    _loaded = true;
-                    return;
-                }
-
-                var json = await File.ReadAllTextAsync(_filePath, cancellationToken);
-                var items = JsonSerializer.Deserialize<List<T>>(json, JsonOptions);
-
-                if (items is not null)
-                {
-                    _items.AddRange(items);
-                }
-
-                _loaded = true;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            await ReloadAsync(cancellationToken);
         }
 
         public async Task SaveAsync(CancellationToken cancellationToken)
@@ -65,6 +40,33 @@ namespace Proxirae.Infrastructure.Persistence.JSON
 
                 File.Move(tempFilePath, _filePath, overwrite: true);
             } 
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task ReloadAsync(CancellationToken cancellationToken)
+        {
+            await _semaphore.WaitAsync(cancellationToken);
+            try
+            {
+                _items.Clear();
+                _loaded = false;
+
+                if (File.Exists(_filePath))
+                {
+                    var json = await File.ReadAllTextAsync(_filePath, cancellationToken);
+                    var items = JsonSerializer.Deserialize<List<T>>(json, JsonOptions);
+
+                    if (items is not null)
+                    {
+                        _items.AddRange(items);
+                    }
+                }
+
+                _loaded = true;
+            }
             finally
             {
                 _semaphore.Release();

@@ -19,9 +19,9 @@ namespace Proxirae {
 		std::lock_guard<std::mutex> lock(m_mutex);
 
 		auto log = LogContract{
+			.timestamp = now,
 			.level = static_cast<LogLevelContract>(level),
-			.message = message,
-			.timestamp = now
+			.message = message
 		};
 
 		m_messenger.Send(PipeMessageType::Evt_SendLog, log);

@@ -1,9 +1,9 @@
-﻿using Proxirae.Application.Services.Configurator;
+﻿using Proxirae.Application.Services.UI;
 using System.Windows;
 
-namespace Proxirae.Presentation.WPF.Services.Configurator
+namespace Proxirae.Presentation.WPF.Services.UI
 {
-    public class WpfUiConfiguratorService : IConfiguratorService
+    public class WpfUiService : IUiService
     {
         public void ApplyGlobalTweaks()
         {

@@ -1,11 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MvvmDialogs.FrameworkDialogs.OpenFile;
+using MvvmDialogs.FrameworkDialogs.SaveFile;
 using ObservableCollections;
+using Proxirae.Application.Exporters.Csv;
+using Proxirae.Application.Facades.Configuration;
 using Proxirae.Application.Models.Preferences.Appearance;
-using Proxirae.Application.Models.Preferences.Engine;
 using Proxirae.Application.Models.Preferences.Metrics;
-using Proxirae.Application.Models.Preferences.System;
 using Proxirae.Application.Services.Application;
+using Proxirae.Application.Services.Archive;
 using Proxirae.Application.Services.Clipboard;
 using Proxirae.Application.Services.Flows;
 using Proxirae.Application.Services.Logs;
@@ -38,6 +41,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
         private readonly IApplicationService _applicationService;
         private readonly IClipboardService _clipboardService;
         private readonly DialogFacade _dialogFacade;
+        private readonly IConfigurationFacade _configurationFacade;
         private readonly IRouteViewModelFactory _routeViewModelFactory;
         private readonly IFlowViewModelFactory _flowViewModelFactory;
         private readonly IFlowService _flowService;
@@ -45,6 +49,8 @@ namespace Proxirae.Presentation.WPF.ViewModels
         private readonly IRouteService _routeService;
         private readonly IPreferencesService _preferencesService;
         private readonly IAutostartService _autostartService;
+        private readonly IArchiveService _archiveService;
+        private readonly ICsvExporter _csvExporter;
 
         [ObservableProperty]
         private int _selectedTabIndex;
@@ -83,17 +89,21 @@ namespace Proxirae.Presentation.WPF.ViewModels
             IApplicationService applicationService,
             IClipboardService clipboardService,
             DialogFacade dialogFacade,
+            IConfigurationFacade configurationFacade,
             IRouteViewModelFactory routeViewModelFactory,
             IFlowViewModelFactory flowViewModelFactory,
             IFlowService flowService,
             ILogService logService,
             IRouteService routeService,
             IPreferencesService preferencesService,
-            IAutostartService autostartService)
+            IAutostartService autostartService,
+            IArchiveService archiveService,
+            ICsvExporter csvExporter)
         {
             _applicationService = applicationService;
             _clipboardService = clipboardService;
             _dialogFacade = dialogFacade;
+            _configurationFacade = configurationFacade;
             _routeViewModelFactory = routeViewModelFactory;
             _flowViewModelFactory = flowViewModelFactory;
             _flowService = flowService;
@@ -101,13 +111,15 @@ namespace Proxirae.Presentation.WPF.ViewModels
             _routeService = routeService;
             _preferencesService = preferencesService;
             _autostartService = autostartService;
+            _archiveService = archiveService;
+            _csvExporter = csvExporter;
 
             _flowService.FlowsUpdated += OnFlowsUpdated;
             _flowService.FlowClosed += OnFlowDeleted;
 
             _preferencesService.PreferencesChanged += OnPreferencesChanged;
 
-            _logsBuffer = new(_preferencesService.Current.Metrics.LogsBufferSize); 
+            _logsBuffer = new(_preferencesService.Current.Metrics.LogsBufferSize);
 
             _logs = _logsBuffer
                 .CreateView(l => l)
@@ -115,7 +127,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
 
             _logService.LogReceived += OnLogReceived;
 
-            _routesBuffer = new(_preferencesService.Current.Metrics.RoutingBufferSize); 
+            _routesBuffer = new(_preferencesService.Current.Metrics.RoutingBufferSize);
 
             _routes = _routesBuffer
                 .CreateView(r => r)
@@ -238,6 +250,94 @@ namespace Proxirae.Presentation.WPF.ViewModels
                     Flows.Remove(target);
                 }
             });
+        }
+
+        [RelayCommand]
+        private async Task ImportConfiguration(CancellationToken cancellationToken)
+        {
+            var settings = new OpenFileDialogSettings
+            {
+                Title = "Import Configuration",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Filter = "Proxirae Configuration (*.pxcfg)|*.pxcfg"
+            };
+
+            var path = _dialogFacade.OpenFile(this, settings);
+            if (path is null) return;
+
+            var success = _archiveService.ExtractArchive(path, _configurationFacade.AppDataDirectory);
+
+            if (success)
+            {
+                await _configurationFacade.ReloadAsync(cancellationToken);
+            }
+        }
+
+        [RelayCommand]
+        private void ExportConfiguration()
+        {
+            var settings = new SaveFileDialogSettings
+            {
+                Title = "Export Configuration",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Filter = "Proxirae Configuration (*.pxcfg)|*.pxcfg",
+                DefaultExt = ".pxcfg",
+                AddExtension = true,
+                FileName = "config.pxcfg"
+            };
+
+            var path = _dialogFacade.SaveFile(this, settings);
+
+            if (path is not null)
+            {
+                _archiveService.CreateArchive(path, _configurationFacade.ConfigurationFiles);
+            }
+        }
+
+        [RelayCommand]
+        private async Task ExportRoutingHistoryAsync(CancellationToken cancellationToken)
+        {
+            if (_routesBuffer.Count == 0) return;
+
+            var settings = new SaveFileDialogSettings
+            {
+                Title = "Export Routing History",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Filter = "CSV File (*.csv)|*.csv",
+                DefaultExt = "csv",
+                AddExtension = true,
+                FileName = $"routing_history_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+            };
+
+            var path = _dialogFacade.SaveFile(this, settings);
+
+            if (path is not null)
+            {
+                await _csvExporter.ExportAsync(path, _routesBuffer, cancellationToken);
+            }
+        }
+
+        [RelayCommand]
+        private async Task ExportLogsHistoryAsync(CancellationToken cancellationToken)
+        {
+            if (_logsBuffer.Count == 0) return;
+
+            var settings = new SaveFileDialogSettings
+            {
+                Title = "Export Logs History",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Filter = "CSV File (*.csv)|*.csv",
+                DefaultExt = "csv",
+                AddExtension = true,
+                FileName = $"logs_history_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+            };
+
+            var path = _dialogFacade.SaveFile(this, settings);
+
+            if (path is not null)
+            {
+                await _csvExporter.ExportAsync(path, _logsBuffer, cancellationToken);
+            }
         }
 
         [RelayCommand]

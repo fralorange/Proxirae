@@ -8,7 +8,7 @@ using Proxirae.Application.Mappers.Rules.Actions;
 using Proxirae.Application.Services.Application;
 using Proxirae.Application.Services.Browser;
 using Proxirae.Application.Services.Clipboard;
-using Proxirae.Application.Services.Configurator;
+using Proxirae.Application.Services.UI;
 using Proxirae.Application.Services.Flows;
 using Proxirae.Application.Services.Logs;
 using Proxirae.Application.Services.Preferences;
@@ -24,9 +24,10 @@ using Proxirae.Presentation.WPF.Factories.Flow;
 using Proxirae.Presentation.WPF.Factories.ProxyChecker;
 using Proxirae.Presentation.WPF.Factories.Routes;
 using Proxirae.Presentation.WPF.Services.Application;
+using Proxirae.Presentation.WPF.Services.Archive;
 using Proxirae.Presentation.WPF.Services.Browser;
 using Proxirae.Presentation.WPF.Services.Clipboard;
-using Proxirae.Presentation.WPF.Services.Configurator;
+using Proxirae.Presentation.WPF.Services.UI;
 using Proxirae.Presentation.WPF.Services.Preferences.Autostart;
 using Proxirae.Presentation.WPF.Services.Process;
 using Proxirae.Presentation.WPF.ViewModels;
@@ -36,6 +37,8 @@ using Proxirae.Presentation.WPF.ViewModels.Options.Sections;
 using Proxirae.Presentation.WPF.ViewModels.ProxyChecker;
 using Proxirae.Presentation.WPF.ViewModels.ProxyRules;
 using Proxirae.Presentation.WPF.ViewModels.ProxyServers;
+using Proxirae.Infrastructure;
+using Proxirae.Application.Services.Archive;
 
 namespace Proxirae.Presentation.WPF
 {
@@ -45,6 +48,7 @@ namespace Proxirae.Presentation.WPF
         {
             services.AddSingleton<MainView>();
             services.AddSingleton<MainViewModel>();
+
             return services;
         }
 
@@ -64,7 +68,9 @@ namespace Proxirae.Presentation.WPF
             services.AddSingleton<IAutostartService, WindowsAutostartService>();
             services.AddSingleton<IProcessInfoService, ProcessInfoService>();
             services.AddTransient<IBrowserService, BrowserService>();
-            services.AddTransient<IConfiguratorService, WpfUiConfiguratorService>();
+            services.AddTransient<IUiService, WpfUiService>();
+            services.AddTransient<IArchiveService, PxcfgService>();
+
             return services;
         }
 
@@ -75,6 +81,7 @@ namespace Proxirae.Presentation.WPF
             services.AddTransient<IActionDtoMapper, ActionDtoMapper>();
             services.AddTransient<IRuleDataMapper, RuleDataMapper>();
             services.AddTransient<IActionDataMapper, ActionDataMapper>();
+
             return services;
         }
 
@@ -83,6 +90,8 @@ namespace Proxirae.Presentation.WPF
             services.AddSingleton<DialogFacade>();
             services.AddSingleton<ActionFacade>();
             services.AddSingleton<RouteFacade>();
+            services.AddConfigurationFacade();
+
             return services;
         }
 
@@ -91,6 +100,7 @@ namespace Proxirae.Presentation.WPF
             services.AddTransient<IProxyCheckerViewModelFactory, ProxyCheckerViewModelFactory>();
             services.AddTransient<IFlowViewModelFactory, FlowViewModelFactory>();
             services.AddTransient<IRouteViewModelFactory, RouteViewModelFactory>();
+
             return services;
         }
 
@@ -106,6 +116,7 @@ namespace Proxirae.Presentation.WPF
             services.AddTransient<GeneralViewModel>();
             services.AddTransient<AppearanceViewModel>();
             services.AddTransient<MetricsViewModel>();
+
             return services;
         }
 

@@ -1,9 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Proxirae.Application.Exporters.Csv;
+using Proxirae.Application.Facades.Configuration;
 using Proxirae.Application.Repositories;
 using Proxirae.Application.Stores;
 using Proxirae.Application.Stores.Preferences;
 using Proxirae.Contracts.Data.Rules;
 using Proxirae.Domain.Proxies;
+using Proxirae.Infrastructure.Exporters.Csv;
+using Proxirae.Infrastructure.Facades;
 using Proxirae.Infrastructure.Persistence;
 using Proxirae.Infrastructure.Repositories.Proxies;
 using Proxirae.Infrastructure.Repositories.Rules;
@@ -66,6 +70,20 @@ namespace Proxirae.Infrastructure
 
             services.AddSingleton<IPreferencesStore>(sp =>
                 sp.GetRequiredService<PreferencesStore>());
+
+            return services;
+        }
+
+        public static IServiceCollection AddConfigurationFacade(this IServiceCollection services)
+        {
+            services.AddTransient<IConfigurationFacade, ConfigurationFacade>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddExporters(this IServiceCollection services)
+        {
+            services.AddTransient<ICsvExporter, SepCsvExporter>();
 
             return services;
         }

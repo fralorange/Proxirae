@@ -25,11 +25,15 @@
         <Menu Background="WhiteSmoke" 
               Margin="0 5 0 5">
             <MenuItem Header="File">
-                <MenuItem Header="Import Configuration..."/>
-                <MenuItem Header="Export Configuration..."/>
+                <MenuItem Header="Import Configuration..."
+                          Command="{Binding ImportConfigurationCommand}"/>
+                <MenuItem Header="Export Configuration..."
+                          Command="{Binding ExportConfigurationCommand}"/>
                 <Separator/>
-                <MenuItem Header="Export Traffic History..."/>
-                <MenuItem Header="Export Logs History..."/>
+                <MenuItem Header="Export Routing History..."
+                          Command="{Binding ExportRoutingHistoryCommand}"/>
+                <MenuItem Header="Export Logs History..."
+                          Command="{Binding ExportLogsHistoryCommand}"/>
                 <Separator/>
                 <MenuItem Header="Autostart"
                           IsCheckable="True"

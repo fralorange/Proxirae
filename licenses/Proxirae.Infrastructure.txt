@@ -1,0 +1,150 @@
+﻿License notice for Microsoft.Extensions.DependencyInjection.Abstractions (v10.0.12)
+------------------------------------
+
+https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+
+https://dot.net/
+
+Copyright © Microsoft Corporation. All rights reserved.
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
+License notice for csFastFloat (v4.1.6)
+------------------------------------
+
+https://github.com/CarlVerret/csFastFloat at 08263c120f9bae760f7497cfbf47bff6431d4cb8
+
+csFastFloat is licensed under the MIT license
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
+License notice for Microsoft.Extensions.Configuration.Abstractions (v10.0.12)
+------------------------------------
+
+https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+
+https://dot.net/
+
+Copyright © Microsoft Corporation. All rights reserved.
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
+License notice for Microsoft.Extensions.Diagnostics.Abstractions (v10.0.12)
+------------------------------------
+
+https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+
+https://dot.net/
+
+Copyright © Microsoft Corporation. All rights reserved.
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
+License notice for Microsoft.Extensions.FileProviders.Abstractions (v10.0.12)
+------------------------------------
+
+https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+
+https://dot.net/
+
+Copyright © Microsoft Corporation. All rights reserved.
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
+License notice for Microsoft.Extensions.Hosting.Abstractions (v10.0.12)
+------------------------------------
+
+https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+
+https://dot.net/
+
+Copyright © Microsoft Corporation. All rights reserved.
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
+License notice for Microsoft.Extensions.Logging.Abstractions (v10.0.12)
+------------------------------------
+
+https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+
+https://dot.net/
+
+Copyright © Microsoft Corporation. All rights reserved.
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
+License notice for Microsoft.Extensions.Options (v10.0.12)
+------------------------------------
+
+https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+
+https://dot.net/
+
+Copyright © Microsoft Corporation. All rights reserved.
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
+License notice for Microsoft.Extensions.Primitives (v10.0.12)
+------------------------------------
+
+https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+
+https://dot.net/
+
+Copyright © Microsoft Corporation. All rights reserved.
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
+License notice for Sep (v0.17.0)
+------------------------------------
+
+https://github.com/nietras/Sep/ at 76b063ec151af051526d064e9f45ad9584e63384
+
+Copyright © nietras A/S 2025
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
+License notice for System.Diagnostics.DiagnosticSource (v10.0.12)
+------------------------------------
+
+https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+
+https://dot.net/
+
+Copyright © Microsoft Corporation. All rights reserved.
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
