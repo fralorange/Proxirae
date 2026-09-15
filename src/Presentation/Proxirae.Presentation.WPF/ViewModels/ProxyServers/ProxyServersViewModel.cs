@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MvvmDialogs;
 using Proxirae.Application.Services.Proxies;
+using Proxirae.Application.Validators.ProxyRule;
 using Proxirae.Contracts.DTOs.Proxies;
 using Proxirae.Presentation.WPF.Facades.Dialog;
 using Proxirae.Presentation.WPF.Factories.ProxyChecker;
@@ -14,6 +15,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         private readonly DialogFacade _dialogFacade;
         private readonly IProxyService _proxyService;
         private readonly IProxyCheckerViewModelFactory _proxyCheckerFactory;
+        private readonly IProxyRuleValidator _proxyRuleValidator;
 
         private bool? dialogResult;
         public bool? DialogResult
@@ -28,11 +30,12 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
         private bool _hasChanges;
 
-        public ProxyServersViewModel(DialogFacade dialogFacade, IProxyService proxyService, IProxyCheckerViewModelFactory proxyCheckerFactory)
+        public ProxyServersViewModel(DialogFacade dialogFacade, IProxyService proxyService, IProxyCheckerViewModelFactory proxyCheckerFactory, IProxyRuleValidator proxyRuleValidator)
         {
             _dialogFacade = dialogFacade;
             _proxyService = proxyService;
             _proxyCheckerFactory = proxyCheckerFactory;
+            _proxyRuleValidator = proxyRuleValidator;
         }
 
         [RelayCommand]
@@ -93,6 +96,8 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         private async Task RemoveProxyServerAsync(ProxyListDto proxyServer, CancellationToken cancellationToken)
         {
             await _proxyService.DeleteAsync(proxyServer.Id, cancellationToken);
+            await _proxyRuleValidator.UnbindProxyFromRulesAsync(proxyServer.Id, cancellationToken); // TODO: Add Confirmation Dialog menu
+            
             ProxyServers.Remove(proxyServer);
         }
 
@@ -113,6 +118,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         private async Task ConfirmAsync(CancellationToken cancellationToken)
         {
             await _proxyService.SaveChangesAsync(cancellationToken);
+            await _proxyRuleValidator.SaveChangesAsync(cancellationToken);
 
             DialogResult = true;
         }
