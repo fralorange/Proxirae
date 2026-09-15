@@ -61,7 +61,8 @@
                           Command="{Binding OpenOptionsCommand}"/>
             </MenuItem>
             <MenuItem Header="Help">
-                <MenuItem Header="Check for Updates..."/>
+                <MenuItem Header="Check for Updates..."
+                          Command="{Binding CheckForUpdatesCommand}"/>
                 <Separator/>
                 <MenuItem Header="About Proxirae..."
                           Command="{Binding OpenAboutCommand}"/>

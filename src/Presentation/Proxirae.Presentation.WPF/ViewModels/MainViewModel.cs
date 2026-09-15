@@ -9,6 +9,7 @@ using Proxirae.Application.Models.Preferences.Appearance;
 using Proxirae.Application.Models.Preferences.Metrics;
 using Proxirae.Application.Services.Application;
 using Proxirae.Application.Services.Archive;
+using Proxirae.Application.Services.Browser;
 using Proxirae.Application.Services.Clipboard;
 using Proxirae.Application.Services.Flows;
 using Proxirae.Application.Services.Logs;
@@ -51,6 +52,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
         private readonly IAutostartService _autostartService;
         private readonly IArchiveService _archiveService;
         private readonly ICsvExporter _csvExporter;
+        private readonly IBrowserService _browserService;
 
         [ObservableProperty]
         private int _selectedTabIndex;
@@ -98,7 +100,8 @@ namespace Proxirae.Presentation.WPF.ViewModels
             IPreferencesService preferencesService,
             IAutostartService autostartService,
             IArchiveService archiveService,
-            ICsvExporter csvExporter)
+            ICsvExporter csvExporter,
+            IBrowserService browserService)
         {
             _applicationService = applicationService;
             _clipboardService = clipboardService;
@@ -113,6 +116,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
             _autostartService = autostartService;
             _archiveService = archiveService;
             _csvExporter = csvExporter;
+            _browserService = browserService;
 
             _flowService.FlowsUpdated += OnFlowsUpdated;
             _flowService.FlowClosed += OnFlowDeleted;
@@ -477,6 +481,12 @@ namespace Proxirae.Presentation.WPF.ViewModels
         private void OpenOptions()
         {
             _dialogFacade.ShowDialog<OptionsViewModel>(this);
+        }
+
+        [RelayCommand]
+        private void CheckForUpdates()
+        {
+            _browserService.OpenUrl("https://github.com/fralorange/Proxirae/releases"); // TODO: Integrate with GitHub API in future
         }
 
         [RelayCommand]
