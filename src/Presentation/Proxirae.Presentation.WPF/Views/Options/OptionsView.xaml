@@ -15,7 +15,9 @@
                          Width="500"
                          Background="Transparent"
                          ResizeMode="NoResize"
-                         KeyboardNavigation.TabNavigation="None">
+                         KeyboardNavigation.TabNavigation="None"
+                         ShowInTaskbar="False"
+                         WindowStartupLocation="CenterOwner">
     <controls:TitleBarWindow.Resources>
         <DataTemplate DataType="{x:Type sections:GeneralViewModel}">
             <views:GeneralView/>
