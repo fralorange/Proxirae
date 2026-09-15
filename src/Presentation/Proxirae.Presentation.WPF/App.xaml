@@ -9,6 +9,7 @@
                 <ResourceDictionary Source="/Resources/Providers/Providers.xaml"/>
                 <ResourceDictionary Source="/Converters/Converters.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/Styles.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/Templates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

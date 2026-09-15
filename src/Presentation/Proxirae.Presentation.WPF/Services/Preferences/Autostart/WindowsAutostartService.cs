@@ -1,8 +1,9 @@
 ﻿#pragma warning disable CA1416
 
 using Microsoft.Win32;
+using Proxirae.Application.Services.Preferences.Autostart;
 
-namespace Proxirae.Application.Services.Preferences.Autostart
+namespace Proxirae.Presentation.WPF.Services.Preferences.Autostart
 {
     public class WindowsAutostartService : IAutostartService
     {
@@ -36,7 +37,7 @@ namespace Proxirae.Application.Services.Preferences.Autostart
             using RegistryKey? runKey = Registry.CurrentUser.OpenSubKey(RunKeyPath, true);
             if (runKey == null) return;
 
-            var exePath = System.Environment.ProcessPath;
+            var exePath = Environment.ProcessPath;
             if (string.IsNullOrEmpty(exePath)) return;
 
             string expectedValue = $"\"{exePath}\" --autostart";

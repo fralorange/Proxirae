@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="Proxirae.Presentation.WPF.Views.Options.Sections.AppearanceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Proxirae.Presentation.WPF.Views.Options.Sections" 
+             xmlns:sections="clr-namespace:Proxirae.Presentation.WPF.ViewModels.Options.Sections" 
+             d:DataContext="{d:DesignInstance Type=sections:AppearanceViewModel}"
+             mc:Ignorable="d" 
+             Background="WhiteSmoke">
+
+    <Grid Margin="10">
+        <GroupBox Header="Visual Settings" VerticalAlignment="Top" Padding="10">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="200"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Theme:" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Column="1" 
+                              ItemsSource="{Binding Themes}"
+                              SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                              DisplayMemberPath="Name" />
+                </Grid>
+
+                <TextBlock Text="Select the visual theme. The interface will update automatically." 
+                           Foreground="DimGray" 
+                           Margin="100 5 0 0"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+        </GroupBox>
+    </Grid>
+</UserControl>

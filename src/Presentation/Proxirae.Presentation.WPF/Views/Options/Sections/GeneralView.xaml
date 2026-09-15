@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="Proxirae.Presentation.WPF.Views.Options.Sections.GeneralView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Proxirae.Presentation.WPF.Views.Options.Sections" 
+             xmlns:sections="clr-namespace:Proxirae.Presentation.WPF.ViewModels.Options.Sections" 
+             d:DataContext="{d:DesignInstance Type=sections:GeneralViewModel}"
+             mc:Ignorable="d"
+             Background="WhiteSmoke">
+
+    <Grid Margin="10">
+        <GroupBox Header="Localization" 
+                  VerticalAlignment="Top" 
+                  Padding="10">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="200"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Language:" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Column="1" 
+                              ItemsSource="{Binding Languages}"
+                              SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
+                              DisplayMemberPath="Name" />
+                </Grid>
+
+                <TextBlock Text="Select your preferred language. Changes are applied immediately." 
+                           Foreground="DimGray" 
+                           Margin="100 5 0 0" 
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+        </GroupBox>
+    </Grid>
+</UserControl>

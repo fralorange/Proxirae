@@ -7,8 +7,8 @@
 
 namespace Proxirae {
 	struct LogContract {
+		std::chrono::system_clock::time_point timestamp;
 		LogLevelContract level;
 		std::string_view message;
-		std::chrono::system_clock::time_point timestamp;
 	};
 }

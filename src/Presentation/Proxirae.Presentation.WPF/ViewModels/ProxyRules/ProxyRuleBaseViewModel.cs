@@ -1,11 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MvvmDialogs;
+using MvvmDialogs.FrameworkDialogs.OpenFile;
 using Proxirae.Contracts.DTOs.Rules;
 using Proxirae.Contracts.DTOs.Rules.Actions;
 using Proxirae.Presentation.WPF.Facades.Dialog;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
 {
@@ -67,11 +69,20 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         [RelayCommand]
         private void BrowseProcesses()
         {
-            var fileName = _dialogFacade.OpenFile(this);
-            if (fileName is null)
+            var settings = new OpenFileDialogSettings
+            {
+                Title = "Open File",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*"
+            };
+
+            var filePath = _dialogFacade.OpenFile(this, settings);
+            if (filePath is null)
             {
                 return;
             }
+
+            var fileName = Path.GetFileName(filePath);
 
             if (fileName.Contains(' '))
             {

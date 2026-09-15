@@ -11,9 +11,10 @@
                          xmlns:converters="clr-namespace:Proxirae.Presentation.WPF.Converters"
                          xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels"
                          xmlns:behaviors="clr-namespace:Proxirae.Presentation.WPF.Behaviors"
+                         xmlns:root="clr-namespace:Proxirae.Presentation.WPF"
                          md:DialogServiceViews.IsRegistered="True"
                          mc:Ignorable="d"
-                         Title="Proxirae"
+                         Title="{x:Static root:ProgramInfo.AppName}"
                          MinWidth="750"
                          MinHeight="500"
                          Background="Transparent"
@@ -24,11 +25,15 @@
         <Menu Background="WhiteSmoke" 
               Margin="0 5 0 5">
             <MenuItem Header="File">
-                <MenuItem Header="Import Configuration..."/>
-                <MenuItem Header="Export Configuration..."/>
+                <MenuItem Header="Import Configuration..."
+                          Command="{Binding ImportConfigurationCommand}"/>
+                <MenuItem Header="Export Configuration..."
+                          Command="{Binding ExportConfigurationCommand}"/>
                 <Separator/>
-                <MenuItem Header="Export Traffic History..."/>
-                <MenuItem Header="Export Logs History..."/>
+                <MenuItem Header="Export Routing History..."
+                          Command="{Binding ExportRoutingHistoryCommand}"/>
+                <MenuItem Header="Export Logs History..."
+                          Command="{Binding ExportLogsHistoryCommand}"/>
                 <Separator/>
                 <MenuItem Header="Autostart"
                           IsCheckable="True"
@@ -45,18 +50,22 @@
                           Command="{Binding OpenProxyRulesCommand}"/>
             </MenuItem>
             <MenuItem Header="View">
-                <MenuItem Header="Reset Layout"/>
+                <MenuItem Header="Reset Layout"
+                          Command="{Binding ResetLayoutCommand}"/>
             </MenuItem>
             <MenuItem Header="Tools">
                 <MenuItem Header="Proxy Checker..."
                           Command="{Binding OpenProxyCheckerCommand}"/>
                 <Separator/>
-                <MenuItem Header="Options..."/>
+                <MenuItem Header="Options..."
+                          Command="{Binding OpenOptionsCommand}"/>
             </MenuItem>
             <MenuItem Header="Help">
-                <MenuItem Header="Check for Updates..."/>
+                <MenuItem Header="Check for Updates..."
+                          Command="{Binding CheckForUpdatesCommand}"/>
                 <Separator/>
-                <MenuItem Header="About Proxirae..."/>
+                <MenuItem Header="About Proxirae..."
+                          Command="{Binding OpenAboutCommand}"/>
             </MenuItem>
         </Menu>
     </controls:TitleBarWindow.TitleBarMenuContent>
@@ -71,11 +80,11 @@
         </Grid.RowDefinitions>
 
         <tb:TaskbarIcon x:Name="TrayIcon"
-                        ToolTipText="Proxirae"
+                        ToolTipText="{x:Static root:ProgramInfo.AppName}"
                         IconSource="/Resources/Icons/icon.ico"
                         DoubleClickCommand="{Binding RestoreCommand}">
             <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu>
+                <ContextMenu d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
                     <MenuItem Header="Open"
                               Command="{Binding RestoreCommand}"/>
                     <Separator/>

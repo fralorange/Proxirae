@@ -20,7 +20,6 @@ namespace Proxirae.Presentation.WPF.Controls
     [ContentProperty(nameof(WindowContent))]
     public class TitleBarWindow : Window
     {
-        private static readonly Brush TitleBarBackgroundBrush = Brushes.WhiteSmoke;
         private static readonly Brush TitleBarButtonBackgroundBrush = Brushes.Transparent;
         private static readonly Brush TitleBarButtonHoverBackgroundBrush = new SolidColorBrush(Color.FromRgb(233, 236, 239));
         private static readonly Brush TitleBarButtonPressedBackgroundBrush = new SolidColorBrush(Color.FromRgb(221, 226, 230));
@@ -37,6 +36,13 @@ namespace Proxirae.Presentation.WPF.Controls
         private Grid titleBar;
         private Border windowBorder;
         private WindowChrome windowChrome;
+
+        public static readonly DependencyProperty TitleBarBackgroundProperty =
+            DependencyProperty.Register(
+                nameof(TitleBarBackground),
+                typeof(Brush),
+                typeof(TitleBarWindow),
+                new PropertyMetadata(Brushes.WhiteSmoke));
 
         /// <summary>
         /// A title bar menu content dependency property.
@@ -93,6 +99,15 @@ namespace Proxirae.Presentation.WPF.Controls
                 typeof(bool),
                 typeof(TitleBarWindow),
                 new PropertyMetadata(false));
+
+        /// <summary>
+        /// Gets or sets title bar background brush
+        /// </summary>
+        public Brush TitleBarBackground
+        {
+            get => (Brush)GetValue(TitleBarBackgroundProperty);
+            set => SetValue(TitleBarBackgroundProperty, value);
+        }
 
         /// <summary>
         /// Gets or sets title bar menu content.
@@ -232,7 +247,7 @@ namespace Proxirae.Presentation.WPF.Controls
                     new ColumnDefinition { Width = GridLength.Auto }
                 }
             };
-            titleBar.Background = TitleBarBackgroundBrush;
+            titleBar.SetBinding(Panel.BackgroundProperty, new Binding(nameof(TitleBarBackground)) { Source = this });
             DockPanel.SetDock(titleBar, Dock.Top);
             dockPanel.Children.Add(titleBar);
             WindowChrome.SetIsHitTestVisibleInChrome(titleBar, false);

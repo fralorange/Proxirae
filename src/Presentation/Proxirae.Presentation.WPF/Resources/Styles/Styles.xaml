@@ -223,7 +223,10 @@
 
     <Style x:Key="Table" TargetType="DataGrid">
         <Setter Property="SelectionMode" Value="Single"/>
-        
+        <Setter Property="CanUserResizeColumns" Value="False"/>
+        <Setter Property="CanUserResizeRows" Value="False"/>
+        <Setter Property="CanUserReorderColumns" Value="False"/>
+
         <Setter Property="HorizontalGridLinesBrush" Value="#40808080" />
         <Setter Property="VerticalGridLinesBrush" Value="#40808080" />
         
@@ -253,8 +256,6 @@
         <Setter Property="Margin" Value="0 0 5 0"/>
         <Setter Property="BorderBrush" Value="LightGray"/>
         <Setter Property="Background" Value="White"/>
-        <Setter Property="CanUserResizeColumns" Value="False"/>
-        <Setter Property="CanUserResizeRows" Value="False"/>
         <Setter Property="AutoGenerateColumns" Value="False"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
     </Style>
@@ -263,8 +264,6 @@
         <Setter Property="AutoGenerateColumns" Value="False"/>
         <Setter Property="SelectionUnit" Value="FullRow"/>
         <Setter Property="IsReadOnly" Value="True"/>
-        <Setter Property="CanUserResizeColumns" Value="False"/>
-        <Setter Property="CanUserResizeRows" Value="False"/>
         <Setter Property="Background" Value="White"/>
         <Setter Property="BorderBrush" Value="LightGray"/>
         <Setter Property="Margin" Value="10"/>
