@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Proxirae.Application.Services.Configurator;
 using Proxirae.Infrastructure;
 using Proxirae.Infrastructure.ProcessCommunication;
 using Proxirae.Infrastructure.TransactionControl;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Proxirae.Presentation.WPF
 {
@@ -41,9 +43,12 @@ namespace Proxirae.Presentation.WPF
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
+            var uiConfigurator = _host.Services.GetRequiredService<IConfiguratorService>();
+            uiConfigurator.ApplyGlobalTweaks();
+
             var mainView = _host.Services.GetRequiredService<MainView>();
-            mainView.Show();
             Current.MainWindow = mainView;
+            mainView.Show();
 
             base.OnStartup(e);
         }

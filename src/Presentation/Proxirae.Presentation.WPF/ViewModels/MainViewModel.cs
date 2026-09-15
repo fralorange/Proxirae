@@ -2,6 +2,9 @@
 using CommunityToolkit.Mvvm.Input;
 using ObservableCollections;
 using Proxirae.Application.Models.Preferences.Appearance;
+using Proxirae.Application.Models.Preferences.Engine;
+using Proxirae.Application.Models.Preferences.Metrics;
+using Proxirae.Application.Models.Preferences.System;
 using Proxirae.Application.Services.Application;
 using Proxirae.Application.Services.Clipboard;
 using Proxirae.Application.Services.Flows;
@@ -12,18 +15,21 @@ using Proxirae.Application.Services.Routes;
 using Proxirae.Contracts.DTOs.Flows;
 using Proxirae.Contracts.DTOs.Logs;
 using Proxirae.Contracts.DTOs.Routes;
+using Proxirae.Presentation.WPF.Extensions;
 using Proxirae.Presentation.WPF.Facades.Dialog;
 using Proxirae.Presentation.WPF.Factories.Flow;
 using Proxirae.Presentation.WPF.Factories.Routes;
 using Proxirae.Presentation.WPF.ViewModels.About;
 using Proxirae.Presentation.WPF.ViewModels.Flows;
 using Proxirae.Presentation.WPF.ViewModels.Logs;
+using Proxirae.Presentation.WPF.ViewModels.Options;
 using Proxirae.Presentation.WPF.ViewModels.ProxyChecker;
 using Proxirae.Presentation.WPF.ViewModels.ProxyRules;
 using Proxirae.Presentation.WPF.ViewModels.ProxyServers;
 using Proxirae.Presentation.WPF.ViewModels.Routes;
 using System.Collections;
 using System.Collections.ObjectModel;
+using AppPreferences = Proxirae.Application.Models.Preferences.Preferences;
 
 namespace Proxirae.Presentation.WPF.ViewModels
 {
@@ -46,11 +52,15 @@ namespace Proxirae.Presentation.WPF.ViewModels
         [ObservableProperty]
         private ObservableCollection<FlowViewModel> _flows = [];
 
-        private readonly ObservableFixedSizeRingBuffer<LogViewModel> _logsBuffer = new(1000);
-        public INotifyCollectionChangedSynchronizedViewList<LogViewModel> Logs { get; }
+        private ObservableFixedSizeRingBuffer<LogViewModel> _logsBuffer;
 
-        private readonly ObservableFixedSizeRingBuffer<RouteViewModel> _routesBuffer = new(1000);
-        public INotifyCollectionChangedSynchronizedViewList<RouteViewModel> Routes { get; }
+        [ObservableProperty]
+        private INotifyCollectionChangedSynchronizedViewList<LogViewModel> _logs;
+
+        private ObservableFixedSizeRingBuffer<RouteViewModel> _routesBuffer;
+
+        [ObservableProperty]
+        private INotifyCollectionChangedSynchronizedViewList<RouteViewModel> _routes;
 
         [ObservableProperty]
         private bool _routesAutoScroll = true;
@@ -95,13 +105,19 @@ namespace Proxirae.Presentation.WPF.ViewModels
             _flowService.FlowsUpdated += OnFlowsUpdated;
             _flowService.FlowClosed += OnFlowDeleted;
 
-            Logs = _logsBuffer
+            _preferencesService.PreferencesChanged += OnPreferencesChanged;
+
+            _logsBuffer = new(_preferencesService.Current.Metrics.LogsBufferSize); 
+
+            _logs = _logsBuffer
                 .CreateView(l => l)
                 .ToNotifyCollectionChanged();
 
             _logService.LogReceived += OnLogReceived;
 
-            Routes = _routesBuffer
+            _routesBuffer = new(_preferencesService.Current.Metrics.RoutingBufferSize); 
+
+            _routes = _routesBuffer
                 .CreateView(r => r)
                 .ToNotifyCollectionChanged();
 
@@ -130,6 +146,27 @@ namespace Proxirae.Presentation.WPF.ViewModels
                 }
                 catch (TaskCanceledException) { }
             }, token);
+        }
+
+        private void OnPreferencesChanged(object? sender, AppPreferences newPreferences)
+        {
+            WinApp.Current.Dispatcher.Invoke(() =>
+            {
+                SyncMetricsPreferences(newPreferences.Metrics);
+            });
+        }
+
+        private void SyncMetricsPreferences(MetricsPreferences metrics)
+        {
+            if (_logsBuffer.Capacity != metrics.LogsBufferSize)
+            {
+                (_logsBuffer, Logs) = _logsBuffer.Resize(Logs, metrics.LogsBufferSize);
+            }
+
+            if (_routesBuffer.Capacity != metrics.RoutingBufferSize)
+            {
+                (_routesBuffer, Routes) = _routesBuffer.Resize(Routes, metrics.RoutingBufferSize);
+            }
         }
 
         private async void OnRouteReceived(RouteDto route)
@@ -337,6 +374,12 @@ namespace Proxirae.Presentation.WPF.ViewModels
         }
 
         [RelayCommand]
+        private void OpenOptions()
+        {
+            _dialogFacade.ShowDialog<OptionsViewModel>(this);
+        }
+
+        [RelayCommand]
         private void OpenAbout()
         {
             _dialogFacade.ShowDialog<AboutViewModel>(this);
@@ -344,6 +387,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
 
         public void Dispose()
         {
+            _preferencesService.PreferencesChanged -= OnPreferencesChanged;
             _flowService.FlowsUpdated -= OnFlowsUpdated;
             _flowService.FlowClosed -= OnFlowDeleted;
             _logService.LogReceived -= OnLogReceived;

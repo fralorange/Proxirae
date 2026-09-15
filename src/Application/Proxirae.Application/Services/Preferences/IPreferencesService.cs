@@ -1,6 +1,4 @@
-﻿using Proxirae.Application.Models.Preferences.Appearance;
-using Proxirae.Application.Models.Preferences.Engine;
-using Proxirae.Application.Models.Preferences.System;
+﻿using Proxirae.Application.Models.Preferences.Engine;
 using AppPreferences = Proxirae.Application.Models.Preferences.Preferences;
 
 namespace Proxirae.Application.Services.Preferences
@@ -8,9 +6,11 @@ namespace Proxirae.Application.Services.Preferences
     public interface IPreferencesService
     {
         AppPreferences Current { get; }
+
+        event EventHandler<AppPreferences>? PreferencesChanged;
+
         Task LoadAsync(CancellationToken cancellationToken);
-        Task UpdateAsync(SystemPreferences preferences, CancellationToken cancellationToken);
-        Task UpdateAsync(EnginePreferences preferences, CancellationToken cancellationToken);
-        Task UpdateAsync(AppearancePreferences preferences, CancellationToken cancellationToken);
+        Task UpdateAsync<T>(T preferences, CancellationToken cancellationToken = default);
+        Task UpdateAsync(EnginePreferences preferences, CancellationToken cancellationToken = default);
     }
 }

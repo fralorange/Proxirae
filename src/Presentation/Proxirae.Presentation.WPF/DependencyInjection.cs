@@ -8,6 +8,7 @@ using Proxirae.Application.Mappers.Rules.Actions;
 using Proxirae.Application.Services.Application;
 using Proxirae.Application.Services.Browser;
 using Proxirae.Application.Services.Clipboard;
+using Proxirae.Application.Services.Configurator;
 using Proxirae.Application.Services.Flows;
 using Proxirae.Application.Services.Logs;
 using Proxirae.Application.Services.Preferences;
@@ -25,9 +26,13 @@ using Proxirae.Presentation.WPF.Factories.Routes;
 using Proxirae.Presentation.WPF.Services.Application;
 using Proxirae.Presentation.WPF.Services.Browser;
 using Proxirae.Presentation.WPF.Services.Clipboard;
+using Proxirae.Presentation.WPF.Services.Configurator;
+using Proxirae.Presentation.WPF.Services.Preferences.Autostart;
 using Proxirae.Presentation.WPF.Services.Process;
 using Proxirae.Presentation.WPF.ViewModels;
 using Proxirae.Presentation.WPF.ViewModels.About;
+using Proxirae.Presentation.WPF.ViewModels.Options;
+using Proxirae.Presentation.WPF.ViewModels.Options.Sections;
 using Proxirae.Presentation.WPF.ViewModels.ProxyChecker;
 using Proxirae.Presentation.WPF.ViewModels.ProxyRules;
 using Proxirae.Presentation.WPF.ViewModels.ProxyServers;
@@ -53,12 +58,13 @@ namespace Proxirae.Presentation.WPF
             services.AddSingleton<ILogService, LogService>();
             services.AddSingleton<IRouteService, RouteService>();
             services.AddTransient<IClipboardService, ClipboardService>();
-            services.AddTransient<IPreferencesService, PreferencesService>();
+            services.AddSingleton<IPreferencesService, PreferencesService>();
             services.AddHostedService<PreferencesHostedService>();
             services.AddSingleton<ITestService, TestService>();
             services.AddSingleton<IAutostartService, WindowsAutostartService>();
             services.AddSingleton<IProcessInfoService, ProcessInfoService>();
             services.AddTransient<IBrowserService, BrowserService>();
+            services.AddTransient<IConfiguratorService, WpfUiConfiguratorService>();
             return services;
         }
 
@@ -96,6 +102,10 @@ namespace Proxirae.Presentation.WPF
             services.AddTransient<AddProxyRuleViewModel>();
             services.AddTransient<ProxyCheckerViewModel>();
             services.AddTransient<AboutViewModel>();
+            services.AddTransient<OptionsViewModel>();
+            services.AddTransient<GeneralViewModel>();
+            services.AddTransient<AppearanceViewModel>();
+            services.AddTransient<MetricsViewModel>();
             return services;
         }
 

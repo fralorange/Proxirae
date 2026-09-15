@@ -53,7 +53,8 @@
                 <MenuItem Header="Proxy Checker..."
                           Command="{Binding OpenProxyCheckerCommand}"/>
                 <Separator/>
-                <MenuItem Header="Options..."/>
+                <MenuItem Header="Options..."
+                          Command="{Binding OpenOptionsCommand}"/>
             </MenuItem>
             <MenuItem Header="Help">
                 <MenuItem Header="Check for Updates..."/>
