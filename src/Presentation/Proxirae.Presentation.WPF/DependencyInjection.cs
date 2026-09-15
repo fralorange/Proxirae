@@ -39,6 +39,7 @@ using Proxirae.Presentation.WPF.ViewModels.ProxyRules;
 using Proxirae.Presentation.WPF.ViewModels.ProxyServers;
 using Proxirae.Infrastructure;
 using Proxirae.Application.Services.Archive;
+using Proxirae.Application.Validators.ProxyRule;
 
 namespace Proxirae.Presentation.WPF
 {
@@ -70,6 +71,13 @@ namespace Proxirae.Presentation.WPF
             services.AddTransient<IBrowserService, BrowserService>();
             services.AddTransient<IUiService, WpfUiService>();
             services.AddTransient<IArchiveService, PxcfgService>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddValidators(this IServiceCollection services)
+        {
+            services.AddTransient<IProxyRuleValidator, RuleService>();
 
             return services;
         }

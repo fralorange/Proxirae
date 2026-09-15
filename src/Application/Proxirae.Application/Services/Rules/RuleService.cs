@@ -1,11 +1,13 @@
 ﻿using Proxirae.Application.Mappers.Rules;
 using Proxirae.Application.Messenger;
 using Proxirae.Application.UnitsOfWork.Rules;
+using Proxirae.Application.Validators.ProxyRule;
 using Proxirae.Contracts.DTOs.Rules;
+using Proxirae.Domain.Rules.Actions;
 
 namespace Proxirae.Application.Services.Rules
 {
-    public class RuleService : IRuleService
+    public class RuleService : IRuleService, IProxyRuleValidator
     {
         private readonly IRuleUnitOfWork _ruleUnitOfWork;
         private readonly IRuleDtoMapper _ruleMapper;
@@ -22,6 +24,16 @@ namespace Proxirae.Application.Services.Rules
         {
             var rules = await _ruleUnitOfWork.GetAsync(token);
             return rules.Select(_ruleMapper.MapToDto).ToList();
+        }
+
+        public async Task<IReadOnlyCollection<RuleDto>> GetAffectedRulesAsync(Guid proxyId, CancellationToken cancellationToken)
+        {
+            var rules = await _ruleUnitOfWork.GetAsync(cancellationToken);
+
+            return rules
+                .Where(r => r.Action is ProxyAction pa && pa.Id == proxyId)
+                .Select(_ruleMapper.MapToDto)
+                .ToList();
         }
 
         public async Task<RuleDto?> GetByIdAsync(Guid id, CancellationToken token)
@@ -54,6 +66,21 @@ namespace Proxirae.Application.Services.Rules
         public Task<bool> DeleteAsync(Guid id, CancellationToken token)
         {
             return Task.FromResult(_ruleUnitOfWork.Delete(id));
+        }
+
+
+        public async Task UnbindProxyFromRulesAsync(Guid proxyId, CancellationToken cancellationToken)
+        {
+            var rules = await _ruleUnitOfWork.GetAsync(cancellationToken);
+
+            var affectedRules = rules
+                .Where(r => r.Action is ProxyAction pa && pa.Id == proxyId);
+
+            foreach (var rule in affectedRules)
+            {
+                rule.Action = new DirectAction();
+                _ruleUnitOfWork.Update(rule);
+            }
         }
 
         public async Task SwapPrioritiesAsync(Guid sourceId, Guid targetId, CancellationToken token)
