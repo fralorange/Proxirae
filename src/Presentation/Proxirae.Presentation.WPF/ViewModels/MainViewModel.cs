@@ -197,6 +197,8 @@ namespace Proxirae.Presentation.WPF.ViewModels
             WinApp.Current.Dispatcher.Invoke(() =>
             {
                 _routesBuffer.AddLast(routeViewModel);
+
+                ExportRoutesHistoryCommand.NotifyCanExecuteChanged();
             });
         }
 
@@ -205,6 +207,8 @@ namespace Proxirae.Presentation.WPF.ViewModels
             WinApp.Current.Dispatcher.Invoke(() =>
             {
                 _logsBuffer.AddLast(new(log));
+
+                ExportLogsHistoryCommand.NotifyCanExecuteChanged();
             });
         }
 
@@ -298,8 +302,8 @@ namespace Proxirae.Presentation.WPF.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async Task ExportRoutingHistoryAsync(CancellationToken cancellationToken)
+        [RelayCommand(CanExecute = nameof(CanExportRoutes))]
+        private async Task ExportRoutesHistoryAsync(CancellationToken cancellationToken)
         {
             if (_routesBuffer.Count == 0) return;
 
@@ -321,7 +325,12 @@ namespace Proxirae.Presentation.WPF.ViewModels
             }
         }
 
-        [RelayCommand]
+        private bool CanExportRoutes()
+        {
+            return _routesBuffer.Count > 0;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanExportLogs))]
         private async Task ExportLogsHistoryAsync(CancellationToken cancellationToken)
         {
             if (_logsBuffer.Count == 0) return;
@@ -342,6 +351,11 @@ namespace Proxirae.Presentation.WPF.ViewModels
             {
                 await _csvExporter.ExportAsync(path, _logsBuffer, cancellationToken);
             }
+        }
+
+        private bool CanExportLogs()
+        {
+            return _logsBuffer.Count > 0;
         }
 
         [RelayCommand]
@@ -415,10 +429,12 @@ namespace Proxirae.Presentation.WPF.ViewModels
             if (tabIndex == 0)
             {
                 _routesBuffer.Clear();
+                ExportRoutesHistoryCommand.NotifyCanExecuteChanged();
             }
             else if (tabIndex == 1)
             {
                 _logsBuffer.Clear();
+                ExportLogsHistoryCommand.NotifyCanExecuteChanged();
             }
         }
 

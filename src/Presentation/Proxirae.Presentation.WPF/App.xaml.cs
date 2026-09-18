@@ -1,9 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Proxirae.Application.Services.Localization;
+using Proxirae.Application.Services.Preferences;
 using Proxirae.Application.Services.UI;
 using Proxirae.Infrastructure;
 using Proxirae.Infrastructure.ProcessCommunication;
 using Proxirae.Infrastructure.TransactionControl;
+using RentADeveloper.ResXLocalization;
+using System.Globalization;
 using System.Windows;
 
 namespace Proxirae.Presentation.WPF
@@ -41,6 +45,12 @@ namespace Proxirae.Presentation.WPF
         protected override async void OnStartup(StartupEventArgs e)
         {
             await _host.StartAsync();
+
+            var preferencesService = _host.Services.GetRequiredService<IPreferencesService>();
+            await preferencesService.LoadAsync(CancellationToken.None);
+
+            var localizationService = _host.Services.GetRequiredService<ILocalizationService>();
+            localizationService.Initialize(preferencesService.Current.System.LanguageCode);
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 

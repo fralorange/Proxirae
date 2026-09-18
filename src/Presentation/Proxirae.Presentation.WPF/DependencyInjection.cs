@@ -40,6 +40,8 @@ using Proxirae.Presentation.WPF.ViewModels.ProxyServers;
 using Proxirae.Infrastructure;
 using Proxirae.Application.Services.Archive;
 using Proxirae.Application.Validators.ProxyRule;
+using Proxirae.Application.Services.Localization;
+using Proxirae.Presentation.WPF.Services.Localization;
 
 namespace Proxirae.Presentation.WPF
 {
@@ -71,6 +73,7 @@ namespace Proxirae.Presentation.WPF
             services.AddTransient<IBrowserService, BrowserService>();
             services.AddTransient<IUiService, WpfUiService>();
             services.AddTransient<IArchiveService, PxcfgService>();
+            services.AddSingleton<ILocalizationService, LocalizationService>();
 
             return services;
         }

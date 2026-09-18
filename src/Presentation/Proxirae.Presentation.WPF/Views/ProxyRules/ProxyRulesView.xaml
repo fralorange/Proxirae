@@ -3,8 +3,10 @@
                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                          xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:l="clr-namespace:RentADeveloper.ResXLocalization.WPF;assembly=ResXLocalization.WPF"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                          xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
+                         xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
                          xmlns:local="clr-namespace:Proxirae.Presentation.WPF.Views.ProxyRules"
                          xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
                          xmlns:behaviors="clr-namespace:Proxirae.Presentation.WPF.Behaviors"
@@ -12,7 +14,7 @@
                          md:DialogServiceViews.IsRegistered="True"
                          d:DataContext="{d:DesignInstance Type=viewmodels:ProxyRulesViewModel}"
                          mc:Ignorable="d"
-                         Title="Proxy Rules"
+                         Title="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesTitle}}"
                          MinHeight="650" 
                          MinWidth="750"
                          Height="650"
@@ -55,7 +57,7 @@
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="Remarks"
+                <DataGridTemplateColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderRemarks}}"
                                         Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -81,29 +83,33 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Processes" 
+                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderProcesses}}" 
                                     Width="*"
-                                    Binding="{Binding Processes}"/>
-                <DataGridTextColumn Header="Target Hosts" 
+                                    Binding="{Binding Processes}"
+                                    ElementStyle="{StaticResource WrapTextColumnStyle}"/>
+                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderTargetHosts}}" 
                                     Width="*"
-                                    Binding="{Binding Hosts}"/>
-                <DataGridTextColumn Header="Target Ports" 
+                                    Binding="{Binding Hosts}"
+                                    ElementStyle="{StaticResource WrapTextColumnStyle}"/>
+                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderTargetPorts}}" 
                                     Width="*"
-                                    Binding="{Binding Ports}"/>
-                <DataGridTextColumn Header="Protocol" 
+                                    Binding="{Binding Ports}"
+                                    ElementStyle="{StaticResource WrapTextColumnStyle}"/>
+                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderProtocol}}" 
                                     Width="*"
-                                    Binding="{Binding Protocol}"/>
-                <DataGridTemplateColumn Header="Action"
+                                    Binding="{Binding Protocol}"
+                                    ElementStyle="{StaticResource WrapTextColumnStyle}"/>
+                <DataGridTemplateColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderAction}}"
                                         Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid>
                                 <TextBlock x:Name="ActionTextBlock" 
-                                           Text="{Binding Action.Name}"
+                                           Text="{Binding Action, Converter={StaticResource ActionToLocalizeConverter}}"
                                            VerticalAlignment="Center"
                                            Margin="5 0">
                                     <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource WrapTextColumnStyle}">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=DataGridRow}}"
                                                              Value="True">
@@ -117,15 +123,20 @@
                                           SelectedItem="{Binding Action, UpdateSourceTrigger=PropertyChanged}"
                                           SelectedValue="{Binding Action.Id, UpdateSourceTrigger=PropertyChanged}"
                                           SelectedValuePath="Id"
-                                          DisplayMemberPath="Name"
                                           Margin="0 0">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Converter={StaticResource ActionToLocalizeConverter}}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="SelectionChanged">
                                             <i:InvokeCommandAction Command="{Binding DataContext.UpdateProxyRuleCommand, RelativeSource={RelativeSource AncestorType=controls:TitleBarWindow}}"
                                                                    CommandParameter="{Binding}" />
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
-                                    
+
                                     <ComboBox.Style>
                                         <Style TargetType="ComboBox">
                                             <Setter Property="Visibility" Value="Collapsed"/>
@@ -168,27 +179,27 @@
                 </Style>
 
             </Grid.Resources>
-            
+
             <StackPanel Grid.Row="0">
-                <Button Content="Add..."
+                <Button Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesButtonAdd}}"
                         Style="{StaticResource ControlButton}"
                         Command="{Binding AddProxyRuleCommand}"/>
-                <Button Content="Edit..."
+                <Button Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesButtonEdit}}"
                         Style="{StaticResource TaskButton}"
                         Command="{Binding EditProxyRuleCommand}"
                         CommandParameter="{Binding SelectedItem, ElementName=ProxyRulesDataGrid}"/>
-                <Button Content="Remove"
+                <Button Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesButtonRemove}}"
                         Style="{StaticResource TaskButton}"
                         Command="{Binding DeleteProxyRuleCommand}"
                         CommandParameter="{Binding SelectedItem, ElementName=ProxyRulesDataGrid}"/>
             </StackPanel>
-            
+
             <StackPanel Grid.Row="2">
-                <Button Content="Up"
+                <Button Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesButtonUp}}"
                         Style="{StaticResource TaskButton}"
                         Command="{Binding MoveProxyRuleUpCommand}"
                         CommandParameter="{Binding SelectedItem, ElementName=ProxyRulesDataGrid}"/>
-                <Button Content="Down"
+                <Button Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesButtonDown}}"
                         Style="{StaticResource TaskButton}"
                         Command="{Binding MoveProxyRuleDownCommand}"
                         CommandParameter="{Binding SelectedItem, ElementName=ProxyRulesDataGrid}"/>
@@ -196,23 +207,23 @@
         </Grid>
 
 
-        <DockPanel Grid.Row="1"
-                   Grid.Column="0"
-                   Grid.ColumnSpan="2"
-                   LastChildFill="False">
-            <Button Content="Apply"
+        <UniformGrid Grid.Row="1"
+                     Grid.Column="0"
+                     Rows="1"
+                     HorizontalAlignment="Right">
+            <Button Content="{l:Localize {x:Static res:LocalizationKeys.SharedOK}}"
                     Style="{StaticResource ControlButton}"
-                    DockPanel.Dock="Right"
-                    Command="{Binding ApplyCommand}"/>
-            <Button Content="Cancel"
-                    Style="{StaticResource ControlButton}"
-                    DockPanel.Dock="Right" 
-                    IsCancel="True"/>
-            <Button Content="OK"
-                    Style="{StaticResource ControlButton}"
-                    DockPanel.Dock="Right" 
                     IsDefault="True"
                     Command="{Binding ConfirmCommand}"/>
-        </DockPanel>
+            <Button Content="{l:Localize {x:Static res:LocalizationKeys.SharedCancel}}"
+                    Style="{StaticResource ControlButton}"
+                    IsCancel="True"/>
+        </UniformGrid>
+
+        <Button Grid.Row="1"
+                Grid.Column="1"
+                Content="{l:Localize {x:Static res:LocalizationKeys.SharedApply}}"
+                Style="{StaticResource ControlButton}"
+                Command="{Binding ApplyCommand}"/>
     </Grid>
 </controls:TitleBarWindow>

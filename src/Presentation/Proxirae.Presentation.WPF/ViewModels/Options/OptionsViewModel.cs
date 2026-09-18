@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Gu.Wpf.NumericInput;
 using MvvmDialogs;
+using Proxirae.Application.Services.Localization;
 using Proxirae.Application.Services.Preferences;
 using Proxirae.Presentation.WPF.Models.Sections;
 using Proxirae.Presentation.WPF.ViewModels.Options.Sections;
@@ -11,6 +11,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options
     public partial class OptionsViewModel : ObservableObject, IModalDialogViewModel
     {
         private readonly IPreferencesService _preferencesService;
+        private readonly ILocalizationService _localizationService;
 
         private bool? _dialogResult;
         public bool? DialogResult
@@ -24,9 +25,10 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options
         [ObservableProperty]
         private ISectionViewModel _selectedSection;
 
-        public OptionsViewModel(IPreferencesService preferencesService, GeneralViewModel generalViewModel, AppearanceViewModel appearanceViewModel, MetricsViewModel metricsViewModel)
+        public OptionsViewModel(IPreferencesService preferencesService, GeneralViewModel generalViewModel, AppearanceViewModel appearanceViewModel, MetricsViewModel metricsViewModel, ILocalizationService localizationService)
         {
             _preferencesService = preferencesService;
+            _localizationService = localizationService;
 
             Sections =
             [
@@ -42,14 +44,14 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options
         private bool CanApply() => Sections.Any(s => s.ViewModel is ISectionViewModel vm && vm.HasChanges);
 
         [RelayCommand(CanExecute = nameof(CanApply))]
-        private async Task ApplyAsync(CancellationToken cancellationToken)
+        private async Task<bool> ApplyAsync(CancellationToken cancellationToken)
         {
             foreach (var section in Sections)
             {
                 if (section.ViewModel is ISectionViewModel sectionViewModel && !sectionViewModel.Validate())
                 {
                     SelectedSection = sectionViewModel;
-                    return;
+                    return false;
                 }
             }
 
@@ -62,13 +64,35 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options
                 }
             }
 
+            var languageChanged =
+                _preferencesService.Current.System.LanguageCode != newPreferences.System.LanguageCode;
+            // if the number of options increases, this comparison will need to be refactored.
+
             await _preferencesService.UpdateAsync(newPreferences, cancellationToken);
+
+            if (languageChanged)
+            {
+                _localizationService.SwitchTo(newPreferences.System.LanguageCode);
+            }
+
+            foreach (var section in Sections)
+            {
+                if (section.ViewModel is ISectionViewModel vm)
+                {
+                    vm.HasChanges = false;
+                }
+            }
+
+            ApplyCommand.NotifyCanExecuteChanged();
+
+            return true;
         }
 
         [RelayCommand]
         private async Task ConfirmAsync(CancellationToken cancellationToken)
         {
-            await ApplyAsync(cancellationToken);
+            var success = await ApplyAsync(cancellationToken);
+            if (!success) return;
 
             DialogResult = true;
         }

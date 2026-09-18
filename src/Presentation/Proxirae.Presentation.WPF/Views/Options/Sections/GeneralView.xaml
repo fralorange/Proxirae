@@ -5,12 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Proxirae.Presentation.WPF.Views.Options.Sections" 
              xmlns:sections="clr-namespace:Proxirae.Presentation.WPF.ViewModels.Options.Sections" 
+             xmlns:l="clr-namespace:RentADeveloper.ResXLocalization.WPF;assembly=ResXLocalization.WPF"
+             xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
+             xmlns:core="clr-namespace:RentADeveloper.ResXLocalization;assembly=ResXLocalization.Core"
              d:DataContext="{d:DesignInstance Type=sections:GeneralViewModel}"
              mc:Ignorable="d"
              Background="WhiteSmoke">
 
     <Grid Margin="10">
-        <GroupBox Header="Localization" 
+        <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.GeneralGroupHeaderLocalization}}" 
                   VerticalAlignment="Top" 
                   Padding="10">
             <StackPanel>
@@ -20,14 +23,28 @@
                         <ColumnDefinition Width="200"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Language:" VerticalAlignment="Center"/>
-                    <ComboBox Grid.Column="1" 
+                    <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.GeneralLanguage}}" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Column="1"
                               ItemsSource="{Binding Languages}"
-                              SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
-                              DisplayMemberPath="Name" />
+                              SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource NameToLocalizeConverter}"
+                                                      ConverterParameter="GeneralLanguage">
+                                            <Binding Path="Name"/>
+                                            <Binding Path="CurrentCulture"
+                                                     Source="{x:Static core:Localizer.Current}"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </Grid>
 
-                <TextBlock Text="Select your preferred language. Changes are applied immediately." 
+                <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.GeneralLanguageDescription}}" 
                            Foreground="DimGray" 
                            Margin="100 5 0 0" 
                            TextWrapping="Wrap"/>

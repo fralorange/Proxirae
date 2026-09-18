@@ -1,0 +1,501 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MenuImportConf" xml:space="preserve">
+    <value>Import Configuration...</value>
+  </data>
+  <data name="MenuExportRoutes" xml:space="preserve">
+    <value>Export Routing History...</value>
+  </data>
+  <data name="MenuExportLogs" xml:space="preserve">
+    <value>Export Logs History...</value>
+  </data>
+  <data name="MenuAutostart" xml:space="preserve">
+    <value>Autostart</value>
+  </data>
+  <data name="MenuExit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="MenuProxy" xml:space="preserve">
+    <value>Proxy</value>
+  </data>
+  <data name="MenuProxyServers" xml:space="preserve">
+    <value>Proxy Servers...</value>
+  </data>
+  <data name="MenuProxyRules" xml:space="preserve">
+    <value>Proxy Rules...</value>
+  </data>
+  <data name="MenuView" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="MenuResetLayout" xml:space="preserve">
+    <value>Reset Layout</value>
+  </data>
+  <data name="MenuTools" xml:space="preserve">
+    <value>Tools</value>
+  </data>
+  <data name="MenuProxyChecker" xml:space="preserve">
+    <value>Proxy Checker...</value>
+  </data>
+  <data name="MenuOptions" xml:space="preserve">
+    <value>Options...</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="MenuCheckForUpdates" xml:space="preserve">
+    <value>Check for Updates...</value>
+  </data>
+  <data name="MenuAboutApp" xml:space="preserve">
+    <value>About Proxirae...</value>
+  </data>
+  <data name="ContextCopy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="ContextSelectAll" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="ContextClear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="ContextAutoScroll" xml:space="preserve">
+    <value>AutoScroll</value>
+  </data>
+  <data name="TrayOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="TrayExit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="FlowsHeaderApplication" xml:space="preserve">
+    <value>Application</value>
+  </data>
+  <data name="FlowsHeaderTarget" xml:space="preserve">
+    <value>Target</value>
+  </data>
+  <data name="FlowsHeaderTime" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="FlowsHeaderAction" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="FlowsHeaderSent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="FlowsHeaderReceived" xml:space="preserve">
+    <value>Received</value>
+  </data>
+  <data name="TabHeaderRoutes" xml:space="preserve">
+    <value>Routes</value>
+  </data>
+  <data name="TabHeaderLogs" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="TabContextLogLevel" xml:space="preserve">
+    <value>Log Level</value>
+  </data>
+  <data name="TabContextLogLevelDebug" xml:space="preserve">
+    <value>Debug</value>
+  </data>
+  <data name="TabContextLogLevelInfo" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="TabContextLogLevelWarning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="TabContextLogLevelError" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ProxyServersTitle" xml:space="preserve">
+    <value>Proxy Servers</value>
+  </data>
+  <data name="ProxyServersGridHeaderType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="ProxyServersGridHeaderRemarks" xml:space="preserve">
+    <value>Remarks</value>
+  </data>
+  <data name="ProxyServersGridHeaderAddress" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="ProxyServersGridHeaderPort" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="ProxyServersButtonAdd" xml:space="preserve">
+    <value>Add...</value>
+  </data>
+  <data name="ProxyServersButtonEdit" xml:space="preserve">
+    <value>Edit...</value>
+  </data>
+  <data name="ProxyServersButtonRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="ProxyServersButtonCheck" xml:space="preserve">
+    <value>Check...</value>
+  </data>
+  <data name="SharedApply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="SharedOK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="SharedCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SharedClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="ProxyServerEditorGroupHeaderServer" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="MenuExportConf" xml:space="preserve">
+    <value>Export Configuration...</value>
+  </data>
+  <data name="ProxyServerEditorRemarks" xml:space="preserve">
+    <value>Remarks:</value>
+  </data>
+  <data name="ProxyServerEditorAddress" xml:space="preserve">
+    <value>Address:</value>
+  </data>
+  <data name="ProxyServerEditorPort" xml:space="preserve">
+    <value>Port:</value>
+  </data>
+  <data name="ProxyServerEditorProtocol" xml:space="preserve">
+    <value>Protocol:</value>
+  </data>
+  <data name="ProxyServerEditorAuthRequired" xml:space="preserve">
+    <value>Proxy requires authentication</value>
+  </data>
+  <data name="ProxyServerEditorAuthUsername" xml:space="preserve">
+    <value>Username:</value>
+  </data>
+  <data name="ProxyServerEditorAuthPassword" xml:space="preserve">
+    <value>Password:</value>
+  </data>
+  <data name="ProxyServerEditorGroupHeaderAuthentication" xml:space="preserve">
+    <value>Authentication</value>
+  </data>
+  <data name="ProxyServerEditorTitle" xml:space="preserve">
+    <value>Proxy Server</value>
+  </data>
+  <data name="ProxyRulesTitle" xml:space="preserve">
+    <value>Proxy Rules</value>
+  </data>
+  <data name="ProxyRulesGridHeaderRemarks" xml:space="preserve">
+    <value>Remarks</value>
+  </data>
+  <data name="ProxyRulesGridHeaderProcesses" xml:space="preserve">
+    <value>Processes</value>
+  </data>
+  <data name="ProxyRulesGridHeaderTargetHosts" xml:space="preserve">
+    <value>Target Hosts</value>
+  </data>
+  <data name="ProxyRulesGridHeaderTargetPorts" xml:space="preserve">
+    <value>Target Ports</value>
+  </data>
+  <data name="ProxyRulesGridHeaderProtocol" xml:space="preserve">
+    <value>Protocol</value>
+  </data>
+  <data name="ProxyRulesGridHeaderAction" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="ProxyRulesButtonAdd" xml:space="preserve">
+    <value>Add...</value>
+  </data>
+  <data name="ProxyRulesButtonEdit" xml:space="preserve">
+    <value>Edit...</value>
+  </data>
+  <data name="ProxyRulesButtonRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="ProxyRulesButtonUp" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="ProxyRulesButtonDown" xml:space="preserve">
+    <value>Down</value>
+  </data>
+  <data name="ProxyRulesEditorTitle" xml:space="preserve">
+    <value>Proxy Rule</value>
+  </data>
+  <data name="ProxyRulesEditorGroupHeaderRule" xml:space="preserve">
+    <value>Rule</value>
+  </data>
+  <data name="ProxyRulesEditorRemarks" xml:space="preserve">
+    <value>_Remarks</value>
+  </data>
+  <data name="ProxyRulesEditorEnabled" xml:space="preserve">
+    <value>_Enabled</value>
+  </data>
+  <data name="ProxyRulesEditorGroupHeaderMatching" xml:space="preserve">
+    <value>Matching</value>
+  </data>
+  <data name="ProxyRulesEditorProcesses" xml:space="preserve">
+    <value>_Processes</value>
+  </data>
+  <data name="ProxyRulesEditorHosts" xml:space="preserve">
+    <value>_Hosts</value>
+  </data>
+  <data name="ProxyRulesEditorPorts" xml:space="preserve">
+    <value>_Ports</value>
+  </data>
+  <data name="ProxyRulesEditorGroupHeaderTransport" xml:space="preserve">
+    <value>Transport</value>
+  </data>
+  <data name="ProxyRulesEditorProtocol" xml:space="preserve">
+    <value>_Protocol</value>
+  </data>
+  <data name="ProxyRulesEditorAction" xml:space="preserve">
+    <value>_Action</value>
+  </data>
+  <data name="ProxyCheckerTitle" xml:space="preserve">
+    <value>Proxy Checker</value>
+  </data>
+  <data name="ProxyCheckerGroupHeaderTestProxy" xml:space="preserve">
+    <value>Test Proxy</value>
+  </data>
+  <data name="ProxyCheckerServer" xml:space="preserve">
+    <value>Server: </value>
+  </data>
+  <data name="ProxyCheckerProtocol" xml:space="preserve">
+    <value>Protocol: </value>
+  </data>
+  <data name="ProxyCheckerNoProxySelected" xml:space="preserve">
+    <value>No proxy selected</value>
+  </data>
+  <data name="ProxyCheckerButtonSet" xml:space="preserve">
+    <value>Set...</value>
+  </data>
+  <data name="ProxyCheckerGroupHeaderTestTarget" xml:space="preserve">
+    <value>Test Target</value>
+  </data>
+  <data name="ProxyCheckerUrl" xml:space="preserve">
+    <value>URL:</value>
+  </data>
+  <data name="ProxyCheckerPort" xml:space="preserve">
+    <value>Port: </value>
+  </data>
+  <data name="ProxyCheckerGroupHeaderTestResults" xml:space="preserve">
+    <value>Test Results</value>
+  </data>
+  <data name="ProxyCheckerStatus" xml:space="preserve">
+    <value>Status: </value>
+  </data>
+  <data name="ProxyCheckerLatency" xml:space="preserve">
+    <value>Latency: </value>
+  </data>
+  <data name="ProxyCheckerProxyCheckFailed" xml:space="preserve">
+    <value>Proxy check failed.</value>
+  </data>
+  <data name="ProxyCheckerButtonTest" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="OptionsTitle" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="AppearanceGroupHeaderVisualSettings" xml:space="preserve">
+    <value>Visual Settings</value>
+  </data>
+  <data name="AppearanceTheme" xml:space="preserve">
+    <value>Theme:</value>
+  </data>
+  <data name="AppearanceThemeDescription" xml:space="preserve">
+    <value>Select the visual theme. The interface will update automatically.</value>
+  </data>
+  <data name="GeneralGroupHeaderLocalization" xml:space="preserve">
+    <value>Localization</value>
+  </data>
+  <data name="GeneralLanguage" xml:space="preserve">
+    <value>Language:</value>
+  </data>
+  <data name="GeneralLanguageDescription" xml:space="preserve">
+    <value>Select your preferred language. Changes are applied immediately.</value>
+  </data>
+  <data name="MetricsGroupHeaderBufferConfiguration" xml:space="preserve">
+    <value>Buffer Configuration</value>
+  </data>
+  <data name="MetricsRoutingBufferSize" xml:space="preserve">
+    <value>Routing Buffer Size:</value>
+  </data>
+  <data name="MetricsLogsBufferSize" xml:space="preserve">
+    <value>Logs Buffer Size:</value>
+  </data>
+  <data name="MetricsEntries" xml:space="preserve">
+    <value>entries</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>About Proxirae</value>
+  </data>
+  <data name="AboutCopyright" xml:space="preserve">
+    <value>Copyright (c) 2026 Alexei Rodionov</value>
+  </data>
+  <data name="AboutLicense" xml:space="preserve">
+    <value>Licensed under the GNU GPL v3.0</value>
+  </data>
+  <data name="ActionNameDirect" xml:space="preserve">
+    <value>Direct</value>
+  </data>
+  <data name="ActionNameBlock" xml:space="preserve">
+    <value>Block</value>
+  </data>
+  <data name="ActionNameProxy" xml:space="preserve">
+    <value>Proxy</value>
+  </data>
+  <data name="GeneralLanguageEnglish" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="GeneralLanguageRussian" xml:space="preserve">
+    <value>Russian</value>
+  </data>
+  <data name="AppearanceThemeSystem" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="AppearanceThemeLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="AppearanceThemeDark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="OptionsGeneral" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="OptionsAppearance" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="OptionsMetrics" xml:space="preserve">
+    <value>Metrics</value>
+  </data>
+  <data name="ProxyCheckerProgressIdle" xml:space="preserve">
+    <value>Idle...</value>
+  </data>
+  <data name="ProxyCheckerProgressEstablish" xml:space="preserve">
+    <value>Establishing connection...</value>
+  </data>
+  <data name="ProxyCheckerProgressHandshake" xml:space="preserve">
+    <value>Performing handshake...</value>
+  </data>
+  <data name="ProxyCheckerProgressConnect" xml:space="preserve">
+    <value>Connected successfully!</value>
+  </data>
+  <data name="ProxyCheckerProgressFailed" xml:space="preserve">
+    <value>Connection failed.</value>
+  </data>
+</root>
