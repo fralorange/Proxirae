@@ -197,6 +197,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\asyncio\io\stream\win\IocpStreamAdapter.cpp" />
     <ClCompile Include="src\interception\correlation\win\WinUdpCorrelator.cpp" />
     <ClCompile Include="src\interception\correlation\DispatcherCorrelator.cpp" />
+    <ClCompile Include="src\interception\correlation\win\WinUdpLookupTable.cpp" />
     <ClCompile Include="src\interception\routing\PacketFilter.cpp" />
     <ClCompile Include="src\interception\handling\UdpHandler.cpp" />
     <ClCompile Include="src\proxification\Socks5ProxyBase.cpp" />
@@ -279,6 +280,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\interception\correlation\DispatcherCorrelator.h" />
     <ClInclude Include="include\interception\correlation\IPacketCorrelator.h" />
     <ClInclude Include="include\interception\correlation\win\WinUdpCorrelator.h" />
+    <ClInclude Include="include\interception\correlation\win\WinUdpLookupTable.h" />
     <ClInclude Include="include\interception\routing\PacketFilter.h" />
     <ClInclude Include="include\interception\handling\UdpHandler.h" />
     <ClInclude Include="include\monitoring\flow\IFlowMonitor.h" />

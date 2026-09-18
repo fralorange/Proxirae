@@ -1,8 +1,9 @@
 #pragma once
 
-#include <memory>
+#include <unordered_map>
 
 #include "interception/correlation/IPacketCorrelator.h"
+#include "interception/correlation/win/WinUdpLookupTable.h"
 #include "persistence/associations/AssociationTable.h"
 #include "interception/diversion/IPacketContext.h"
 #include "interception/diversion/Packet.h"
@@ -18,10 +19,11 @@ namespace Proxirae {
 		bool CorrelateSocket(const PacketMetadata& metadata, const std::function<void(IPacketContext&)>& callback) override;
 
 	private:
-		class PendingPacketCache;
-		std::unique_ptr<PendingPacketCache> m_cache;
+		std::unordered_multimap<FiveTuple, Packet, FiveTupleHash> m_pending;
 
 		IProcessGuard& m_guard;
 		AssociationTable& m_associations;
+
+		std::optional<WinUdpLookupTable> m_lookupTable;
 	};
 }
