@@ -8,6 +8,7 @@
                          xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
                          xmlns:sdl="http://schemas.sdl.com/xaml"
                          xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
+                         xmlns:core="clr-namespace:RentADeveloper.ResXLocalization;assembly=ResXLocalization.Core"
                          xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
                          xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels.ProxyRules"
                          d:DataContext="{d:DesignInstance Type=viewmodels:AddProxyRuleViewModel}"
@@ -163,7 +164,15 @@
                               Margin="0 8 0 0">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Converter={StaticResource ActionToLocalizeConverter}}"/>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource ActionToLocalizeConverter}">
+                                            <Binding/>
+                                            <Binding Path="CurrentCulture"
+                                                     Source="{x:Static core:Localizer.Current}"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>

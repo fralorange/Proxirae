@@ -6,6 +6,7 @@
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                          xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
                          xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
+                         xmlns:core="clr-namespace:RentADeveloper.ResXLocalization;assembly=ResXLocalization.Core"
                          xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls" 
                          xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels.ProxyChecker" 
                          d:DataContext="{d:DesignInstance Type=viewmodels:ProxyCheckerViewModel}"
@@ -121,8 +122,16 @@
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 0 0 8">
                     <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerStatus}}" />
-                    <TextBlock Text="{Binding StatusMessage, 
-                        Converter={StaticResource NameToLocalizeConverter}, ConverterParameter='ProxyCheckerProgress'}" />
+                    <TextBlock>
+                        <TextBlock.Text>
+                            <MultiBinding Converter="{StaticResource NameToLocalizeConverter}"
+                                          ConverterParameter="ProxyCheckerProgress">
+                                <Binding Path="StatusMessage"/>
+                                <Binding Path="CurrentCulture"
+                                         Source="{x:Static core:Localizer.Current}"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
                 </StackPanel>
 
                 <ProgressBar Height="15" Minimum="0" Maximum="3" 
