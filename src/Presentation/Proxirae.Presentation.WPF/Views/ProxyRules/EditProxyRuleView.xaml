@@ -3,30 +3,29 @@
                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                          xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:l="clr-namespace:RentADeveloper.ResXLocalization.WPF;assembly=ResXLocalization.WPF"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                          xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
                          xmlns:sdl="http://schemas.sdl.com/xaml"
+                         xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
+                         xmlns:core="clr-namespace:RentADeveloper.ResXLocalization;assembly=ResXLocalization.Core"
                          xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
                          xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels.ProxyRules"
                          d:DataContext="{d:DesignInstance Type=viewmodels:EditProxyRuleViewModel}"
                          mc:Ignorable="d"
                          md:DialogServiceViews.IsRegistered="True"
-                         Title="Proxy Rule"
+                         Title="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorTitle}}"
                          Width="700"
                          Height="500"
                          MinWidth="700"
                          MinHeight="500"
-                         Background="Transparent"
                          WindowStartupLocation="CenterOwner"
-                         ShowInTaskbar="False">
-    <controls:TitleBarWindow.Resources>
-        <Style TargetType="Label">
-            <Setter Property="VerticalAlignment" Value="Top"/>
-            <Setter Property="Padding" Value="0"/>
-        </Style>
-    </controls:TitleBarWindow.Resources>
+                         ShowInTaskbar="False"
+                         ShowMaximizeButton="False"
+                         ShowMinimizeButton="False"
+                         Style="{StaticResource Window}">
 
-    <Grid Background="WhiteSmoke">
+    <Grid Style="{StaticResource ProxyRulesEditorRoot}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
@@ -39,7 +38,9 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <GroupBox Header="Rule" Margin="0 0 0 10">
+            <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorGroupHeaderRule}}"
+                      Style="{StaticResource ProxyRulesEditorGroupBox}"
+                      Margin="0 0 0 10">
                 <Grid Margin="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="150"/>
@@ -48,12 +49,14 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Content="_Remarks"
+                    <Label Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorRemarks}}"
+                           Style="{StaticResource ProxyRulesEditorLabel}"
                            Target="{Binding ElementName=RemarksBox}"
                            VerticalAlignment="Center"/>
 
                     <TextBox x:Name="RemarksBox"
                              Grid.Column="1"
+                             Style="{StaticResource ProxyRulesEditorInput}"
                              Margin="0 0 10 0"
                              VerticalAlignment="Center"
                              Text="{Binding Remarks, UpdateSourceTrigger=PropertyChanged}"/>
@@ -64,14 +67,18 @@
                               Margin="0 0 5 0"
                               IsChecked="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged}"/>
 
-                    <Label Content="_Enabled"
+                    <Label Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorEnabled}}"
                            Grid.Column="3"
+                           Style="{StaticResource ProxyRulesEditorLabel}"
                            VerticalAlignment="Center"
                            Target="{Binding ElementName=EnabledBox}"/>
                 </Grid>
             </GroupBox>
 
-            <GroupBox Header="Matching" Grid.Row="1" Margin="0 0 0 10">
+            <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorGroupHeaderMatching}}"
+                      Style="{StaticResource ProxyRulesEditorGroupBox}"
+                      Grid.Row="1"
+                      Margin="0 0 0 10">
                 <Grid Margin="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="150"/>
@@ -86,8 +93,10 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <Label Content="_Processes"
+                    <Label Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorProcesses}}"
+                           Style="{StaticResource ProxyRulesEditorLabel}"
                            Target="{Binding ElementName=ProcessesBox}"/>
+
                     <TextBox x:Name="ProcessesBox"
                              Grid.Column="1"
                              Style="{StaticResource FilePickerInput}"
@@ -97,13 +106,16 @@
                              VerticalAlignment="Top"
                              Text="{Binding Processes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
-                    <Label Content="_Hosts"
+                    <Label Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorHosts}}"
                            Grid.Row="1"
+                           Style="{StaticResource ProxyRulesEditorLabel}"
                            Margin="0 8 0 0"
                            Target="{Binding ElementName=HostsBox}"/>
+
                     <TextBox x:Name="HostsBox"
                              Grid.Row="1"
                              Grid.Column="1"
+                             Style="{StaticResource ProxyRulesEditorInput}"
                              Margin="0 8 0 0"
                              AcceptsReturn="True"
                              TextWrapping="Wrap"
@@ -111,36 +123,43 @@
                              VerticalAlignment="Top"
                              Text="{Binding Hosts, UpdateSourceTrigger=PropertyChanged}"/>
 
-                    <Label Content="_Ports"
+                    <Label Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorPorts}}"
                            Grid.Row="2"
+                           Style="{StaticResource ProxyRulesEditorLabel}"
                            Margin="0 8 0 0"
                            Target="{Binding ElementName=PortsBox}"/>
+
                     <TextBox x:Name="PortsBox"
                              Grid.Row="2"
                              Grid.Column="1"
+                             Style="{StaticResource ProxyRulesEditorInput}"
                              Margin="0 8 0 0"
                              VerticalAlignment="Top"
                              Text="{Binding Ports, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </GroupBox>
 
-            <GroupBox Header="Transport" Grid.Row="2">
+            <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorGroupHeaderTransport}}"
+                      Style="{StaticResource ProxyRulesEditorGroupBox}"
+                      Grid.Row="2">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="150"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Content="_Protocol"
+                    <Label Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorProtocol}}"
                            Grid.Row="0"
+                           Style="{StaticResource ProxyRulesEditorLabel}"
                            Target="{Binding ElementName=ProtocolList}"/>
 
                     <sdl:MultiSelectComboBox x:Name="ProtocolList"
+                                             Style="{StaticResource ProxyRulesEditorInput}"
                                              ItemsSource="{Binding Protocols, Mode=OneWay}"
                                              SelectedItems="{Binding SelectedProtocols, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              Grid.Row="0"
@@ -148,18 +167,29 @@
                                              IsEditable="False"/>
 
                     <Label Grid.Row="1"
-                           Content="_Action"
+                           Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorAction}}"
+                           Style="{StaticResource ProxyRulesEditorLabel}"
                            Margin="0 8 0 0"
                            Target="{Binding ElementName=ActionBox}"/>
+
                     <ComboBox x:Name="ActionBox"
                               ItemsSource="{Binding Actions}"
+                              Style="{StaticResource ProxyRulesEditorComboBox}"
                               SelectedItem="{Binding SelectedAction, UpdateSourceTrigger=PropertyChanged}"
                               Grid.Row="1"
                               Grid.Column="1"
                               Margin="0 8 0 0">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Name}"/>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource ActionToLocalizeConverter}">
+                                            <Binding/>
+                                            <Binding Path="CurrentCulture"
+                                                     Source="{x:Static core:Localizer.Current}"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
@@ -172,12 +202,12 @@
                     HorizontalAlignment="Right"
                     Margin="10">
 
-            <Button Content="OK"
+            <Button Content="{l:Localize {x:Static res:LocalizationKeys.SharedOK}}"
                     Style="{StaticResource ControlButton}"
                     IsDefault="True"
                     Command="{Binding ConfirmCommand}"/>
 
-            <Button Content="Cancel"
+            <Button Content="{l:Localize {x:Static res:LocalizationKeys.SharedCancel}}"
                     Style="{StaticResource ControlButton}"
                     IsCancel="True"/>
         </StackPanel>

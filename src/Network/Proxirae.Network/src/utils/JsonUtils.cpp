@@ -103,9 +103,9 @@ namespace Proxirae {
 		auto isoTime = std::format("{:%FT%TZ}", l.timestamp);
 
 		j = nlohmann::json{
+			{"Timestamp", isoTime},
 			{"Level", l.level},
-			{"Message", l.message},
-			{"Timestamp", isoTime}
+			{"Message", l.message}
 		};
 	}
 

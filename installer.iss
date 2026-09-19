@@ -1,6 +1,7 @@
 [Setup]
+AppId={{6AE9A480-F547-485D-92C4-BEEFBB67616A}}
 AppName=Proxirae
-AppVersion=0.0.1
+AppVersion=0.0.2
 DefaultDirName={autopf}\Proxirae
 DefaultGroupName=Proxirae
 UninstallDisplayIcon={app}\Proxirae.exe
@@ -9,8 +10,13 @@ SolidCompression=yes
 OutputDir=.\installer
 OutputBaseFilename=ProxiraeSetup
 
+DirExistsWarning=no
+
 ArchitecturesAllowed=x64compatible x86
 ArchitecturesInstallIn64BitMode=x64compatible
+
+CloseApplications=yes
+RestartApplications=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

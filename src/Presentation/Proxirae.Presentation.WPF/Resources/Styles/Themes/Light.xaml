@@ -1,0 +1,58 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="LogCriticalColor">#C00000</Color>
+    <Color x:Key="LogErrorColor">#FF3300</Color>
+    <Color x:Key="LogWarningColor">#FFC000</Color>
+    <Color x:Key="LogInfoColor">#70AD47</Color>
+    <Color x:Key="LogDebugColor">#5B9BD5</Color>
+
+    <Color x:Key="IconColor">#FF5398CE</Color>
+    
+    <Color x:Key="TitleBarColor">#FFF5F5F5</Color>
+    <Color x:Key="TitleBarForegroundColor">#FF202124</Color>
+
+    <Color x:Key="BackgroundColor">#FFF5F5F5</Color>
+    <Color x:Key="SecondaryBackgroundColor">#FFFFFFFF</Color>
+    <Color x:Key="DisabledBackgroundColor">#FFE5E5E5</Color>
+
+    <Color x:Key="DisabledForegroundColor">#FF707070</Color>
+    <Color x:Key="ForegroundColor">#FF202124</Color>
+    <Color x:Key="SecondaryForegroundColor">#FF696969</Color>
+    
+    <Color x:Key="BorderColor">#FFD0D0D0</Color>
+    <Color x:Key="DisabledBorderColor">#FFD0D0D0</Color>
+
+    <Color x:Key="MenuSubMenuBackgroundColor">#FFF0F0F0</Color>
+    <Color x:Key="MenuHighlightColor">#FFDCEBF6</Color>
+    <Color x:Key="MenuDisabledHighlightColor">#0A000000</Color>
+    <Color x:Key="MenuSubMenuBorderColor">#FF999999</Color>
+    <Color x:Key="MenuSeparatorColor">#FFD7D7D7</Color>
+    <Color x:Key="MenuHighlightBorderColor">#FF9BC7E5</Color>
+    <Color x:Key="MenuDisabledBorderColor">#21000000</Color>
+
+    <Color x:Key="LatencyColor">#FF006400</Color>
+    <Color x:Key="StatusColor">#FF8B0000</Color>
+
+    <Color x:Key="GridLineColor">#40808080</Color>
+    
+    <Color x:Key="TitleBarButtonHoverColor">#E9ECEF</Color>
+    <Color x:Key="TitleBarButtonPressedColor">#DDE2E6</Color>
+    <Color x:Key="TitleBarCloseButtonHoverColor">#D9534F</Color>
+    <Color x:Key="TitleBarCloseButtonPressedColor">#C9302C</Color>
+
+    <Color x:Key="ButtonBackgroundColor">#FFFFFFFF</Color>
+    <Color x:Key="ButtonHoverColor">#FFE9ECEF</Color>
+    <Color x:Key="ButtonPressedColor">#FFDDE2E6</Color>
+
+    <Color x:Key="SelectionColor">#FFDCEBF6</Color>
+    <Color x:Key="SelectionForegroundColor">#FF202124</Color>
+    <Color x:Key="FocusColor">#FF5398CE</Color>
+
+    <Color x:Key="ProcessButtonColor">#FF666666</Color>
+    <Color x:Key="ProcessButtonHoverColor">#FF202124</Color>
+    <Color x:Key="ProcessButtonPressedColor">#FF000000</Color>
+    <Color x:Key="ProcessButtonDisabledColor">#FFAAAAAA</Color>
+
+    <Color x:Key="ProcessButtonHoverBackgroundColor">#FFE9ECEF</Color>
+    <Color x:Key="ProcessButtonPressedBackgroundColor">#FFDDE2E6</Color>
+</ResourceDictionary>

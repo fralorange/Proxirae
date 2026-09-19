@@ -1,9 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MvvmDialogs.FrameworkDialogs.OpenFile;
+using MvvmDialogs.FrameworkDialogs.SaveFile;
 using ObservableCollections;
-using Proxirae.Application.Facades.Actions;
-using Proxirae.Application.Facades.Routes;
+using Proxirae.Application.Exporters.Csv;
+using Proxirae.Application.Facades.Configuration;
+using Proxirae.Application.Models.Preferences.Appearance;
+using Proxirae.Application.Models.Preferences.Metrics;
 using Proxirae.Application.Services.Application;
+using Proxirae.Application.Services.Archive;
+using Proxirae.Application.Services.Browser;
 using Proxirae.Application.Services.Clipboard;
 using Proxirae.Application.Services.Flows;
 using Proxirae.Application.Services.Logs;
@@ -13,16 +19,21 @@ using Proxirae.Application.Services.Routes;
 using Proxirae.Contracts.DTOs.Flows;
 using Proxirae.Contracts.DTOs.Logs;
 using Proxirae.Contracts.DTOs.Routes;
+using Proxirae.Presentation.WPF.Extensions;
 using Proxirae.Presentation.WPF.Facades.Dialog;
+using Proxirae.Presentation.WPF.Factories.Flow;
+using Proxirae.Presentation.WPF.Factories.Routes;
+using Proxirae.Presentation.WPF.ViewModels.About;
 using Proxirae.Presentation.WPF.ViewModels.Flows;
 using Proxirae.Presentation.WPF.ViewModels.Logs;
+using Proxirae.Presentation.WPF.ViewModels.Options;
 using Proxirae.Presentation.WPF.ViewModels.ProxyChecker;
 using Proxirae.Presentation.WPF.ViewModels.ProxyRules;
 using Proxirae.Presentation.WPF.ViewModels.ProxyServers;
 using Proxirae.Presentation.WPF.ViewModels.Routes;
 using System.Collections;
 using System.Collections.ObjectModel;
-using System.Windows;
+using AppPreferences = Proxirae.Application.Models.Preferences.Preferences;
 
 namespace Proxirae.Presentation.WPF.ViewModels
 {
@@ -31,13 +42,17 @@ namespace Proxirae.Presentation.WPF.ViewModels
         private readonly IApplicationService _applicationService;
         private readonly IClipboardService _clipboardService;
         private readonly DialogFacade _dialogFacade;
-        private readonly ActionFacade _actionFacade;
-        private readonly RouteFacade _routeFacade;
+        private readonly IConfigurationFacade _configurationFacade;
+        private readonly IRouteViewModelFactory _routeViewModelFactory;
+        private readonly IFlowViewModelFactory _flowViewModelFactory;
         private readonly IFlowService _flowService;
         private readonly ILogService _logService;
         private readonly IRouteService _routeService;
         private readonly IPreferencesService _preferencesService;
         private readonly IAutostartService _autostartService;
+        private readonly IArchiveService _archiveService;
+        private readonly ICsvExporter _csvExporter;
+        private readonly IBrowserService _browserService;
 
         [ObservableProperty]
         private int _selectedTabIndex;
@@ -45,11 +60,15 @@ namespace Proxirae.Presentation.WPF.ViewModels
         [ObservableProperty]
         private ObservableCollection<FlowViewModel> _flows = [];
 
-        private readonly ObservableFixedSizeRingBuffer<LogViewModel> _logsBuffer = new(1000);
-        public INotifyCollectionChangedSynchronizedViewList<LogViewModel> Logs { get; }
+        private ObservableFixedSizeRingBuffer<LogViewModel> _logsBuffer;
 
-        private readonly ObservableFixedSizeRingBuffer<RouteViewModel> _routesBuffer = new(1000);
-        public INotifyCollectionChangedSynchronizedViewList<RouteViewModel> Routes { get; }
+        [ObservableProperty]
+        private INotifyCollectionChangedSynchronizedViewList<LogViewModel> _logs;
+
+        private ObservableFixedSizeRingBuffer<RouteViewModel> _routesBuffer;
+
+        [ObservableProperty]
+        private INotifyCollectionChangedSynchronizedViewList<RouteViewModel> _routes;
 
         [ObservableProperty]
         private bool _routesAutoScroll = true;
@@ -72,35 +91,49 @@ namespace Proxirae.Presentation.WPF.ViewModels
             IApplicationService applicationService,
             IClipboardService clipboardService,
             DialogFacade dialogFacade,
-            ActionFacade actionFacade,
-            RouteFacade routeFacade,
+            IConfigurationFacade configurationFacade,
+            IRouteViewModelFactory routeViewModelFactory,
+            IFlowViewModelFactory flowViewModelFactory,
             IFlowService flowService,
             ILogService logService,
             IRouteService routeService,
             IPreferencesService preferencesService,
-            IAutostartService autostartService)
+            IAutostartService autostartService,
+            IArchiveService archiveService,
+            ICsvExporter csvExporter,
+            IBrowserService browserService)
         {
             _applicationService = applicationService;
             _clipboardService = clipboardService;
             _dialogFacade = dialogFacade;
-            _actionFacade = actionFacade;
-            _routeFacade = routeFacade;
+            _configurationFacade = configurationFacade;
+            _routeViewModelFactory = routeViewModelFactory;
+            _flowViewModelFactory = flowViewModelFactory;
             _flowService = flowService;
             _logService = logService;
             _routeService = routeService;
             _preferencesService = preferencesService;
             _autostartService = autostartService;
+            _archiveService = archiveService;
+            _csvExporter = csvExporter;
+            _browserService = browserService;
 
             _flowService.FlowsUpdated += OnFlowsUpdated;
             _flowService.FlowClosed += OnFlowDeleted;
 
-            Logs = _logsBuffer
+            _preferencesService.PreferencesChanged += OnPreferencesChanged;
+
+            _logsBuffer = new(_preferencesService.Current.Metrics.LogsBufferSize);
+
+            _logs = _logsBuffer
                 .CreateView(l => l)
                 .ToNotifyCollectionChanged();
 
             _logService.LogReceived += OnLogReceived;
 
-            Routes = _routesBuffer
+            _routesBuffer = new(_preferencesService.Current.Metrics.RoutingBufferSize);
+
+            _routes = _routesBuffer
                 .CreateView(r => r)
                 .ToNotifyCollectionChanged();
 
@@ -131,19 +164,41 @@ namespace Proxirae.Presentation.WPF.ViewModels
             }, token);
         }
 
-        private void OnRouteReceived(RouteDto route)
+        private void OnPreferencesChanged(object? sender, AppPreferences newPreferences)
         {
-            WinApp.Current.Dispatcher.Invoke(async () =>
+            WinApp.Current.Dispatcher.Invoke(() =>
             {
-                var actionName = await _routeFacade.GetActionNameAsync(route.RuleId, CancellationToken.None);
+                SyncMetricsPreferences(newPreferences.Metrics);
+            });
+        }
 
-                if (actionName == null)
-                {
-                    return;
-                }
+        private void SyncMetricsPreferences(MetricsPreferences metrics)
+        {
+            if (_logsBuffer.Capacity != metrics.LogsBufferSize)
+            {
+                (_logsBuffer, Logs) = _logsBuffer.Resize(Logs, metrics.LogsBufferSize);
+            }
 
-                var routeViewModel = new RouteViewModel(route, actionName);
+            if (_routesBuffer.Capacity != metrics.RoutingBufferSize)
+            {
+                (_routesBuffer, Routes) = _routesBuffer.Resize(Routes, metrics.RoutingBufferSize);
+            }
+        }
+
+        private async void OnRouteReceived(RouteDto route)
+        {
+            var routeViewModel = await _routeViewModelFactory.CreateAsync(route, CancellationToken.None);
+
+            if (routeViewModel is null)
+            {
+                return;
+            }
+
+            WinApp.Current.Dispatcher.Invoke(() =>
+            {
                 _routesBuffer.AddLast(routeViewModel);
+
+                ExportRoutesHistoryCommand.NotifyCanExecuteChanged();
             });
         }
 
@@ -152,14 +207,27 @@ namespace Proxirae.Presentation.WPF.ViewModels
             WinApp.Current.Dispatcher.Invoke(() =>
             {
                 _logsBuffer.AddLast(new(log));
+
+                ExportLogsHistoryCommand.NotifyCanExecuteChanged();
             });
         }
 
-        private void OnFlowsUpdated(IEnumerable<FlowDto> flows)
+        private async void OnFlowsUpdated(IEnumerable<FlowDto> flows)
         {
             var activeIds = flows.Select(f => f.Id).ToHashSet();
 
-            WinApp.Current.Dispatcher.InvokeAsync(async () =>
+            var existingIds = Flows.Select(x => x.Id).ToHashSet();
+            var newFlowDtos = flows.Where(f => !existingIds.Contains(f.Id)).ToList();
+
+            var newViewModels = new List<FlowViewModel>();
+
+            foreach (var flow in newFlowDtos)
+            {
+                var vm = await _flowViewModelFactory.CreateAsync(flow, CancellationToken.None);
+                if (vm != null) newViewModels.Add(vm);
+            }
+
+            WinApp.Current.Dispatcher.Invoke(() =>
             {
                 var ghosts = Flows.Where(f => !activeIds.Contains(f.Id)).ToList();
                 foreach (var ghost in ghosts)
@@ -169,20 +237,13 @@ namespace Proxirae.Presentation.WPF.ViewModels
 
                 foreach (var flow in flows)
                 {
-                    var existing = Enumerable.FirstOrDefault(Flows, x => x.Id == flow.Id);
-                    if (existing is not null)
-                    {
-                        existing.Update(flow);
-                    }
-                    else
-                    {
-                        var action = await _actionFacade.GetActionAsync(flow.ProxyId, CancellationToken.None);
+                    var existing = Flows.FirstOrDefault(x => x.Id == flow.Id);
+                    existing?.Update(flow);
+                }
 
-                        if (!Flows.Any(x => x.Id == flow.Id))
-                        {
-                            Flows.Add(new FlowViewModel(flow, action.Name));
-                        }
-                    }
+                foreach (var vm in newViewModels)
+                {
+                    Flows.Add(vm);
                 }
             });
         }
@@ -197,6 +258,104 @@ namespace Proxirae.Presentation.WPF.ViewModels
                     Flows.Remove(target);
                 }
             });
+        }
+
+        [RelayCommand]
+        private async Task ImportConfiguration(CancellationToken cancellationToken)
+        {
+            var settings = new OpenFileDialogSettings
+            {
+                Title = "Import Configuration",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Filter = "Proxirae Configuration (*.pxcfg)|*.pxcfg"
+            };
+
+            var path = _dialogFacade.OpenFile(this, settings);
+            if (path is null) return;
+
+            var success = _archiveService.ExtractArchive(path, _configurationFacade.AppDataDirectory);
+
+            if (success)
+            {
+                await _configurationFacade.ReloadAsync(cancellationToken);
+            }
+        }
+
+        [RelayCommand]
+        private void ExportConfiguration()
+        {
+            var settings = new SaveFileDialogSettings
+            {
+                Title = "Export Configuration",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Filter = "Proxirae Configuration (*.pxcfg)|*.pxcfg",
+                DefaultExt = ".pxcfg",
+                AddExtension = true,
+                FileName = "config.pxcfg"
+            };
+
+            var path = _dialogFacade.SaveFile(this, settings);
+
+            if (path is not null)
+            {
+                _archiveService.CreateArchive(path, _configurationFacade.ConfigurationFiles);
+            }
+        }
+
+        [RelayCommand(CanExecute = nameof(CanExportRoutes))]
+        private async Task ExportRoutesHistoryAsync(CancellationToken cancellationToken)
+        {
+            if (_routesBuffer.Count == 0) return;
+
+            var settings = new SaveFileDialogSettings
+            {
+                Title = "Export Routing History",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Filter = "CSV File (*.csv)|*.csv",
+                DefaultExt = "csv",
+                AddExtension = true,
+                FileName = $"routing_history_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+            };
+
+            var path = _dialogFacade.SaveFile(this, settings);
+
+            if (path is not null)
+            {
+                await _csvExporter.ExportAsync(path, _routesBuffer, cancellationToken);
+            }
+        }
+
+        private bool CanExportRoutes()
+        {
+            return _routesBuffer.Count > 0;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanExportLogs))]
+        private async Task ExportLogsHistoryAsync(CancellationToken cancellationToken)
+        {
+            if (_logsBuffer.Count == 0) return;
+
+            var settings = new SaveFileDialogSettings
+            {
+                Title = "Export Logs History",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Filter = "CSV File (*.csv)|*.csv",
+                DefaultExt = "csv",
+                AddExtension = true,
+                FileName = $"logs_history_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+            };
+
+            var path = _dialogFacade.SaveFile(this, settings);
+
+            if (path is not null)
+            {
+                await _csvExporter.ExportAsync(path, _logsBuffer, cancellationToken);
+            }
+        }
+
+        private bool CanExportLogs()
+        {
+            return _logsBuffer.Count > 0;
         }
 
         [RelayCommand]
@@ -270,10 +429,12 @@ namespace Proxirae.Presentation.WPF.ViewModels
             if (tabIndex == 0)
             {
                 _routesBuffer.Clear();
+                ExportRoutesHistoryCommand.NotifyCanExecuteChanged();
             }
             else if (tabIndex == 1)
             {
                 _logsBuffer.Clear();
+                ExportLogsHistoryCommand.NotifyCanExecuteChanged();
             }
         }
 
@@ -317,8 +478,42 @@ namespace Proxirae.Presentation.WPF.ViewModels
             _dialogFacade.ShowDialog<ProxyCheckerViewModel>(this);
         }
 
+        [RelayCommand]
+        private async Task ResetLayoutAsync(CancellationToken cancellationToken)
+        {
+            var defaultAppearance = new AppearancePreferences();
+
+            var updatedAppearance = _preferencesService.Current.Appearance with
+            {
+                TabsHeight = defaultAppearance.TabsHeight
+            };
+
+            await _preferencesService.UpdateAsync(updatedAppearance, cancellationToken);
+
+            TabsHeight = updatedAppearance.TabsHeight;
+        }
+
+        [RelayCommand]
+        private void OpenOptions()
+        {
+            _dialogFacade.ShowDialog<OptionsViewModel>(this);
+        }
+
+        [RelayCommand]
+        private void CheckForUpdates()
+        {
+            _browserService.OpenUrl("https://github.com/fralorange/Proxirae/releases"); // TODO: Integrate with GitHub API in future
+        }
+
+        [RelayCommand]
+        private void OpenAbout()
+        {
+            _dialogFacade.ShowDialog<AboutViewModel>(this);
+        }
+
         public void Dispose()
         {
+            _preferencesService.PreferencesChanged -= OnPreferencesChanged;
             _flowService.FlowsUpdated -= OnFlowsUpdated;
             _flowService.FlowClosed -= OnFlowDeleted;
             _logService.LogReceived -= OnLogReceived;

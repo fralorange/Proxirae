@@ -12,42 +12,56 @@ namespace Proxirae.Infrastructure.Repositories.Proxies
         {
             await EnsureLoadedAsync(token);
 
-            return _items.AsReadOnly();
+            lock (_items)
+            {
+                return _items.ToList();
+            }
         }
 
         public async Task<Proxy?> GetByIdAsync(Guid id, CancellationToken token)
         {
             await EnsureLoadedAsync(token);
 
-            return _items.FirstOrDefault(p => p.Id == id);
+            lock (_items)
+            {
+                return _items.FirstOrDefault(p => p.Id == id);
+            }
         }
 
         public async Task AddAsync(Proxy proxyServer, CancellationToken token)
         {
             await EnsureLoadedAsync(token);
 
-            _items.Add(proxyServer);
+            lock (_items)
+            {
+                _items.Add(proxyServer);
+            }
         }
 
         public async Task<bool> UpdateAsync(Proxy proxyServer, CancellationToken token)
         {
             await EnsureLoadedAsync(token);
 
-            var index = _items.FindIndex(p => p.Id == proxyServer.Id);
+            lock (_items)
+            {
+                var index = _items.FindIndex(p => p.Id == proxyServer.Id);
 
-            if (index == -1)
-                return false;
+                if (index == -1)
+                    return false;
 
-            _items[index] = proxyServer;
-
-            return true;
+                _items[index] = proxyServer;
+                return true;
+            }
         }
 
         public async Task<bool> DeleteAsync(Guid id, CancellationToken token)
         {
             await EnsureLoadedAsync(token);
 
-            return _items.RemoveAll(p => p.Id == id) > 0;
+            lock (_items)
+            {
+                return _items.RemoveAll(p => p.Id == id) > 0;
+            }
         }
     }
 }

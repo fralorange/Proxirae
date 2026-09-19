@@ -10,7 +10,6 @@
 		constexpr int SocketError = SOCKET_ERROR;
 		constexpr int SocketNotConnected = WSAENOTCONN;
 		constexpr int ShutdownBoth = SD_BOTH;
-		using SocketLen = int;
 
 		void CloseSocket(NativeSocket s);
 		int GetSocketError();

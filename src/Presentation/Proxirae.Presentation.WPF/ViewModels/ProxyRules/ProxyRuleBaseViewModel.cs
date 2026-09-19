@@ -1,15 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MvvmDialogs;
+using MvvmDialogs.FrameworkDialogs.OpenFile;
 using Proxirae.Contracts.DTOs.Rules;
 using Proxirae.Contracts.DTOs.Rules.Actions;
 using Proxirae.Presentation.WPF.Facades.Dialog;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
 {
-    public partial class ProxyRuleBaseViewModel : ObservableValidator, IModalDialogViewModel
+    public partial class ProxyRuleBaseViewModel : ObservableValidator, IModalDialogViewModel, IDisposable
     {
         private readonly DialogFacade _dialogFacade;
 
@@ -60,18 +62,32 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
             _dialogFacade = dialogFacade;
 
             Actions = actions;
-            SelectedProtocols.CollectionChanged += (_, _) => ValidateProperty(SelectedProtocols, nameof(SelectedProtocols));
+            SelectedProtocols.CollectionChanged += OnSelectedProtocolsCollectionChanged;
             SelectedAction = Actions.First();
+        }
+
+        private void OnSelectedProtocolsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            ValidateProperty(SelectedProtocols, nameof(SelectedProtocols));
         }
 
         [RelayCommand]
         private void BrowseProcesses()
         {
-            var fileName = _dialogFacade.OpenFile(this);
-            if (fileName is null)
+            var settings = new OpenFileDialogSettings
+            {
+                Title = "Open File",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*"
+            };
+
+            var filePath = _dialogFacade.OpenFile(this, settings);
+            if (filePath is null)
             {
                 return;
             }
+
+            var fileName = Path.GetFileName(filePath);
 
             if (fileName.Contains(' '))
             {
@@ -94,6 +110,11 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
                 return new ValidationResult("The protocols list must not be empty");
 
             return ValidationResult.Success;
+        }
+
+        public void Dispose()
+        {
+            SelectedProtocols.CollectionChanged -= OnSelectedProtocolsCollectionChanged;
         }
     }
 }

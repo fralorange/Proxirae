@@ -1,9 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Proxirae.Application.Services.Localization;
 using Proxirae.Application.Services.Preferences;
+using Proxirae.Application.Services.UI;
 using Proxirae.Infrastructure;
 using Proxirae.Infrastructure.ProcessCommunication;
 using Proxirae.Infrastructure.TransactionControl;
+using Proxirae.Presentation.WPF.Models.Themes;
+using Proxirae.Presentation.WPF.Services.Themes;
 using System.Windows;
 
 namespace Proxirae.Presentation.WPF
@@ -22,10 +26,13 @@ namespace Proxirae.Presentation.WPF
                 {
                     services
                         .AddStartupServices()
+                        .AddCache()
                         .AddServices()
                         .AddRepositories()
                         .AddStores()
+                        .AddExporters()
                         .AddUnitsOfWork()
+                        .AddValidators()
                         .AddMappers()
                         .AddFacades()
                         .AddFactories()
@@ -39,11 +46,23 @@ namespace Proxirae.Presentation.WPF
         {
             await _host.StartAsync();
 
+            var preferencesService = _host.Services.GetRequiredService<IPreferencesService>();
+            await preferencesService.LoadAsync(CancellationToken.None);
+
+            var localizationService = _host.Services.GetRequiredService<ILocalizationService>();
+            localizationService.Initialize(preferencesService.Current.System.LanguageCode);
+
+            var themeService = _host.Services.GetRequiredService<IThemeService>();
+            themeService.Apply(Enum.Parse<Theme>(preferencesService.Current.Appearance.Theme));
+
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
+            var uiConfigurator = _host.Services.GetRequiredService<IUiService>();
+            uiConfigurator.ApplyGlobalTweaks();
+
             var mainView = _host.Services.GetRequiredService<MainView>();
-            mainView.Show();
             Current.MainWindow = mainView;
+            mainView.Show();
 
             base.OnStartup(e);
         }
@@ -56,5 +75,4 @@ namespace Proxirae.Presentation.WPF
             base.OnExit(e);
         }
     }
-
 }

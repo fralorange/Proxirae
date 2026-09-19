@@ -11,6 +11,8 @@ namespace Proxirae.Application.Services.Preferences
     {
         public AppPreferences Current => _preferencesStore.Current;
 
+        public event EventHandler<AppPreferences>? PreferencesChanged;
+
         private readonly IPreferencesStore _preferencesStore;
         private readonly IMessenger _messenger;
 
@@ -25,20 +27,24 @@ namespace Proxirae.Application.Services.Preferences
             return _preferencesStore.LoadAsync(cancellationToken);
         }
 
-        public Task UpdateAsync(SystemPreferences preferences, CancellationToken cancellationToken)
+        public async Task UpdateAsync<T>(T preferences, CancellationToken cancellationToken = default)
         {
-            return _preferencesStore.UpdateAsync(preferences, cancellationToken);
+            await _preferencesStore.UpdateAsync(current => preferences switch
+            {
+                SystemPreferences sys => current with { System = sys },
+                EnginePreferences eng => current with { Engine = eng },
+                AppearancePreferences app => current with { Appearance = app },
+                AppPreferences full => full,
+                _ => throw new ArgumentOutOfRangeException(nameof(preferences), $"Unsupported preferences type: {typeof(T).Name}")
+            }, cancellationToken);
+
+            PreferencesChanged?.Invoke(this, Current);
         }
 
-        public async Task UpdateAsync(EnginePreferences preferences, CancellationToken cancellationToken)
+        public async Task UpdateAsync(EnginePreferences preferences, CancellationToken cancellationToken = default)
         {
-            await _preferencesStore.UpdateAsync(preferences, cancellationToken);
-            await _messenger.SendMessageAsync(MessageType.Cmd_ReloadPreferences, cancellationToken);   
-        }
-
-        public Task UpdateAsync(AppearancePreferences preferences, CancellationToken cancellationToken)
-        {
-            return _preferencesStore.UpdateAsync(preferences, cancellationToken);
+            await UpdateAsync<EnginePreferences>(preferences, cancellationToken);
+            await _messenger.SendMessageAsync(MessageType.Cmd_ReloadPreferences, cancellationToken);
         }
     }
 }

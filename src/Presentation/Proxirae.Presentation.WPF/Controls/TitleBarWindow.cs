@@ -20,7 +20,6 @@ namespace Proxirae.Presentation.WPF.Controls
     [ContentProperty(nameof(WindowContent))]
     public class TitleBarWindow : Window
     {
-        private static readonly Brush TitleBarBackgroundBrush = Brushes.WhiteSmoke;
         private static readonly Brush TitleBarButtonBackgroundBrush = Brushes.Transparent;
         private static readonly Brush TitleBarButtonHoverBackgroundBrush = new SolidColorBrush(Color.FromRgb(233, 236, 239));
         private static readonly Brush TitleBarButtonPressedBackgroundBrush = new SolidColorBrush(Color.FromRgb(221, 226, 230));
@@ -32,11 +31,31 @@ namespace Proxirae.Presentation.WPF.Controls
         private ContentPresenter titleBarMenuPresenter;
         private TextBlock sideTitleTextBlock;
         private TextBlock centeredTitleTextBlock;
-        private Image windowIcon;
+        private Border titleBarIconPresenter;
         private Path maximizeRestoreIcon;
         private Grid titleBar;
         private Border windowBorder;
         private WindowChrome windowChrome;
+
+        /// <summary>
+        /// A title bar icon property.
+        /// </summary>
+        public static readonly DependencyProperty TitleBarIconProperty =
+            DependencyProperty.Register(
+                nameof(TitleBarIcon),
+                typeof(object),
+                typeof(TitleBarWindow),
+                new PropertyMetadata(null, OnTitleBarIconChanged));
+
+        /// <summary>
+        /// A title bar background property.
+        /// </summary>
+        public static readonly DependencyProperty TitleBarBackgroundProperty =
+            DependencyProperty.Register(
+                nameof(TitleBarBackground),
+                typeof(Brush),
+                typeof(TitleBarWindow),
+                new PropertyMetadata(Brushes.WhiteSmoke));
 
         /// <summary>
         /// A title bar menu content dependency property.
@@ -93,6 +112,24 @@ namespace Proxirae.Presentation.WPF.Controls
                 typeof(bool),
                 typeof(TitleBarWindow),
                 new PropertyMetadata(false));
+
+        /// <summary>
+        /// Gets or sets title bar icon
+        /// </summary>
+        public object TitleBarIcon
+        {
+            get => GetValue(TitleBarIconProperty);
+            set => SetValue(TitleBarIconProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets title bar background brush
+        /// </summary>
+        public Brush TitleBarBackground
+        {
+            get => (Brush)GetValue(TitleBarBackgroundProperty);
+            set => SetValue(TitleBarBackgroundProperty, value);
+        }
 
         /// <summary>
         /// Gets or sets title bar menu content.
@@ -232,7 +269,7 @@ namespace Proxirae.Presentation.WPF.Controls
                     new ColumnDefinition { Width = GridLength.Auto }
                 }
             };
-            titleBar.Background = TitleBarBackgroundBrush;
+            titleBar.SetBinding(Panel.BackgroundProperty, new Binding(nameof(TitleBarBackground)) { Source = this });
             DockPanel.SetDock(titleBar, Dock.Top);
             dockPanel.Children.Add(titleBar);
             WindowChrome.SetIsHitTestVisibleInChrome(titleBar, false);
@@ -251,33 +288,35 @@ namespace Proxirae.Presentation.WPF.Controls
 
         private void CreateIcon()
         {
-            windowIcon = new Image
+            var contentPresenter = new ContentPresenter
             {
                 Focusable = false,
-
-                Width = 24,
-                Height = 24,
-
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Left,
-
-                Margin = new Thickness(3, 0, 5, 0),
-
-                UseLayoutRounding = true,
-                SnapsToDevicePixels = true
+                IsHitTestVisible = false,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
             };
 
-            RenderOptions.SetBitmapScalingMode(windowIcon, BitmapScalingMode.HighQuality);
+            contentPresenter.SetBinding(
+                ContentPresenter.ContentProperty,
+                new Binding(nameof(TitleBarIcon)) { Source = this });
 
-            windowIcon.SetBinding(Image.SourceProperty, new Binding(nameof(Icon)) { Source = this });
-            windowIcon.MouseDown += OnIconMouseDown;
+            titleBarIconPresenter = new Border
+            {
+                Background = Brushes.Transparent,
+                Width = 24,
+                Height = 24,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Thickness(3, 0, 5, 0),
+                Child = contentPresenter
+            };
 
-            titleBar.Children.Add(windowIcon);
-            Grid.SetColumn(windowIcon, 0);
-            Panel.SetZIndex(windowIcon, 1);
-            WindowChrome.SetIsHitTestVisibleInChrome(windowIcon, true);
+            titleBarIconPresenter.MouseDown += OnIconMouseDown;
 
-            UpdateIconVisibility();
+            titleBar.Children.Add(titleBarIconPresenter);
+            Grid.SetColumn(titleBarIconPresenter, 0);
+            Panel.SetZIndex(titleBarIconPresenter, 1);
+            WindowChrome.SetIsHitTestVisibleInChrome(titleBarIconPresenter, true);
         }
 
         private void CreateMenuSection()
@@ -371,12 +410,12 @@ namespace Proxirae.Presentation.WPF.Controls
 
         private void UpdateIconVisibility()
         {
-            if (windowIcon is null)
+            if (titleBarIconPresenter is null)
             {
                 return;
             }
 
-            windowIcon.Visibility = Icon is null
+            titleBarIconPresenter.Visibility = TitleBarIcon is null
                 ? Visibility.Collapsed
                 : Visibility.Visible;
         }
@@ -651,6 +690,14 @@ namespace Proxirae.Presentation.WPF.Controls
                 ShadowDepth = 0,
                 Color = Colors.Black
             };
+        }
+
+        private static void OnTitleBarIconChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            if (dependencyObject is TitleBarWindow window)
+            {
+                window.UpdateIconVisibility();
+            }
         }
 
         private static void OnTitleBarMenuContentChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)

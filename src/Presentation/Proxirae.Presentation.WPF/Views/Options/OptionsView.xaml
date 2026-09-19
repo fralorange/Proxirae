@@ -1,0 +1,96 @@
+﻿<controls:TitleBarWindow x:Class="Proxirae.Presentation.WPF.Views.Options.OptionsView"
+                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:views="clr-namespace:Proxirae.Presentation.WPF.Views.Options.Sections"
+                         xmlns:sections="clr-namespace:Proxirae.Presentation.WPF.ViewModels.Options.Sections"
+                         xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls" 
+                         xmlns:options="clr-namespace:Proxirae.Presentation.WPF.ViewModels.Options" 
+                         xmlns:l="clr-namespace:RentADeveloper.ResXLocalization.WPF;assembly=ResXLocalization.WPF"
+                         xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
+                         xmlns:core="clr-namespace:RentADeveloper.ResXLocalization;assembly=ResXLocalization.Core"
+                         d:DataContext="{d:DesignInstance Type=options:OptionsViewModel}"
+                         mc:Ignorable="d"
+                         Title="{l:Localize {x:Static res:LocalizationKeys.OptionsTitle}}" 
+                         MinHeight="500"
+                         SizeToContent="Height"
+                         Width="560"
+                         ResizeMode="NoResize"
+                         KeyboardNavigation.TabNavigation="None"
+                         ShowInTaskbar="False"
+                         WindowStartupLocation="CenterOwner"
+                         ShowMaximizeButton="False"
+                         ShowMinimizeButton="False"
+                         Style="{StaticResource Window}">
+    <controls:TitleBarWindow.Resources>
+        <DataTemplate DataType="{x:Type sections:GeneralViewModel}">
+            <views:GeneralView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type sections:AppearanceViewModel}">
+            <views:AppearanceView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type sections:MetricsViewModel}">
+            <views:MetricsView/>
+        </DataTemplate>
+    </controls:TitleBarWindow.Resources>
+
+    <Grid Style="{StaticResource OptionsViewRoot}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ListBox Margin="10 10 5 10"
+                 ItemsSource="{Binding Sections}"
+                 SelectedValue="{Binding SelectedSection}"
+                 SelectedValuePath="ViewModel"
+                 Style="{StaticResource OptionsSectionList}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Style="{StaticResource OptionsSectionText}">
+                        <TextBlock.Text>
+                            <MultiBinding Converter="{StaticResource NameToLocalizeConverter}"
+                                          ConverterParameter="Options">
+                                <Binding Path="Title"/>
+                                <Binding Path="CurrentCulture"
+                                         Source="{x:Static core:Localizer.Current}"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <ContentControl Grid.Column="1"
+                        Content="{Binding SelectedSection}"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Top"
+                        IsTabStop="False"/>
+
+        <DockPanel Grid.Row="1"
+                   Grid.ColumnSpan="2"
+                   LastChildFill="False">
+            <Button Content="{l:Localize {x:Static res:LocalizationKeys.SharedApply}}"
+                    Style="{StaticResource ControlButton}"
+                    DockPanel.Dock="Right"
+                    Command="{Binding ApplyCommand}"/>
+            <Button Content="{l:Localize {x:Static res:LocalizationKeys.SharedCancel}}"
+                    Style="{StaticResource ControlButton}"
+                    DockPanel.Dock="Right" 
+                    IsCancel="True"/>
+            <Button Content="{l:Localize {x:Static res:LocalizationKeys.SharedOK}}"
+                    Style="{StaticResource ControlButton}"
+                    DockPanel.Dock="Right" 
+                    IsDefault="True"
+                    Command="{Binding ConfirmCommand}"/>
+        </DockPanel>
+    </Grid>
+</controls:TitleBarWindow>

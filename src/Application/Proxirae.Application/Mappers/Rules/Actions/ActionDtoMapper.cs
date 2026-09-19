@@ -1,5 +1,4 @@
-﻿using Proxirae.Application.Mappers.Proxies;
-using Proxirae.Contracts.DTOs.Rules.Actions;
+﻿using Proxirae.Contracts.DTOs.Rules.Actions;
 using Proxirae.Domain.Rules.Actions;
 
 namespace Proxirae.Application.Mappers.Rules.Actions
@@ -11,7 +10,7 @@ namespace Proxirae.Application.Mappers.Rules.Actions
             return action switch
             {
                 DirectAction directAction => new DirectActionDto() { Id = directAction.Id },
-                BlockAction blockAction => new BlockActionDto() { Id = blockAction.Id},
+                BlockAction blockAction => new BlockActionDto() { Id = blockAction.Id },
                 ProxyAction proxyAction => new ProxyActionDto(proxyAction.Name, proxyAction.Id),
                 _ => throw new NotSupportedException($"Unknown action type: {action.GetType().Name}")
             };
