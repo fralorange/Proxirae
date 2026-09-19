@@ -7,23 +7,23 @@
                          xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
                          xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
                          xmlns:local="clr-namespace:Proxirae.Presentation.WPF.Views.ProxyChecker"
-                         xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls" 
+                         xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
                          xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels.ProxyChecker"
                          md:DialogServiceViews.IsRegistered="True"
                          d:DataContext="{d:DesignInstance Type=viewmodels:SetProxyServerViewModel}"
                          mc:Ignorable="d"
-                         Title="{l:Localize {x:Static res:LocalizationKeys.ProxyServerEditorTitle}}" 
+                         Title="{l:Localize {x:Static res:LocalizationKeys.ProxyServerEditorTitle}}"
                          MinHeight="450"
                          MinWidth="400"
-                         Height="450" 
+                         Height="450"
                          Width="400"
-                         Background="Transparent"
                          WindowStartupLocation="CenterOwner"
                          ShowInTaskbar="False"
                          ShowMaximizeButton="False"
                          ShowMinimizeButton="False"
-                         ResizeMode="NoResize">
-    <Grid Background="WhiteSmoke"
+                         ResizeMode="NoResize"
+                         Style="{StaticResource Window}">
+    <Grid Style="{StaticResource ProxyServerEditorRoot}"
           Grid.IsSharedSizeScope="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -32,12 +32,13 @@
         </Grid.RowDefinitions>
 
         <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.ProxyServerEditorGroupHeaderServer}}" 
+                  Style="{StaticResource ProxyServerEditorGroupBox}"
                   Margin="20" 
                   Grid.Row="0">
             <Grid Margin="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" 
-                                      SharedSizeGroup="Labels"/>
+                                  SharedSizeGroup="Labels"/>
                     <ColumnDefinition Width="200"/>
                 </Grid.ColumnDefinitions>
 
@@ -49,33 +50,40 @@
 
                 <Label Grid.Row="0" 
                        Grid.Column="0" 
+                       Style="{StaticResource ProxyServerEditorLabel}"
                        Content="{l:Localize {x:Static res:LocalizationKeys.ProxyServerEditorAddress}}" 
                        Margin="0 0 10 10"/>
                 <TextBox Grid.Row="0" 
                          Grid.Column="1" 
+                         Style="{StaticResource ProxyServerEditorInput}"
                          Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}" 
                          Margin="0 0 0 10"/>
 
                 <Label Grid.Row="1" 
                        Grid.Column="0" 
+                       Style="{StaticResource ProxyServerEditorLabel}"
                        Content="{l:Localize {x:Static res:LocalizationKeys.ProxyServerEditorPort}}" 
                        Margin="0 0 10 10"/>
                 <TextBox Grid.Row="1" 
                          Grid.Column="1" 
+                         Style="{StaticResource ProxyServerEditorInput}"
                          Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}" 
                          Margin="0 0 0 10"/>
 
                 <Label Grid.Row="2" 
                        Grid.Column="0" 
+                       Style="{StaticResource ProxyServerEditorLabel}"
                        Content="{l:Localize {x:Static res:LocalizationKeys.ProxyServerEditorProtocol}}" 
                        Margin="0 0 10 0"/>
                 <ComboBox Grid.Row="2" 
                           Grid.Column="1" 
+                          Style="{StaticResource ProxyServerEditorComboBox}"
                           SelectedItem="{Binding Protocol, UpdateSourceTrigger=PropertyChanged}" 
                           ItemsSource="{Binding Source={StaticResource enumValues}}"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.ProxyServerEditorGroupHeaderAuthentication}}" 
+                  Style="{StaticResource ProxyServerEditorGroupBox}"
                   Margin="20"
                   Grid.Row="1">
             <Grid Margin="10">
@@ -95,31 +103,36 @@
                           Grid.Row="0" 
                           Grid.Column="0" 
                           Grid.ColumnSpan="2"
+                          Style="{StaticResource ProxyServerEditorInput}"
                           Content="{l:Localize {x:Static res:LocalizationKeys.ProxyServerEditorAuthRequired}}"
                           IsChecked="{Binding IsAuth, Mode=TwoWay}"
                           Margin="0 0 0 10"/>
 
                 <Label Grid.Row="1" 
                        Grid.Column="0"
+                       Style="{StaticResource ProxyServerEditorLabel}"
                        Content="{l:Localize {x:Static res:LocalizationKeys.ProxyServerEditorAuthUsername}}" 
                        Margin="0 0 10 10"
                        IsEnabled="{Binding IsChecked, ElementName=AuthCheck}"/>
 
                 <TextBox Grid.Row="1"
                          Grid.Column="1"
+                         Style="{StaticResource ProxyServerEditorInput}"
                          Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                          Margin="0 0 0 10"
                          IsEnabled="{Binding IsChecked, ElementName=AuthCheck}"/>
 
                 <Label Grid.Row="2" 
                        Grid.Column="0"
+                       Style="{StaticResource ProxyServerEditorLabel}"
                        Content="{l:Localize {x:Static res:LocalizationKeys.ProxyServerEditorAuthPassword}}" 
                        Margin="0 0 10 0"
                        IsEnabled="{Binding IsChecked, ElementName=AuthCheck}"/>
 
                 <PasswordBox Grid.Row="2" 
                              Grid.Column="1"
-                     IsEnabled="{Binding IsChecked, ElementName=AuthCheck}"/>
+                             Style="{StaticResource ProxyServerEditorInput}"
+                             IsEnabled="{Binding IsChecked, ElementName=AuthCheck}"/>
             </Grid>
         </GroupBox>
 

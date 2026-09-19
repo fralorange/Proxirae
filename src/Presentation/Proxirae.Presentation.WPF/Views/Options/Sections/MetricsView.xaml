@@ -10,11 +10,12 @@
              xmlns:l="clr-namespace:RentADeveloper.ResXLocalization.WPF;assembly=ResXLocalization.WPF"
              xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
              d:DataContext="{d:DesignInstance Type=sections:MetricsViewModel}"
-             mc:Ignorable="d"
-             Background="WhiteSmoke">
+             mc:Ignorable="d" 
+             Style="{StaticResource SectionWindow}">
 
     <Grid Margin="10">
         <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.MetricsGroupHeaderBufferConfiguration}}" 
+                  Style="{StaticResource SectionGroupBox}"
                   VerticalAlignment="Top" 
                   Padding="10"
                   KeyboardNavigation.TabNavigation="Cycle">
@@ -25,20 +26,23 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="140"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Routing Buffer -->
                 <TextBlock Grid.Row="0" 
                            Grid.Column="0" 
+                           Style="{StaticResource SectionText}"
                            Text="{l:Localize {x:Static res:LocalizationKeys.MetricsRoutingBufferSize}}" 
+                           Margin="0 0 15 0"
                            VerticalAlignment="Center"/>
+
                 <numeric:SpinnerDecorator Grid.Row="0" 
                                           Grid.Column="1"
                                           Focusable="False">
                     <numeric:IntBox Value="{Binding RoutingBufferSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Style="{StaticResource SectionInput}"
                                     VerticalContentAlignment="Center" 
                                     Padding="2"
                                     AllowSpinners="True"
@@ -49,22 +53,26 @@
                                     TabIndex="1"
                                     IsTabStop="True"/>
                 </numeric:SpinnerDecorator>
+
                 <TextBlock Grid.Row="0" 
                            Grid.Column="2" 
+                           Style="{StaticResource SectionSecondaryText}"
                            Text="{l:Localize {x:Static res:LocalizationKeys.MetricsEntries}}" 
                            Margin="5 0 0 0" 
-                           VerticalAlignment="Center" 
-                           Foreground="DimGray"/>
+                           VerticalAlignment="Center"/>
 
-                <!-- Logs Buffer -->
                 <TextBlock Grid.Row="2" 
                            Grid.Column="0" 
+                           Style="{StaticResource SectionText}"
                            Text="{l:Localize {x:Static res:LocalizationKeys.MetricsLogsBufferSize}}" 
+                           Margin="0 0 15 0"
                            VerticalAlignment="Center"/>
+
                 <numeric:SpinnerDecorator Grid.Row="2" 
                                           Grid.Column="1"
                                           Focusable="False">
                     <numeric:IntBox Value="{Binding LogsBufferSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Style="{StaticResource SectionInput}"
                                     VerticalContentAlignment="Center"
                                     Padding="2"
                                     AllowSpinners="True"
@@ -75,12 +83,13 @@
                                     TabIndex="2"
                                     IsTabStop="True"/>
                 </numeric:SpinnerDecorator>
+
                 <TextBlock Grid.Row="2" 
                            Grid.Column="2" 
+                           Style="{StaticResource SectionSecondaryText}"
                            Text="{l:Localize {x:Static res:LocalizationKeys.MetricsEntries}}" 
                            Margin="5 0 0 0" 
-                           VerticalAlignment="Center" 
-                           Foreground="DimGray"/>
+                           VerticalAlignment="Center"/>
             </Grid>
         </GroupBox>
     </Grid>

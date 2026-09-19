@@ -1,7 +1,9 @@
 ﻿namespace Proxirae.Presentation.WPF.Models.Themes
 {
-    public class Theme
+    public enum Theme
     {
-        public required string Name { get; set; }
+        System,
+        Light,
+        Dark
     }
 }

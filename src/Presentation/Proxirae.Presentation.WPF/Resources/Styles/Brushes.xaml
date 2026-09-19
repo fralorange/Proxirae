@@ -1,8 +1,60 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <SolidColorBrush x:Key="LogCriticalBrush" Color="#C00000"/>
-    <SolidColorBrush x:Key="LogErrorBrush" Color="#FF3300"/>
-    <SolidColorBrush x:Key="LogWarningBrush" Color="#FFC000"/>
-    <SolidColorBrush x:Key="LogInfoBrush" Color="#70AD47"/>
-    <SolidColorBrush x:Key="LogDebugBrush" Color="#5B9BD5"/>
+    <SolidColorBrush x:Key="TransparentBrush" Color="Transparent"/>
+
+    <SolidColorBrush x:Key="IconBrush" Color="{DynamicResource IconColor}"/>
+
+    <SolidColorBrush x:Key="LogCriticalBrush" Color="{DynamicResource LogCriticalColor}"/>
+    <SolidColorBrush x:Key="LogErrorBrush" Color="{DynamicResource LogErrorColor}"/>
+    <SolidColorBrush x:Key="LogWarningBrush" Color="{DynamicResource LogWarningColor}"/>
+    <SolidColorBrush x:Key="LogInfoBrush" Color="{DynamicResource LogInfoColor}"/>
+    <SolidColorBrush x:Key="LogDebugBrush" Color="{DynamicResource LogDebugColor}"/>
+
+    <SolidColorBrush x:Key="TitleBarBrush" Color="{DynamicResource TitleBarColor}"/>
+    <SolidColorBrush x:Key="TitleBarForegroundBrush" Color="{DynamicResource TitleBarForegroundColor}"/>
+
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}"/>
+    <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="{DynamicResource SecondaryBackgroundColor}"/>
+    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="{DynamicResource DisabledBackgroundColor}"/>
+
+    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="{DynamicResource DisabledForegroundColor}"/>
+    <SolidColorBrush x:Key="ForegroundBrush" Color="{DynamicResource ForegroundColor}"/>
+    <SolidColorBrush x:Key="SecondaryForegroundBrush" Color="{DynamicResource SecondaryForegroundColor}"/>
+    
+    <SolidColorBrush x:Key="BorderBrush" Color="{DynamicResource BorderColor}"/>
+    <SolidColorBrush x:Key="DisabledBorderBrush" Color="{DynamicResource DisabledBorderColor}"/>
+
+    <SolidColorBrush x:Key="MenuSubMenuBackgroundBrush" Color="{DynamicResource MenuSubMenuBackgroundColor}"/>
+    <SolidColorBrush x:Key="MenuHighlightBrush" Color="{DynamicResource MenuHighlightColor}"/>
+    <SolidColorBrush x:Key="MenuDisabledHighlightBrush" Color="{DynamicResource MenuDisabledHighlightColor}"/>
+    <SolidColorBrush x:Key="MenuSubMenuBorderBrush" Color="{DynamicResource MenuSubMenuBorderColor}"/>
+    <SolidColorBrush x:Key="MenuSeparatorBrush" Color="{DynamicResource MenuSeparatorColor}"/>
+    <SolidColorBrush x:Key="MenuHighlightBorderBrush" Color="{DynamicResource MenuHighlightBorderColor}"/>
+    <SolidColorBrush x:Key="MenuDisabledBorderBrush" Color="{DynamicResource MenuDisabledBorderColor}"/>
+    
+    <SolidColorBrush x:Key="GridLineBrush" Color="{DynamicResource GridLineColor}"/>
+
+    <SolidColorBrush x:Key="TitleBarButtonHoverBrush" Color="{DynamicResource TitleBarButtonHoverColor}"/>
+    <SolidColorBrush x:Key="TitleBarButtonPressedBrush" Color="{DynamicResource TitleBarButtonPressedColor}"/>
+    <SolidColorBrush x:Key="TitleBarCloseButtonHoverBrush" Color="{DynamicResource TitleBarCloseButtonHoverColor}"/>
+    <SolidColorBrush x:Key="TitleBarCloseButtonPressedBrush" Color="{DynamicResource TitleBarCloseButtonPressedColor}"/>
+
+    <SolidColorBrush x:Key="LatencyBrush" Color="{DynamicResource LatencyColor}"/>
+    <SolidColorBrush x:Key="StatusBrush" Color="{DynamicResource StatusColor}"/>
+
+    <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="{DynamicResource ButtonBackgroundColor}"/>
+    <SolidColorBrush x:Key="ButtonHoverBrush" Color="{DynamicResource ButtonHoverColor}"/>
+    <SolidColorBrush x:Key="ButtonPressedBrush" Color="{DynamicResource ButtonPressedColor}"/>
+
+    <SolidColorBrush x:Key="SelectionBrush" Color="{DynamicResource SelectionColor}"/>
+    <SolidColorBrush x:Key="SelectionForegroundBrush" Color="{DynamicResource SelectionForegroundColor}"/>
+    <SolidColorBrush x:Key="FocusBrush" Color="{DynamicResource FocusColor}"/>
+
+    <SolidColorBrush x:Key="ProcessButtonBrush" Color="{DynamicResource ProcessButtonColor}"/>
+    <SolidColorBrush x:Key="ProcessButtonHoverBrush" Color="{DynamicResource ProcessButtonHoverColor}"/>
+    <SolidColorBrush x:Key="ProcessButtonPressedBrush" Color="{DynamicResource ProcessButtonPressedColor}"/>
+    <SolidColorBrush x:Key="ProcessButtonDisabledBrush" Color="{DynamicResource ProcessButtonDisabledColor}"/>
+
+    <SolidColorBrush x:Key="ProcessButtonHoverBackgroundBrush" Color="{DynamicResource ProcessButtonHoverBackgroundColor}"/>
+    <SolidColorBrush x:Key="ProcessButtonPressedBackgroundBrush" Color="{DynamicResource ProcessButtonPressedBackgroundColor}"/>
 </ResourceDictionary>

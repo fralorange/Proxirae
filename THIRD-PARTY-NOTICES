@@ -160,6 +160,18 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
+License notice for csFastFloat (v4.1.6)
+------------------------------------
+
+https://github.com/CarlVerret/csFastFloat at 08263c120f9bae760f7497cfbf47bff6431d4cb8
+
+csFastFloat is licensed under the MIT license
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
 License notice for System.Diagnostics.DiagnosticSource (v10.0.12)
 ------------------------------------
 
@@ -282,6 +294,20 @@ Copyright © 2009-2023 MVVM Dialogs contributors
 Licensed under Apache-2.0
 
 Available at https://licenses.nuget.org/Apache-2.0
+
+
+License notice for ResXLocalization.WPF (v1.1.0)
+------------------------------------
+
+https://github.com/rent-a-developer/ResXLocalization.git at 6ee4f2fe88f2146d344bd328f07a0d9d4999cc45
+
+https://github.com/rent-a-developer/ResXLocalization
+
+Copyright © David Liebeherr, rent-a-developer
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
 
 
 License notice for Sdl.MultiSelectComboBox (v1.0.103)
@@ -594,6 +620,20 @@ License notice for ObservableCollections (v3.3.4)
 https://github.com/Cysharp/ObservableCollections at 094f7df69f4b2f805788f14f9d389694f687b1a1
 
 Copyright © Cysharp, Inc.
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
+License notice for ResXLocalization.Core (v1.1.0)
+------------------------------------
+
+https://github.com/rent-a-developer/ResXLocalization.git at 6ee4f2fe88f2146d344bd328f07a0d9d4999cc45
+
+https://github.com/rent-a-developer/ResXLocalization
+
+Copyright © David Liebeherr, rent-a-developer
 
 Licensed under MIT
 

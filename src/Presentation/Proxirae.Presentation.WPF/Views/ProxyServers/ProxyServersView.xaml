@@ -19,16 +19,16 @@
                          MinWidth="500"
                          Height="300"
                          Width="500"
-                         Background="Transparent"
                          WindowStartupLocation="CenterOwner"
-                         ShowInTaskbar="False">
+                         ShowInTaskbar="False"
+                         Style="{StaticResource Window}">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <Grid Background="WhiteSmoke">
+    <Grid Style="{StaticResource ProxyServersViewRoot}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
@@ -39,13 +39,13 @@
         </Grid.ColumnDefinitions>
 
         <DataGrid x:Name="ProxyServersDataGrid"
-                  Grid.Row="0" 
+                  Grid.Row="0"
                   Grid.Column="0"
                   Style="{StaticResource ControlTable}"
                   ItemsSource="{Binding ProxyServers}"
                   behaviors:DataGridFocusBehavior.ClearSelectionOnClick="True">
             <DataGrid.RowStyle>
-                <Style TargetType="DataGridRow">
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource TableRow}">
                     <Setter Property="behaviors:DataGridRowCommandBehavior.MouseDoubleClickCommand"
                             Value="{Binding DataContext.EditProxyServerCommand, RelativeSource={RelativeSource AncestorType=controls:TitleBarWindow}}"/>
                     <Setter Property="behaviors:DataGridRowCommandBehavior.MouseDoubleClickCommandParameter"
@@ -53,33 +53,33 @@
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyServersGridHeaderType}}" 
+                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyServersGridHeaderType}}"
                                     Width="*"
                                     Binding="{Binding Type}"/>
-                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyServersGridHeaderRemarks}}" 
-                                    Width="*" 
+                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyServersGridHeaderRemarks}}"
+                                    Width="*"
                                     Binding="{Binding Remarks}"/>
-                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyServersGridHeaderAddress}}" 
-                                    Width="*" 
+                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyServersGridHeaderAddress}}"
+                                    Width="*"
                                     Binding="{Binding Address}"/>
-                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyServersGridHeaderPort}}" 
-                                    Width="*" 
+                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyServersGridHeaderPort}}"
+                                    Width="*"
                                     Binding="{Binding Port}"/>
             </DataGrid.Columns>
         </DataGrid>
 
         <StackPanel Grid.Row="0"
                     Grid.Column="1"
-                    Margin="0 20 0 0">
+                    Style="{StaticResource ProxyServersActionPanel}">
             <StackPanel.Resources>
-                <Style x:Key="TaskButton" 
+                <Style x:Key="TaskButton"
                        TargetType="Button"
                        BasedOn="{StaticResource ControlButton}">
                     <Setter Property="IsEnabled" Value="True"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding SelectedIndex, ElementName=ProxyServersDataGrid}"
                                      Value="-1">
-                            <Setter Property="IsEnabled" Value="False" />
+                            <Setter Property="IsEnabled" Value="False"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

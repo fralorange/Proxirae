@@ -16,20 +16,20 @@
                          d:DataContext="{d:DesignInstance Type=viewmodels:ProxyRulesViewModel}"
                          mc:Ignorable="d"
                          Title="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesTitle}}"
-                         MinHeight="650" 
+                         MinHeight="650"
                          MinWidth="750"
                          Height="650"
                          Width="750"
-                         Background="Transparent"
                          WindowStartupLocation="CenterOwner"
-                         ShowInTaskbar="False">
+                         ShowInTaskbar="False"
+                         Style="{StaticResource Window}">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <Grid Background="WhiteSmoke">
+    <Grid Style="{StaticResource ProxyRulesViewRoot}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
@@ -40,7 +40,7 @@
         </Grid.ColumnDefinitions>
 
         <DataGrid x:Name="ProxyRulesDataGrid"
-                  Grid.Row="0" 
+                  Grid.Row="0"
                   Grid.Column="0"
                   Style="{StaticResource ControlTable}"
                   ItemsSource="{Binding ProxyRules}"
@@ -50,7 +50,7 @@
                 <behaviors:DataGridPreventRowSelectionBehavior/>
             </i:Interaction.Behaviors>
             <DataGrid.RowStyle>
-                <Style TargetType="DataGridRow">
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource TableRow}">
                     <Setter Property="behaviors:DataGridRowCommandBehavior.MouseDoubleClickCommand"
                             Value="{Binding DataContext.EditProxyRuleCommand, RelativeSource={RelativeSource AncestorType=controls:TitleBarWindow}}"/>
                     <Setter Property="behaviors:DataGridRowCommandBehavior.MouseDoubleClickCommandParameter"
@@ -84,19 +84,19 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderProcesses}}" 
+                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderProcesses}}"
                                     Width="*"
                                     Binding="{Binding Processes}"
                                     ElementStyle="{StaticResource WrapTextColumnStyle}"/>
-                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderTargetHosts}}" 
+                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderTargetHosts}}"
                                     Width="*"
                                     Binding="{Binding Hosts}"
                                     ElementStyle="{StaticResource WrapTextColumnStyle}"/>
-                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderTargetPorts}}" 
+                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderTargetPorts}}"
                                     Width="*"
                                     Binding="{Binding Ports}"
                                     ElementStyle="{StaticResource WrapTextColumnStyle}"/>
-                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderProtocol}}" 
+                <DataGridTextColumn Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderProtocol}}"
                                     Width="*"
                                     Binding="{Binding Protocol}"
                                     ElementStyle="{StaticResource WrapTextColumnStyle}"/>
@@ -105,9 +105,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid>
-                                <TextBlock x:Name="ActionTextBlock" 
-                                           VerticalAlignment="Center"
-                                           Margin="5 0">
+                                <TextBlock x:Name="ActionTextBlock"
+                                           Style="{StaticResource ProxyRulesActionText}">
                                     <TextBlock.Text>
                                         <MultiBinding Converter="{StaticResource ActionToLocalizeConverter}">
                                             <Binding Path="Action"/>
@@ -119,8 +118,7 @@
                                 <ComboBox ItemsSource="{Binding Path=DataContext.Actions, RelativeSource={RelativeSource AncestorType=controls:TitleBarWindow}}"
                                           SelectedItem="{Binding Action, UpdateSourceTrigger=PropertyChanged}"
                                           SelectedValue="{Binding Action.Id, UpdateSourceTrigger=PropertyChanged}"
-                                          SelectedValuePath="Id"
-                                          Margin="0 0">
+                                          SelectedValuePath="Id">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock>
@@ -143,7 +141,8 @@
                                     </i:Interaction.Triggers>
 
                                     <ComboBox.Style>
-                                        <Style TargetType="ComboBox">
+                                        <Style TargetType="ComboBox"
+                                               BasedOn="{StaticResource ProxyRulesActionComboBox}">
                                             <Setter Property="Visibility" Value="Collapsed"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=DataGridRow}}"
@@ -163,7 +162,7 @@
 
         <Grid Grid.Row="0"
               Grid.Column="1"
-              Margin="0 20 0 0">
+              Style="{StaticResource ProxyRulesActionPanel}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="25" />
@@ -171,7 +170,7 @@
             </Grid.RowDefinitions>
 
             <Grid.Resources>
-                <Style x:Key="TaskButton" 
+                <Style x:Key="TaskButton"
                        TargetType="Button"
                        BasedOn="{StaticResource ControlButton}">
                     <Setter Property="IsEnabled" Value="True"/>
@@ -210,7 +209,6 @@
                         CommandParameter="{Binding SelectedItem, ElementName=ProxyRulesDataGrid}"/>
             </StackPanel>
         </Grid>
-
 
         <UniformGrid Grid.Row="1"
                      Grid.Column="0"
