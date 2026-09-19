@@ -86,25 +86,23 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyChecker
             {
                 case TestProgressStage.Establish:
                     ProgressValue = 1;
-                    StatusMessage = "Establishing connection...";
                     break;
 
                 case TestProgressStage.Handshake:
                     ProgressValue = 2;
-                    StatusMessage = "Performing handshake...";
                     break;
 
                 case TestProgressStage.Connect:
                     ProgressValue = 3;
                     IsSuccess = true;
-                    StatusMessage = "Connected successfully!";
                     break;
 
                 case TestProgressStage.Failed:
                     IsFailed = true;
-                    StatusMessage = "Connection failed.";
                     break;
             }
+
+            StatusMessage = progress.Stage.ToString();
         }
 
         [RelayCommand]

@@ -5,12 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Proxirae.Presentation.WPF.Views.Options.Sections" 
              xmlns:sections="clr-namespace:Proxirae.Presentation.WPF.ViewModels.Options.Sections" 
+             xmlns:l="clr-namespace:RentADeveloper.ResXLocalization.WPF;assembly=ResXLocalization.WPF"
+             xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
+             xmlns:core="clr-namespace:RentADeveloper.ResXLocalization;assembly=ResXLocalization.Core"
              d:DataContext="{d:DesignInstance Type=sections:AppearanceViewModel}"
              mc:Ignorable="d" 
              Background="WhiteSmoke">
 
     <Grid Margin="10">
-        <GroupBox Header="Visual Settings" VerticalAlignment="Top" Padding="10">
+        <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.AppearanceGroupHeaderVisualSettings}}" VerticalAlignment="Top" Padding="10">
             <StackPanel>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -18,14 +21,28 @@
                         <ColumnDefinition Width="200"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Theme:" VerticalAlignment="Center"/>
-                    <ComboBox Grid.Column="1" 
+                    <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.AppearanceTheme}}" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Column="1"
                               ItemsSource="{Binding Themes}"
-                              SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
-                              DisplayMemberPath="Name" />
+                              SelectedItem="{Binding SelectedTheme, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource NameToLocalizeConverter}"
+                                                      ConverterParameter="AppearanceTheme">
+                                            <Binding Path="Name"/>
+                                            <Binding Path="CurrentCulture"
+                                                     Source="{x:Static core:Localizer.Current}"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </Grid>
 
-                <TextBlock Text="Select the visual theme. The interface will update automatically." 
+                <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.AppearanceThemeDescription}}" 
                            Foreground="DimGray" 
                            Margin="100 5 0 0"
                            TextWrapping="Wrap"/>

@@ -11,7 +11,7 @@ using System.IO;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
 {
-    public partial class ProxyRuleBaseViewModel : ObservableValidator, IModalDialogViewModel
+    public partial class ProxyRuleBaseViewModel : ObservableValidator, IModalDialogViewModel, IDisposable
     {
         private readonly DialogFacade _dialogFacade;
 
@@ -62,8 +62,13 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
             _dialogFacade = dialogFacade;
 
             Actions = actions;
-            SelectedProtocols.CollectionChanged += (_, _) => ValidateProperty(SelectedProtocols, nameof(SelectedProtocols));
+            SelectedProtocols.CollectionChanged += OnSelectedProtocolsCollectionChanged;
             SelectedAction = Actions.First();
+        }
+
+        private void OnSelectedProtocolsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            ValidateProperty(SelectedProtocols, nameof(SelectedProtocols));
         }
 
         [RelayCommand]
@@ -105,6 +110,11 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
                 return new ValidationResult("The protocols list must not be empty");
 
             return ValidationResult.Success;
+        }
+
+        public void Dispose()
+        {
+            SelectedProtocols.CollectionChanged -= OnSelectedProtocolsCollectionChanged;
         }
     }
 }

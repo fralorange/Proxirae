@@ -14,4 +14,6 @@
     <local:UtcToLocalTimeConverter x:Key="UtcToLocalTimeConverter"/>
     <local:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
     <local:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter"/>
+    <local:ActionToLocalizeConverter x:Key="ActionToLocalizeConverter"/>
+    <local:NameToLocalizeConverter x:Key="NameToLocalizeConverter"/>
 </ResourceDictionary>

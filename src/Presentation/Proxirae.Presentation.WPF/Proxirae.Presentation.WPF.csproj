@@ -35,6 +35,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.12" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
     <PackageReference Include="MvvmDialogs" Version="9.1.2" />
+    <PackageReference Include="ResXLocalization.WPF" Version="1.1.0" />
     <PackageReference Include="Sdl.MultiSelectComboBox" Version="1.0.103" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.12" />
     <PackageReference Include="System.Management" Version="10.0.12" />
@@ -48,6 +49,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Resources\Localization\Localization.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Localization.resx</DependentUpon>
+    </Compile>
     <Compile Update="Views\ProxyChecker\SetProxyServerView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -61,6 +67,13 @@
 
   <ItemGroup>
     <Resource Include="Resources\Icons\icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Localization\Localization.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Localization.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

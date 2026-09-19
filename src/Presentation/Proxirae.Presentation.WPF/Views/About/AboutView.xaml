@@ -5,15 +5,19 @@
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                          xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
                          xmlns:about="clr-namespace:Proxirae.Presentation.WPF.ViewModels.About"
+                         xmlns:l="clr-namespace:RentADeveloper.ResXLocalization.WPF;assembly=ResXLocalization.WPF"
+                         xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
                          d:DataContext="{d:DesignInstance Type=about:AboutViewModel}"
                          mc:Ignorable="d"
-                         Title="{Binding AppName, StringFormat=About {0}}"
+                         Title="{l:Localize {x:Static res:LocalizationKeys.AboutTitle}}"
                          Background="Transparent"
                          WindowStartupLocation="CenterOwner"
                          ShowInTaskbar="False"
                          SizeToContent="Height"
                          ResizeMode="NoResize"
-                         Width="320">
+                         Width="320"
+                         ShowMaximizeButton="False"
+                         ShowMinimizeButton="False">
 
     <Grid Background="WhiteSmoke">
         <Grid.RowDefinitions>
@@ -48,11 +52,11 @@
             </StackPanel>
 
             <StackPanel HorizontalAlignment="Left">
-                <TextBlock Text="Copyright (c) 2026 Alexei Rodionov" 
+                <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.AboutCopyright}}"
                            HorizontalAlignment="Left"/>
 
-                <TextBlock Text="Licensed under the GNU GPL v3.0"
-                           Margin="0 8 0 0" 
+                <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.AboutLicense}}"
+                           Margin="0 8 0 0"
                            HorizontalAlignment="Left"/>
 
                 <TextBlock Margin="0 8 0 0" HorizontalAlignment="Left">
@@ -66,7 +70,7 @@
         </StackPanel>
 
         <Button Grid.Row="1"
-                Content="OK"
+                Content="{l:Localize {x:Static res:LocalizationKeys.SharedOK}}"
                 Style="{StaticResource ControlButton}"
                 HorizontalAlignment="Right"
                 IsDefault="True"
