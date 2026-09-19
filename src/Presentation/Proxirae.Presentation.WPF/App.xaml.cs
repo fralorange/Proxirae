@@ -6,8 +6,8 @@ using Proxirae.Application.Services.UI;
 using Proxirae.Infrastructure;
 using Proxirae.Infrastructure.ProcessCommunication;
 using Proxirae.Infrastructure.TransactionControl;
-using RentADeveloper.ResXLocalization;
-using System.Globalization;
+using Proxirae.Presentation.WPF.Models.Themes;
+using Proxirae.Presentation.WPF.Services.Themes;
 using System.Windows;
 
 namespace Proxirae.Presentation.WPF
@@ -51,6 +51,9 @@ namespace Proxirae.Presentation.WPF
 
             var localizationService = _host.Services.GetRequiredService<ILocalizationService>();
             localizationService.Initialize(preferencesService.Current.System.LanguageCode);
+
+            var themeService = _host.Services.GetRequiredService<IThemeService>();
+            themeService.Apply(Enum.Parse<Theme>(preferencesService.Current.Appearance.Theme));
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 

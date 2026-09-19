@@ -15,14 +15,14 @@
                          Title="{l:Localize {x:Static res:LocalizationKeys.OptionsTitle}}" 
                          MinHeight="500"
                          SizeToContent="Height"
-                         Width="500"
-                         Background="Transparent"
+                         Width="560"
                          ResizeMode="NoResize"
                          KeyboardNavigation.TabNavigation="None"
                          ShowInTaskbar="False"
                          WindowStartupLocation="CenterOwner"
                          ShowMaximizeButton="False"
-                         ShowMinimizeButton="False">
+                         ShowMinimizeButton="False"
+                         Style="{StaticResource Window}">
     <controls:TitleBarWindow.Resources>
         <DataTemplate DataType="{x:Type sections:GeneralViewModel}">
             <views:GeneralView/>
@@ -37,7 +37,7 @@
         </DataTemplate>
     </controls:TitleBarWindow.Resources>
 
-    <Grid Background="WhiteSmoke">
+    <Grid Style="{StaticResource OptionsViewRoot}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="3*"/>
@@ -48,15 +48,14 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ListBox Margin="10 10 5 10" 
+        <ListBox Margin="10 10 5 10"
                  ItemsSource="{Binding Sections}"
                  SelectedValue="{Binding SelectedSection}"
                  SelectedValuePath="ViewModel"
-                 Background="White"
-                 BorderThickness="1">
+                 Style="{StaticResource OptionsSectionList}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock>
+                    <TextBlock Style="{StaticResource OptionsSectionText}">
                         <TextBlock.Text>
                             <MultiBinding Converter="{StaticResource NameToLocalizeConverter}"
                                           ConverterParameter="Options">

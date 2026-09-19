@@ -19,13 +19,17 @@
                          Title="{x:Static root:ProgramInfo.AppName}"
                          MinWidth="750"
                          MinHeight="500"
-                         Background="Transparent"
+                         Style="{StaticResource Window}"
                          ShowCenteredTitle="True"
-                         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
-                         Icon="/Resources/Icons/icon.ico">
+                         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
+    <controls:TitleBarWindow.TitleBarIcon>
+        <svg:SVGImage Source="/Resources/Vectors/icon-silhouette.svg"
+                      SizeType="SizeToContent"
+                      Style="{StaticResource VectorIcon}"/>
+    </controls:TitleBarWindow.TitleBarIcon>
+    
     <controls:TitleBarWindow.TitleBarMenuContent>
-        <Menu Background="WhiteSmoke"
-              Margin="0 5 0 5">
+        <Menu Style="{StaticResource MainMenu}">
             <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuFile}}">
                 <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuImportConf}}"
                           Command="{Binding ImportConfigurationCommand}"/>
@@ -45,7 +49,7 @@
                 <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuExit}}"
                           Command="{Binding ExitCommand}"/>
             </MenuItem>
-            
+
             <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuProxy}}">
                 <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuProxyServers}}"
                           Command="{Binding OpenProxyServersCommand}"/>
@@ -76,7 +80,7 @@
         </Menu>
     </controls:TitleBarWindow.TitleBarMenuContent>
 
-    <Grid Background="WhiteSmoke">
+    <Grid Style="{StaticResource MainViewRoot}">
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"
                            MinHeight="200"/>
@@ -90,7 +94,8 @@
                         IconSource="/Resources/Icons/icon.ico"
                         DoubleClickCommand="{Binding RestoreCommand}">
             <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
+                <ContextMenu Style="{StaticResource MainContextMenu}"
+                             d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
                     <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.TrayOpen}}"
                               Command="{Binding RestoreCommand}"/>
                     <Separator/>
@@ -111,7 +116,8 @@
                                   RenderTransformOrigin="0.5,0.5"
                                   VerticalContentAlignment="Center"
                                   HorizontalContentAlignment="Center"
-                                  SizeType="SizeToContent"/>
+                                  SizeType="SizeToContent"
+                                  Style="{StaticResource ProcessButtonIcon}"/>
                 </Button>
                 <Button Style="{StaticResource ProcessButton}"
                         Command="{Binding EndCommand}"
@@ -120,7 +126,8 @@
                                   RenderTransformOrigin="0.5,0.5"
                                   VerticalContentAlignment="Center"
                                   HorizontalContentAlignment="Center"
-                                  SizeType="SizeToContent"/>
+                                  SizeType="SizeToContent"
+                                  Style="{StaticResource ProcessButtonIcon}"/>
                 </Button>
             </StackPanel>
 
@@ -128,7 +135,7 @@
                       DockPanel.Dock="Right"
                       ItemsSource="{Binding Flows}"
                       IsReadOnly="True"
-                      Style="{StaticResource ProcessTable}"
+                      Style="{StaticResource MainProcessTable}"
                       behaviors:ClearSelectionBehavior.IsEnabled="True">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderApplication}}"
@@ -142,8 +149,8 @@
                                            Margin="0 0 6 0"
                                            Source="{Binding ProcessIcon, IsAsync=True}"/>
 
-                                    <TextBlock Text="{Binding ProcessName, IsAsync=True}"
-                                               VerticalAlignment="Center"/>
+                                    <TextBlock Style="{StaticResource MainDataGridText}"
+                                               Text="{Binding ProcessName, IsAsync=True}"/>
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -153,7 +160,7 @@
                                             Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource MainDataGridText}">
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="{}{0}:{1}">
                                             <Binding Path="Target.Address"/>
@@ -169,8 +176,8 @@
                                             Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding SecondsPassed, Converter={StaticResource SecondsToTimeConverters}, IsAsync=True}"
-                                           VerticalAlignment="Center"/>
+                                <TextBlock Style="{StaticResource MainDataGridText}"
+                                           Text="{Binding SecondsPassed, Converter={StaticResource SecondsToTimeConverters}, IsAsync=True}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -179,8 +186,8 @@
                                             Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding ActionName}"
-                                           VerticalAlignment="Center"/>
+                                <TextBlock Style="{StaticResource MainDataGridText}"
+                                           Text="{Binding ActionName}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -189,7 +196,8 @@
                                             Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding BytesSent, Converter={StaticResource BytesToSizeConverter}, IsAsync=True}"/>
+                                <TextBlock Style="{StaticResource MainDataGridText}"
+                                           Text="{Binding BytesSent, Converter={StaticResource BytesToSizeConverter}, IsAsync=True}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -198,7 +206,8 @@
                                             Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding BytesReceived, Converter={StaticResource BytesToSizeConverter}, IsAsync=True}"/>
+                                <TextBlock Style="{StaticResource MainDataGridText}"
+                                           Text="{Binding BytesReceived, Converter={StaticResource BytesToSizeConverter}, IsAsync=True}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -208,12 +217,12 @@
 
         <TabControl Grid.Row="2"
                     Margin="0 -25 0 0"
-                    Style="{StaticResource LogPanel}"
+                    Style="{StaticResource MainLogPanel}"
                     SelectedIndex="{Binding SelectedTabIndex}">
             <TabItem Header="{l:Localize {x:Static res:LocalizationKeys.TabHeaderRoutes}}"
                      IsSelected="True">
                 <ListBox ItemsSource="{Binding Routes}"
-                         Style="{StaticResource LogBox}"
+                         Style="{StaticResource MainLogBox}"
                          SelectionMode="Extended"
                          behaviors:ClearSelectionBehavior.IsEnabled="True"
                          behaviors:SelectAllBehavior.IsEnabled="True">
@@ -235,7 +244,8 @@
                     </ListBox.InputBindings>
 
                     <ListBox.ContextMenu>
-                        <ContextMenu DataContext="{Binding Path=PlacementTarget.DataContext,
+                        <ContextMenu Style="{StaticResource MainContextMenu}"
+                                     DataContext="{Binding Path=PlacementTarget.DataContext,
                                 RelativeSource={RelativeSource Mode=Self}}">
                             <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.ContextCopy}}"
                                       InputGestureText="Ctrl+C"
@@ -266,7 +276,7 @@
 
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Grid Margin="2">
+                            <Grid Style="{StaticResource MainLogItemGrid}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="Auto"/>
@@ -315,7 +325,7 @@
 
             <TabItem Header="{l:Localize {x:Static res:LocalizationKeys.TabHeaderLogs}}">
                 <ListBox ItemsSource="{Binding Logs}"
-                         Style="{StaticResource LogBox}"
+                         Style="{StaticResource MainLogBox}"
                          SelectionMode="Extended"
                          behaviors:ClearSelectionBehavior.IsEnabled="True"
                          behaviors:SelectAllBehavior.IsEnabled="True">
@@ -337,7 +347,8 @@
                     </ListBox.InputBindings>
 
                     <ListBox.ContextMenu>
-                        <ContextMenu DataContext="{Binding Path=PlacementTarget.DataContext,
+                        <ContextMenu Style="{StaticResource MainContextMenu}"
+                                     DataContext="{Binding Path=PlacementTarget.DataContext,
                                 RelativeSource={RelativeSource Mode=Self}}">
                             <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.ContextCopy}}"
                                       InputGestureText="Ctrl+C"
@@ -358,6 +369,7 @@
                                       IsChecked="{Binding Path=LogsAutoScroll, Mode=TwoWay}"/>
                             <Separator/>
                             <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.TabContextLogLevel}}"
+                                      Style="{StaticResource RadioMenuGroup}"
                                       ItemContainerStyle="{StaticResource RadioMenuItemContainer}"
                                       xmlns:local="clr-namespace:Proxirae.Contracts.DTOs.Logs;assembly=Proxirae.Contracts">
                                 <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.TabContextLogLevelDebug}}"
@@ -398,12 +410,13 @@
 
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Grid Margin="2">
+                            <Grid Style="{StaticResource MainLogItemGrid}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="80"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
+
                                 <TextBlock Grid.Column="0"
                                            Text="{Binding Timestamp, StringFormat='{}{0:HH:mm:ss}',
                                            Converter={StaticResource UtcToLocalTimeConverter}}"
@@ -425,6 +438,6 @@
 
         <!--GridSplitter MUST be the last element for correct rendering-->
         <GridSplitter Grid.Row="1"
-                      Style="{StaticResource ProcessLogsSplitter}"/>
+                       Style="{StaticResource ProcessLogsSplitter}"/>
     </Grid>
 </controls:TitleBarWindow>

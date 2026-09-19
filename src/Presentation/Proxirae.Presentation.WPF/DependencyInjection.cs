@@ -42,6 +42,7 @@ using Proxirae.Application.Services.Archive;
 using Proxirae.Application.Validators.ProxyRule;
 using Proxirae.Application.Services.Localization;
 using Proxirae.Presentation.WPF.Services.Localization;
+using Proxirae.Presentation.WPF.Services.Themes;
 
 namespace Proxirae.Presentation.WPF
 {
@@ -74,6 +75,7 @@ namespace Proxirae.Presentation.WPF
             services.AddTransient<IUiService, WpfUiService>();
             services.AddTransient<IArchiveService, PxcfgService>();
             services.AddSingleton<ILocalizationService, LocalizationService>();
+            services.AddSingleton<IThemeService, WpfThemeService>();
 
             return services;
         }

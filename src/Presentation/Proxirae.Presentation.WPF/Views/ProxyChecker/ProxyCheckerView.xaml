@@ -13,16 +13,16 @@
                          md:DialogServiceViews.IsRegistered="True"
                          mc:Ignorable="d"
                          Title="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerTitle}}"
-                         Background="Transparent"
                          WindowStartupLocation="CenterOwner"
                          ShowInTaskbar="False"
                          Width="420"
                          SizeToContent="Height"
                          ResizeMode="NoResize"
                          ShowMaximizeButton="False"
-                         ShowMinimizeButton="False">
+                         ShowMinimizeButton="False"
+                         Style="{StaticResource Window}">
 
-    <Grid Background="WhiteSmoke">
+    <Grid Style="{StaticResource ProxyCheckerViewRoot}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -30,9 +30,10 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerGroupHeaderTestProxy}}" 
-                  Grid.Row="0" 
-                  Margin="10" 
+        <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerGroupHeaderTestProxy}}"
+                  Style="{StaticResource ProxyCheckerGroupBox}"
+                  Grid.Row="0"
+                  Margin="10"
                   Padding="10">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -66,14 +67,20 @@
                         </TextBlock.Text>
                     </TextBlock>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerProtocol}}" />
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ProxyServer.Type}" />
+                    <TextBlock Grid.Row="1"
+                               Grid.Column="0"
+                               Text="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerProtocol}}"/>
+                    <TextBlock Grid.Row="1"
+                               Grid.Column="1"
+                               Text="{Binding ProxyServer.Type}"/>
                 </Grid>
 
-                <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerNoProxySelected}}" VerticalAlignment="Center">
+                <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerNoProxySelected}}"
+                           VerticalAlignment="Center">
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Setter Property="Visibility" Value="Visible"/>
+                            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Visibility, ElementName=ProxyDetailsText}" Value="Visible">
                                     <Setter Property="Visibility" Value="Hidden"/>
@@ -83,7 +90,8 @@
                     </TextBlock.Style>
                 </TextBlock>
 
-                <Button Grid.Column="1" Content="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerButtonSet}}"
+                <Button Grid.Column="1"
+                        Content="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerButtonSet}}"
                         Margin="10 0 0 0"
                         VerticalAlignment="Center"
                         Style="{StaticResource ControlButton}"
@@ -91,9 +99,10 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerGroupHeaderTestTarget}}" 
-                  Grid.Row="1" 
-                  Margin="10" 
+        <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerGroupHeaderTestTarget}}"
+                  Style="{StaticResource ProxyCheckerGroupBox}"
+                  Grid.Row="1"
+                  Margin="10"
                   Padding="10">
             <Grid>
                 <Grid.RowDefinitions>
@@ -105,23 +114,41 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerUrl}}" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0 0 0 5"/>
-                <TextBox Text="{Binding TestAddress, UpdateSourceTrigger=PropertyChanged}" 
-                         Grid.Row="0" Grid.Column="1" Margin="0 0 0 5" Padding="2"/>
+                <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerUrl}}"
+                           Grid.Row="0"
+                           Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Margin="0 0 0 5"/>
 
-                <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerPort}}" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"/>
-                <TextBox Text="{Binding TestPort, UpdateSourceTrigger=PropertyChanged}" 
-                         Grid.Row="1" Grid.Column="1" Padding="2"/>
+                <TextBox Text="{Binding TestAddress, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource ProxyCheckerInput}"
+                         Grid.Row="0"
+                         Grid.Column="1"
+                         Margin="0 0 0 5"
+                         Padding="2"/>
+
+                <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerPort}}"
+                           Grid.Row="1"
+                           Grid.Column="0"
+                           VerticalAlignment="Center"/>
+
+                <TextBox Text="{Binding TestPort, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource ProxyCheckerInput}"
+                         Grid.Row="1"
+                         Grid.Column="1"
+                         Padding="2"/>
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerGroupHeaderTestResults}}" 
-                  Grid.Row="2" 
-                  Margin="10" 
+        <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerGroupHeaderTestResults}}"
+                  Style="{StaticResource ProxyCheckerGroupBox}"
+                  Grid.Row="2"
+                  Margin="10"
                   Padding="10">
             <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0 0 0 8">
-                    <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerStatus}}" />
+                <StackPanel Orientation="Horizontal"
+                            Margin="0 0 0 8">
+                    <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.ProxyCheckerStatus}}"/>
                     <TextBlock>
                         <TextBlock.Text>
                             <MultiBinding Converter="{StaticResource NameToLocalizeConverter}"
@@ -134,8 +161,12 @@
                     </TextBlock>
                 </StackPanel>
 
-                <ProgressBar Height="15" Minimum="0" Maximum="3" 
-                             Value="{Binding ProgressValue}" Margin="0 0 0 8"/>
+                <ProgressBar Height="15"
+                             Minimum="0"
+                             Maximum="3"
+                             Style="{StaticResource ProxyCheckerProgressBar}"
+                             Value="{Binding ProgressValue}"
+                             Margin="0 0 0 8"/>
 
                 <Grid MinHeight="16">
                     <StackPanel Orientation="Horizontal"

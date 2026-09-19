@@ -4,6 +4,7 @@ using MvvmDialogs;
 using Proxirae.Application.Services.Localization;
 using Proxirae.Application.Services.Preferences;
 using Proxirae.Presentation.WPF.Models.Sections;
+using Proxirae.Presentation.WPF.Services.Themes;
 using Proxirae.Presentation.WPF.ViewModels.Options.Sections;
 
 namespace Proxirae.Presentation.WPF.ViewModels.Options
@@ -12,6 +13,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options
     {
         private readonly IPreferencesService _preferencesService;
         private readonly ILocalizationService _localizationService;
+        private readonly IThemeService _themeService;  
 
         private bool? _dialogResult;
         public bool? DialogResult
@@ -25,10 +27,11 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options
         [ObservableProperty]
         private ISectionViewModel _selectedSection;
 
-        public OptionsViewModel(IPreferencesService preferencesService, GeneralViewModel generalViewModel, AppearanceViewModel appearanceViewModel, MetricsViewModel metricsViewModel, ILocalizationService localizationService)
+        public OptionsViewModel(IPreferencesService preferencesService, GeneralViewModel generalViewModel, AppearanceViewModel appearanceViewModel, MetricsViewModel metricsViewModel, ILocalizationService localizationService, IThemeService themeService)
         {
             _preferencesService = preferencesService;
             _localizationService = localizationService;
+            _themeService = themeService;
 
             Sections =
             [
@@ -66,6 +69,9 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options
 
             var languageChanged =
                 _preferencesService.Current.System.LanguageCode != newPreferences.System.LanguageCode;
+
+            var themeChanged = 
+                _preferencesService.Current.Appearance.Theme != newPreferences.Appearance.Theme;
             // if the number of options increases, this comparison will need to be refactored.
 
             await _preferencesService.UpdateAsync(newPreferences, cancellationToken);
@@ -73,6 +79,11 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options
             if (languageChanged)
             {
                 _localizationService.SwitchTo(newPreferences.System.LanguageCode);
+            }
+
+            if (themeChanged)
+            {
+                _themeService.Apply(Enum.Parse<Models.Themes.Theme>(newPreferences.Appearance.Theme));
             }
 
             foreach (var section in Sections)

@@ -7,22 +7,15 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options.Sections
 {
     public partial class AppearanceViewModel : BaseSectionViewModel
     {
-        public List<Theme> Themes { get; set; }
+        public List<string> Themes { get; } = Enum.GetNames(typeof(Theme)).ToList();
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasChanges))]
-        private Theme _selectedTheme;
+        private string _selectedTheme;
 
         public AppearanceViewModel(IPreferencesService preferencesService)
         {
-            Themes =
-            [
-                new Theme { Name = "System" },
-                new Theme { Name = "Light" },
-                new Theme { Name = "Dark" },
-            ];
-
-            SelectedTheme = Themes.First(th => preferencesService.Current.Appearance.Theme == th.Name);
+            SelectedTheme = preferencesService.Current.Appearance.Theme.ToString();
 
             HasChanges = false;
         }
@@ -33,12 +26,12 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options.Sections
             {
                 Appearance = current.Appearance with
                 {
-                    Theme = SelectedTheme.Name,
+                    Theme = SelectedTheme,
                 }
             };
         }
 
-        partial void OnSelectedThemeChanged(Theme value)
+        partial void OnSelectedThemeChanged(string value)
         {
             HasChanges = true;
         }

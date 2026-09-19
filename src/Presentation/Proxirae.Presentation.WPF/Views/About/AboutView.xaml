@@ -10,16 +10,16 @@
                          d:DataContext="{d:DesignInstance Type=about:AboutViewModel}"
                          mc:Ignorable="d"
                          Title="{l:Localize {x:Static res:LocalizationKeys.AboutTitle}}"
-                         Background="Transparent"
                          WindowStartupLocation="CenterOwner"
                          ShowInTaskbar="False"
                          SizeToContent="Height"
                          ResizeMode="NoResize"
                          Width="320"
                          ShowMaximizeButton="False"
-                         ShowMinimizeButton="False">
+                         ShowMinimizeButton="False"
+                         Style="{StaticResource Window}">
 
-    <Grid Background="WhiteSmoke">
+    <Grid Style="{StaticResource AboutViewRoot}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -45,9 +45,7 @@
                                HorizontalAlignment="Left" />
 
                     <TextBlock Text="{Binding AppVersion}"
-                               Margin="1 4 0 0"
-                               FontSize="13"
-                               HorizontalAlignment="Left" />
+                               Style="{StaticResource AboutVersionText}" />
                 </StackPanel>
             </StackPanel>
 
@@ -59,7 +57,8 @@
                            Margin="0 8 0 0"
                            HorizontalAlignment="Left"/>
 
-                <TextBlock Margin="0 8 0 0" HorizontalAlignment="Left">
+                <TextBlock Margin="0 8 0 0"
+                           HorizontalAlignment="Left">
                     <Hyperlink NavigateUri="https://github.com/fralorange/Proxirae"
                                Command="{Binding OpenLinkCommand}"
                                CommandParameter="https://github.com/fralorange/Proxirae">
