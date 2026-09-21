@@ -494,6 +494,38 @@
         <Setter Property="OverrideFillColor" Value="{DynamicResource IconColor}"/>
     </Style>
 
+    <Style x:Key="MessageIcon" xmlns:svg="https://github.com/dotnetprojects/SVGImage" TargetType="{x:Type svg:SVGImage}">
+        <Setter Property="Width" Value="36"/>
+        <Setter Property="Height" Value="36"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Margin" Value="0 0 14 0"/>
+        <Setter Property="SizeType" Value="SizeToContent"/>
+    </Style>
+
+    <Style x:Key="ErrorMessageIcon"
+           BasedOn="{StaticResource MessageIcon}"
+           xmlns:svg="https://github.com/dotnetprojects/SVGImage"
+           TargetType="{x:Type svg:SVGImage}">
+        <Setter Property="OverrideStrokeColor" Value="{DynamicResource MessageErrorStrokeColor}"/>
+        <Setter Property="OverrideFillColor" Value="{DynamicResource MessageErrorFillColor}"/>
+    </Style>
+
+    <Style x:Key="WarningMessageIcon"
+           BasedOn="{StaticResource MessageIcon}"
+           xmlns:svg="https://github.com/dotnetprojects/SVGImage"
+           TargetType="{x:Type svg:SVGImage}">
+        <Setter Property="OverrideStrokeColor" Value="{DynamicResource MessageWarningStrokeColor}"/>
+        <Setter Property="OverrideFillColor" Value="{DynamicResource MessageWarningFillColor}"/>
+    </Style>
+
+    <Style x:Key="ConfirmationMessageIcon" 
+           BasedOn="{StaticResource MessageIcon}" 
+           xmlns:svg="https://github.com/dotnetprojects/SVGImage" TargetType="{x:Type svg:SVGImage}">
+        <Setter Property="OverrideStrokeColor" Value="{DynamicResource MessageConfirmationStrokeColor}"/>
+        <Setter Property="OverrideFillColor" Value="{DynamicResource MessageConfirmationFillColor}"/>
+    </Style>
+
     <Style TargetType="Button" BasedOn="{StaticResource ThemedButton}"/>
 
     <Style x:Key="ControlButton" TargetType="Button" BasedOn="{StaticResource ThemedButton}">

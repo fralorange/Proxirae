@@ -2,7 +2,8 @@
 using Proxirae.Application.Factories.Rule;
 using Proxirae.Contracts.DTOs.Rules;
 using Proxirae.Contracts.DTOs.Rules.Actions;
-using Proxirae.Presentation.WPF.Facades.Dialog;
+using Proxirae.Presentation.WPF.Services.Dialog.File;
+using Proxirae.Presentation.WPF.Services.Dialog.Modal;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
 {
@@ -12,8 +13,8 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
 
         public RuleEditDto? ProxyRule { get; private set; }
 
-        public EditProxyRuleViewModel(DialogFacade dialogFacade, List<BaseActionDto> actions, RuleDto ruleDto) 
-            : base(dialogFacade, actions)
+        public EditProxyRuleViewModel(IFileDialogService fileDialogService, List<BaseActionDto> actions, RuleDto ruleDto)
+            : base(fileDialogService, actions)
         {
             _id = ruleDto.Id;
             Priority = ruleDto.Priority;

@@ -20,10 +20,6 @@ namespace Proxirae.Presentation.WPF.Controls
     [ContentProperty(nameof(WindowContent))]
     public class TitleBarWindow : Window
     {
-        private static readonly Brush TitleBarButtonBackgroundBrush = Brushes.Transparent;
-        private static readonly Brush TitleBarButtonHoverBackgroundBrush = new SolidColorBrush(Color.FromRgb(233, 236, 239));
-        private static readonly Brush TitleBarButtonPressedBackgroundBrush = new SolidColorBrush(Color.FromRgb(221, 226, 230));
-        private static readonly Brush TitleBarButtonForegroundBrush = new SolidColorBrush(Color.FromRgb(32, 33, 36));
         private static readonly Geometry MaximizeIconGeometry = Geometry.Parse("M 13.5,10.5 H 22.5 V 19.5 H 13.5 Z");
         private static readonly Geometry RestoreIconGeometry = Geometry.Parse("M 13.5,12.5 H 20.5 V 19.5 H 13.5 Z M 15.5,12.5 V 10.5 H 22.5 V 17.5 H 20.5");
 
@@ -36,6 +32,26 @@ namespace Proxirae.Presentation.WPF.Controls
         private Grid titleBar;
         private Border windowBorder;
         private WindowChrome windowChrome;
+
+        /// <summary>
+        /// A title bar button hover background property.
+        /// </summary>
+        public static readonly DependencyProperty TitleBarButtonHoverBackgroundProperty =
+            DependencyProperty.Register(
+                nameof(TitleBarButtonHoverBackground),
+                typeof(Brush),
+                typeof(TitleBarWindow),
+                new PropertyMetadata(Brushes.Transparent));
+
+        /// <summary>
+        /// A title bar bbutton pressed background property.
+        /// </summary>
+        public static readonly DependencyProperty TitleBarButtonPressedBackgroundProperty =
+            DependencyProperty.Register(
+                nameof(TitleBarButtonPressedBackground),
+                typeof(Brush),
+                typeof(TitleBarWindow),
+                new PropertyMetadata(Brushes.Transparent));
 
         /// <summary>
         /// A title bar icon property.
@@ -114,7 +130,25 @@ namespace Proxirae.Presentation.WPF.Controls
                 new PropertyMetadata(false));
 
         /// <summary>
-        /// Gets or sets title bar icon
+        /// Gets or sets title bar button hover background brush.
+        /// </summary>
+        public Brush TitleBarButtonHoverBackground
+        {
+            get => (Brush)GetValue(TitleBarButtonHoverBackgroundProperty);
+            set => SetValue(TitleBarButtonHoverBackgroundProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets title bar button pressed background brush.
+        /// </summary>
+        public Brush TitleBarButtonPressedBackground
+        {
+            get => (Brush)GetValue(TitleBarButtonPressedBackgroundProperty);
+            set => SetValue(TitleBarButtonPressedBackgroundProperty, value);
+        }
+
+        /// <summary>
+        /// Gets or sets title bar icon.
         /// </summary>
         public object TitleBarIcon
         {
@@ -123,7 +157,7 @@ namespace Proxirae.Presentation.WPF.Controls
         }
 
         /// <summary>
-        /// Gets or sets title bar background brush
+        /// Gets or sets title bar background brush.
         /// </summary>
         public Brush TitleBarBackground
         {
@@ -317,6 +351,8 @@ namespace Proxirae.Presentation.WPF.Controls
             Grid.SetColumn(titleBarIconPresenter, 0);
             Panel.SetZIndex(titleBarIconPresenter, 1);
             WindowChrome.SetIsHitTestVisibleInChrome(titleBarIconPresenter, true);
+
+            UpdateIconVisibility();
         }
 
         private void CreateMenuSection()
@@ -378,7 +414,6 @@ namespace Proxirae.Presentation.WPF.Controls
             {
                 Focusable = false,
                 IsHitTestVisible = false,
-                Foreground = TitleBarButtonForegroundBrush,
                 Margin = new Thickness(0),
                 VerticalAlignment = VerticalAlignment.Center,
                 TextTrimming = TextTrimming.CharacterEllipsis,
@@ -641,12 +676,12 @@ namespace Proxirae.Presentation.WPF.Controls
                         if (WpfHelper.GetElementBoundsRelativeToWindow(maximizeRestoreButton, this).Contains(point))
                         {
                             handled = true;
-                            ApplyMaximizeRestoreButtonColors(TitleBarButtonHoverBackgroundBrush);
+                            ApplyMaximizeRestoreButtonColors(TitleBarButtonHoverBackground);
                             return new IntPtr(NativeHelper.HTMAXBUTTON);
                         }
                         else
                         {
-                            ApplyMaximizeRestoreButtonColors(TitleBarButtonBackgroundBrush);
+                            ApplyMaximizeRestoreButtonColors(Background);
                         }
                     }
                     break;
@@ -656,7 +691,7 @@ namespace Proxirae.Presentation.WPF.Controls
                         if (wParam.ToInt32() == NativeHelper.HTMAXBUTTON)
                         {
                             handled = true;
-                            ApplyMaximizeRestoreButtonColors(TitleBarButtonPressedBackgroundBrush);
+                            ApplyMaximizeRestoreButtonColors(TitleBarButtonPressedBackground);
                         }
                     }
                     break;
@@ -665,7 +700,7 @@ namespace Proxirae.Presentation.WPF.Controls
                     {
                         if (wParam.ToInt32() == NativeHelper.HTMAXBUTTON)
                         {
-                            ApplyMaximizeRestoreButtonColors(TitleBarButtonBackgroundBrush);
+                            ApplyMaximizeRestoreButtonColors(Background);
                             ToggleWindowState();
                         }
                     }
@@ -677,7 +712,7 @@ namespace Proxirae.Presentation.WPF.Controls
         private void ApplyMaximizeRestoreButtonColors(Brush background)
         {
             maximizeRestoreButton.Background = background;
-            maximizeRestoreButton.Foreground = TitleBarButtonForegroundBrush;
+            maximizeRestoreButton.Foreground = Foreground;
         }
 
         private static DropShadowEffect CreateWindowShadow()

@@ -5,13 +5,13 @@ using Proxirae.Application.Factories.Proxy;
 using Proxirae.Application.Services.Test;
 using Proxirae.Contracts.DTOs.Proxies;
 using Proxirae.Contracts.DTOs.Test;
-using Proxirae.Presentation.WPF.Facades.Dialog;
+using Proxirae.Presentation.WPF.Services.Dialog.Modal;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyChecker
 {
     public partial class ProxyCheckerViewModel : ObservableObject, IModalDialogViewModel, IDisposable
     {
-        private readonly DialogFacade _dialogFacade;
+        private readonly IModalDialogService _modalDialogService;
         private readonly ITestService _testService;
 
         private bool? _dialogResult;
@@ -58,9 +58,9 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyChecker
 
         public bool CanExecuteTest => IsProxySet && !IsTesting;
 
-        public ProxyCheckerViewModel(DialogFacade dialogFacade, ITestService testService)
+        public ProxyCheckerViewModel(IModalDialogService modalDialogService, ITestService testService)
         {
-            _dialogFacade = dialogFacade;
+            _modalDialogService = modalDialogService;
             _testService = testService;
 
             _testService.ProgressReceived += OnProgressReceived;
@@ -109,7 +109,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyChecker
         private void SetProxyServer()
         {
             var viewModel = new SetProxyServerViewModel(ProxyServer);
-            _dialogFacade.ShowDialog(this, viewModel);
+            _modalDialogService.ShowDialog(this, viewModel);
 
             if (viewModel.ProxyServer is not null)
             {

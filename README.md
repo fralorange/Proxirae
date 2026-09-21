@@ -12,11 +12,14 @@ Download the latest release from the [Releases](https://github.com/fralorange/Pr
 
 ## Credits
 
-Icons used in Proxirae are sourced from [SVG Repo](https://www.svgrepo.com/) and are released under the [CC0 Public Domain Dedication](https://creativecommons.org/publicdomain/zero/1.0/).
+Some icons used in Proxirae are based on assets from [SVG Repo](https://www.svgrepo.com/).
 
 * [Disconnect Icon](https://www.svgrepo.com/svg/308448/broken-link-mistake-error-disconnect)
 * [Terminate Process Icon](https://www.svgrepo.com/svg/170715/window-close)
+* [Confirmation Message Box Icon](https://www.svgrepo.com/svg/88909/round-help-button)
+* [Warning Message Box Icon](https://www.svgrepo.com/svg/65797/warning-sign)
+* [Error Message Box Icon](https://www.svgrepo.com/svg/40730/round-delete-button)
 
 ## License
 
-The product is distributed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html).
+Proxirae is distributed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html).

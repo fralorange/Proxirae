@@ -6,10 +6,11 @@ using Proxirae.Application.Mappers.Proxies;
 using Proxirae.Application.Mappers.Rules;
 using Proxirae.Application.Mappers.Rules.Actions;
 using Proxirae.Application.Services.Application;
+using Proxirae.Application.Services.Archive;
 using Proxirae.Application.Services.Browser;
 using Proxirae.Application.Services.Clipboard;
-using Proxirae.Application.Services.UI;
 using Proxirae.Application.Services.Flows;
+using Proxirae.Application.Services.Localization;
 using Proxirae.Application.Services.Logs;
 using Proxirae.Application.Services.Preferences;
 using Proxirae.Application.Services.Preferences.Autostart;
@@ -17,9 +18,11 @@ using Proxirae.Application.Services.Proxies;
 using Proxirae.Application.Services.Routes;
 using Proxirae.Application.Services.Rules;
 using Proxirae.Application.Services.Test;
+using Proxirae.Application.Services.UI;
+using Proxirae.Application.Validators.ProxyRule;
+using Proxirae.Infrastructure;
 using Proxirae.Infrastructure.Mappers.Rule;
 using Proxirae.Infrastructure.Mappers.Rule.Action;
-using Proxirae.Presentation.WPF.Facades.Dialog;
 using Proxirae.Presentation.WPF.Factories.Flow;
 using Proxirae.Presentation.WPF.Factories.ProxyChecker;
 using Proxirae.Presentation.WPF.Factories.Routes;
@@ -27,9 +30,14 @@ using Proxirae.Presentation.WPF.Services.Application;
 using Proxirae.Presentation.WPF.Services.Archive;
 using Proxirae.Presentation.WPF.Services.Browser;
 using Proxirae.Presentation.WPF.Services.Clipboard;
-using Proxirae.Presentation.WPF.Services.UI;
+using Proxirae.Presentation.WPF.Services.Dialog.File;
+using Proxirae.Presentation.WPF.Services.Dialog.Message;
+using Proxirae.Presentation.WPF.Services.Dialog.Modal;
+using Proxirae.Presentation.WPF.Services.Localization;
 using Proxirae.Presentation.WPF.Services.Preferences.Autostart;
 using Proxirae.Presentation.WPF.Services.Process;
+using Proxirae.Presentation.WPF.Services.Themes;
+using Proxirae.Presentation.WPF.Services.UI;
 using Proxirae.Presentation.WPF.ViewModels;
 using Proxirae.Presentation.WPF.ViewModels.About;
 using Proxirae.Presentation.WPF.ViewModels.Options;
@@ -37,12 +45,6 @@ using Proxirae.Presentation.WPF.ViewModels.Options.Sections;
 using Proxirae.Presentation.WPF.ViewModels.ProxyChecker;
 using Proxirae.Presentation.WPF.ViewModels.ProxyRules;
 using Proxirae.Presentation.WPF.ViewModels.ProxyServers;
-using Proxirae.Infrastructure;
-using Proxirae.Application.Services.Archive;
-using Proxirae.Application.Validators.ProxyRule;
-using Proxirae.Application.Services.Localization;
-using Proxirae.Presentation.WPF.Services.Localization;
-using Proxirae.Presentation.WPF.Services.Themes;
 
 namespace Proxirae.Presentation.WPF
 {
@@ -76,6 +78,9 @@ namespace Proxirae.Presentation.WPF
             services.AddTransient<IArchiveService, PxcfgService>();
             services.AddSingleton<ILocalizationService, LocalizationService>();
             services.AddSingleton<IThemeService, WpfThemeService>();
+            services.AddSingleton<IModalDialogService, ModalDialogService>();
+            services.AddTransient<IFileDialogService, FileDialogService>();
+            services.AddSingleton<IMessageDialogService, MessageDialogService>();
 
             return services;
         }
@@ -100,7 +105,6 @@ namespace Proxirae.Presentation.WPF
 
         public static IServiceCollection AddFacades(this IServiceCollection services)
         {
-            services.AddSingleton<DialogFacade>();
             services.AddSingleton<ActionFacade>();
             services.AddSingleton<RouteFacade>();
             services.AddConfigurationFacade();

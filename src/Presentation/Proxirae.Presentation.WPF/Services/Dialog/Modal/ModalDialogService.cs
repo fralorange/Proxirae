@@ -1,17 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MvvmDialogs;
-using MvvmDialogs.FrameworkDialogs.OpenFile;
-using MvvmDialogs.FrameworkDialogs.SaveFile;
 using System.ComponentModel;
 
-namespace Proxirae.Presentation.WPF.Facades.Dialog
+namespace Proxirae.Presentation.WPF.Services.Dialog.Modal
 {
-    public class DialogFacade
+    public class ModalDialogService : IModalDialogService
     {
         private readonly IDialogService _dialogService;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public DialogFacade(IDialogService dialogService, IServiceScopeFactory scopeFactory)
+        public ModalDialogService(IDialogService dialogService, IServiceScopeFactory scopeFactory)
         {
             _dialogService = dialogService;
             _scopeFactory = scopeFactory;
@@ -19,7 +17,7 @@ namespace Proxirae.Presentation.WPF.Facades.Dialog
 
         public TViewModel ShowDialog<TViewModel>(INotifyPropertyChanged ownerViewModel) where TViewModel : IModalDialogViewModel
         {
-            using var scope = _scopeFactory.CreateAsyncScope();
+            using var scope = _scopeFactory.CreateScope();
 
             var viewModel = scope.ServiceProvider.GetRequiredService<TViewModel>();
 
@@ -30,18 +28,6 @@ namespace Proxirae.Presentation.WPF.Facades.Dialog
         public void ShowDialog<TViewModel>(INotifyPropertyChanged ownerViewModel, TViewModel viewModel) where TViewModel : IModalDialogViewModel
         {
             _dialogService.ShowDialog(ownerViewModel, viewModel);
-        }
-
-        public string? OpenFile(INotifyPropertyChanged ownerViewModel, OpenFileDialogSettings settings)
-        {
-            var success = _dialogService.ShowOpenFileDialog(ownerViewModel, settings);
-            return success == true ? settings.FileName : null;
-        }
-
-        public string? SaveFile(INotifyPropertyChanged ownerViewModel, SaveFileDialogSettings settings)
-        {
-            var success = _dialogService.ShowSaveFileDialog(ownerViewModel, settings);
-            return success == true ? settings.FileName : null;
         }
     }
 }

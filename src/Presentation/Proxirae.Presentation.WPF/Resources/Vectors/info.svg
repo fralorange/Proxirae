@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 400 400">
+  <g stroke="#000000" fill="#000000">
+    <circle cx="200" cy="200" r="187" stroke-width="26" />
+    <path d="M 150 155 A 50 50 0 0 1 250 155 A 50 50 0 0 1 200 205 L 200 235" 
+          stroke-width="26" 
+          stroke-linecap="round" 
+          fill="none" />
+    <line x1="200" y1="274" x2="200" y2="274" 
+          stroke-width="33" 
+          stroke-linecap="round" 
+          fill="none" />     
+  </g>
+</svg>
