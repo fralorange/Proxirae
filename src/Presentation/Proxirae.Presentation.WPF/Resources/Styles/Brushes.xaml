@@ -10,6 +10,13 @@
     <SolidColorBrush x:Key="LogInfoBrush" Color="{DynamicResource LogInfoColor}"/>
     <SolidColorBrush x:Key="LogDebugBrush" Color="{DynamicResource LogDebugColor}"/>
 
+    <SolidColorBrush x:Key="MessageErrorStrokeBrush" Color="{DynamicResource MessageErrorStrokeColor}"/>
+    <SolidColorBrush x:Key="MessageErrorFillBrush" Color="{DynamicResource MessageErrorFillColor}"/>
+    <SolidColorBrush x:Key="MessageWarningStrokeBrush" Color="{DynamicResource MessageWarningStrokeColor}"/>
+    <SolidColorBrush x:Key="MessageWarningFillBrush" Color="{DynamicResource MessageWarningFillColor}"/>
+    <SolidColorBrush x:Key="MessageConfirmationStrokeBrush" Color="{DynamicResource MessageConfirmationStrokeColor}"/>
+    <SolidColorBrush x:Key="MessageConfirmationFillBrush" Color="{DynamicResource MessageConfirmationFillColor}"/>
+
     <SolidColorBrush x:Key="TitleBarBrush" Color="{DynamicResource TitleBarColor}"/>
     <SolidColorBrush x:Key="TitleBarForegroundBrush" Color="{DynamicResource TitleBarForegroundColor}"/>
 

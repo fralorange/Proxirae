@@ -31,6 +31,7 @@ using Proxirae.Presentation.WPF.Services.Archive;
 using Proxirae.Presentation.WPF.Services.Browser;
 using Proxirae.Presentation.WPF.Services.Clipboard;
 using Proxirae.Presentation.WPF.Services.Dialog.File;
+using Proxirae.Presentation.WPF.Services.Dialog.Message;
 using Proxirae.Presentation.WPF.Services.Dialog.Modal;
 using Proxirae.Presentation.WPF.Services.Localization;
 using Proxirae.Presentation.WPF.Services.Preferences.Autostart;
@@ -78,7 +79,8 @@ namespace Proxirae.Presentation.WPF
             services.AddSingleton<ILocalizationService, LocalizationService>();
             services.AddSingleton<IThemeService, WpfThemeService>();
             services.AddSingleton<IModalDialogService, ModalDialogService>();
-            services.AddSingleton<IFileDialogService, FileDialogService>();
+            services.AddTransient<IFileDialogService, FileDialogService>();
+            services.AddSingleton<IMessageDialogService, MessageDialogService>();
 
             return services;
         }

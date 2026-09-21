@@ -5,7 +5,7 @@ using Proxirae.Application.Services.Proxies;
 using Proxirae.Application.Validators.ProxyRule;
 using Proxirae.Contracts.DTOs.Proxies;
 using Proxirae.Presentation.WPF.Factories.ProxyChecker;
-using Proxirae.Presentation.WPF.Services.Dialog;
+using Proxirae.Presentation.WPF.Services.Dialog.Message;
 using Proxirae.Presentation.WPF.Services.Dialog.Modal;
 using System.Collections.ObjectModel;
 
@@ -14,6 +14,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
     public partial class ProxyServersViewModel : ObservableObject, IModalDialogViewModel
     {
         private readonly IModalDialogService _modalDialogService;
+        private readonly IMessageDialogService _messageDialogService;
         private readonly IProxyService _proxyService;
         private readonly IProxyCheckerViewModelFactory _proxyCheckerFactory;
         private readonly IProxyRuleValidator _proxyRuleValidator;
@@ -31,9 +32,14 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
         private bool _hasChanges;
 
-        public ProxyServersViewModel(IModalDialogService dialogFacade, IProxyService proxyService, IProxyCheckerViewModelFactory proxyCheckerFactory, IProxyRuleValidator proxyRuleValidator)
+        public ProxyServersViewModel(IModalDialogService dialogFacade,
+                                     IMessageDialogService messageDialogService, 
+                                     IProxyService proxyService,
+                                     IProxyCheckerViewModelFactory proxyCheckerFactory,
+                                     IProxyRuleValidator proxyRuleValidator)
         {
             _modalDialogService = dialogFacade;
+            _messageDialogService = messageDialogService;
             _proxyService = proxyService;
             _proxyCheckerFactory = proxyCheckerFactory;
             _proxyRuleValidator = proxyRuleValidator;
@@ -96,9 +102,15 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         [RelayCommand]
         private async Task RemoveProxyServerAsync(ProxyListDto proxyServer, CancellationToken cancellationToken)
         {
+            var affectedRules = await _proxyRuleValidator.GetAffectedRulesAsync(proxyServer.Id, cancellationToken);
+            if (affectedRules.Count > 0 && !_messageDialogService.ShowWarning(this, "ProxyDelete", "ProxyDeleteTitle"))
+            {
+                return;
+            }
+
             await _proxyService.DeleteAsync(proxyServer.Id, cancellationToken);
-            await _proxyRuleValidator.UnbindProxyFromRulesAsync(proxyServer.Id, cancellationToken); // TODO: Add Confirmation Dialog menu
-            
+            await _proxyRuleValidator.UnbindProxyFromRulesAsync(proxyServer.Id, cancellationToken); 
+
             ProxyServers.Remove(proxyServer);
         }
 

@@ -82,7 +82,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
                 Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*"
             };
 
-            var filePath = _fileDialogService.OpenFile(this, settings);
+            var filePath = _fileDialogService.ShowOpenFileDialog(this, settings);
             if (filePath is null)
             {
                 return;

@@ -6,7 +6,7 @@ namespace Proxirae.Presentation.WPF.Services.Dialog.File
 {
     public interface IFileDialogService
     {
-        string? OpenFile(INotifyPropertyChanged ownerViewModel, OpenFileDialogSettings settings);
-        string? SaveFile(INotifyPropertyChanged ownerViewModel, SaveFileDialogSettings settings);
+        string? ShowOpenFileDialog(INotifyPropertyChanged ownerViewModel, OpenFileDialogSettings settings);
+        string? ShowSaveFileDialog(INotifyPropertyChanged ownerViewModel, SaveFileDialogSettings settings);
     }
 }

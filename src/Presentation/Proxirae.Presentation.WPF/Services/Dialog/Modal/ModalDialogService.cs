@@ -17,7 +17,7 @@ namespace Proxirae.Presentation.WPF.Services.Dialog.Modal
 
         public TViewModel ShowDialog<TViewModel>(INotifyPropertyChanged ownerViewModel) where TViewModel : IModalDialogViewModel
         {
-            using var scope = _scopeFactory.CreateAsyncScope();
+            using var scope = _scopeFactory.CreateScope();
 
             var viewModel = scope.ServiceProvider.GetRequiredService<TViewModel>();
 

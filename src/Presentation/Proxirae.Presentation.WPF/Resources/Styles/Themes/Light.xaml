@@ -6,6 +6,13 @@
     <Color x:Key="LogInfoColor">#70AD47</Color>
     <Color x:Key="LogDebugColor">#5B9BD5</Color>
 
+    <Color x:Key="MessageErrorStrokeColor">#FFFF4B3A</Color>
+    <Color x:Key="MessageErrorFillColor">#FFFFE3DF</Color>
+    <Color x:Key="MessageWarningStrokeColor">#FFE9AA00</Color>
+    <Color x:Key="MessageWarningFillColor">#FFFFF3D1</Color>
+    <Color x:Key="MessageConfirmationStrokeColor">#FF5398CE</Color>
+    <Color x:Key="MessageConfirmationFillColor">#FFE4F1FB</Color>
+
     <Color x:Key="IconColor">#FF5398CE</Color>
     
     <Color x:Key="TitleBarColor">#FFF5F5F5</Color>

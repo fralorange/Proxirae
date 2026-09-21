@@ -498,4 +498,28 @@
   <data name="ProxyCheckerProgressFailed" xml:space="preserve">
     <value>Сбой подключения.</value>
   </data>
+  <data name="WarningMessageProxyDelete" xml:space="preserve">
+    <value>Этот прокси используется одним или несколькими правилами прокси. При его удалении для этих правил будет установлено действие "Обход".</value>
+  </data>
+  <data name="WarningMessageProxyDeleteTitle" xml:space="preserve">
+    <value>Вы хотите удалить этот прокси?</value>
+  </data>
+  <data name="ErrorMessageConfigDoesNotExist" xml:space="preserve">
+    <value>Конфигурация пока не создана. Перед выполнением этого действия создайте прокси-сервер или правило прокси.</value>
+  </data>
+  <data name="ErrorMessageConfigDoesNotExistTitle" xml:space="preserve">
+    <value>Конфигурация отсутствует</value>
+  </data>
+  <data name="ConfirmationMessageYes" xml:space="preserve">
+    <value>Да</value>
+  </data>
+  <data name="ConfirmationMessageNo" xml:space="preserve">
+    <value>Нет</value>
+  </data>
+  <data name="WarningMessageEndProcessTitle" xml:space="preserve">
+    <value>Завершение процесса</value>
+  </data>
+  <data name="WarningMessageEndProcess" xml:space="preserve">
+    <value>Вы уверены, что хотите завершить этот процесс? Завершение процесса может привести к непредвиденным последствиям или потере данных. Некоторые приложения могут не позволить завершить процесс.</value>
+  </data>
 </root>

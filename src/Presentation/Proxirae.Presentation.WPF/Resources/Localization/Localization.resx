@@ -498,4 +498,28 @@
   <data name="ProxyCheckerProgressFailed" xml:space="preserve">
     <value>Connection failed.</value>
   </data>
+  <data name="WarningMessageProxyDelete" xml:space="preserve">
+    <value>This proxy is used by one or more proxy rules. Deleting it will set the Action of those rules to Direct.</value>
+  </data>
+  <data name="WarningMessageProxyDeleteTitle" xml:space="preserve">
+    <value>Do you want to delete this proxy?</value>
+  </data>
+  <data name="ErrorMessageConfigDoesNotExist" xml:space="preserve">
+    <value>No configuration has been created yet. Create a proxy server or proxy rule before performing this action.</value>
+  </data>
+  <data name="ErrorMessageConfigDoesNotExistTitle" xml:space="preserve">
+    <value>No Configuration</value>
+  </data>
+  <data name="ConfirmationMessageYes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="ConfirmationMessageNo" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="WarningMessageEndProcessTitle" xml:space="preserve">
+    <value>End Process</value>
+  </data>
+  <data name="WarningMessageEndProcess" xml:space="preserve">
+    <value>Are you sure you want to end this process? Ending a process may cause unexpected behavior or data loss. Some applications may prevent the process from being terminated.</value>
+  </data>
 </root>
