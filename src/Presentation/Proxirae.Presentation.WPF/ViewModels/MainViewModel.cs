@@ -20,9 +20,10 @@ using Proxirae.Contracts.DTOs.Flows;
 using Proxirae.Contracts.DTOs.Logs;
 using Proxirae.Contracts.DTOs.Routes;
 using Proxirae.Presentation.WPF.Extensions;
-using Proxirae.Presentation.WPF.Facades.Dialog;
 using Proxirae.Presentation.WPF.Factories.Flow;
 using Proxirae.Presentation.WPF.Factories.Routes;
+using Proxirae.Presentation.WPF.Services.Dialog.File;
+using Proxirae.Presentation.WPF.Services.Dialog.Modal;
 using Proxirae.Presentation.WPF.ViewModels.About;
 using Proxirae.Presentation.WPF.ViewModels.Flows;
 using Proxirae.Presentation.WPF.ViewModels.Logs;
@@ -41,7 +42,8 @@ namespace Proxirae.Presentation.WPF.ViewModels
     {
         private readonly IApplicationService _applicationService;
         private readonly IClipboardService _clipboardService;
-        private readonly DialogFacade _dialogFacade;
+        private readonly IFileDialogService _fileDialogService;
+        private readonly IModalDialogService _modalDialogService;
         private readonly IConfigurationFacade _configurationFacade;
         private readonly IRouteViewModelFactory _routeViewModelFactory;
         private readonly IFlowViewModelFactory _flowViewModelFactory;
@@ -90,7 +92,6 @@ namespace Proxirae.Presentation.WPF.ViewModels
         public MainViewModel(
             IApplicationService applicationService,
             IClipboardService clipboardService,
-            DialogFacade dialogFacade,
             IConfigurationFacade configurationFacade,
             IRouteViewModelFactory routeViewModelFactory,
             IFlowViewModelFactory flowViewModelFactory,
@@ -101,11 +102,12 @@ namespace Proxirae.Presentation.WPF.ViewModels
             IAutostartService autostartService,
             IArchiveService archiveService,
             ICsvExporter csvExporter,
-            IBrowserService browserService)
+            IBrowserService browserService,
+            IFileDialogService fileDialogService,
+            IModalDialogService modalDialogService)
         {
             _applicationService = applicationService;
             _clipboardService = clipboardService;
-            _dialogFacade = dialogFacade;
             _configurationFacade = configurationFacade;
             _routeViewModelFactory = routeViewModelFactory;
             _flowViewModelFactory = flowViewModelFactory;
@@ -117,6 +119,8 @@ namespace Proxirae.Presentation.WPF.ViewModels
             _archiveService = archiveService;
             _csvExporter = csvExporter;
             _browserService = browserService;
+            _fileDialogService = fileDialogService;
+            _modalDialogService = modalDialogService;
 
             _flowService.FlowsUpdated += OnFlowsUpdated;
             _flowService.FlowClosed += OnFlowDeleted;
@@ -270,7 +274,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
                 Filter = "Proxirae Configuration (*.pxcfg)|*.pxcfg"
             };
 
-            var path = _dialogFacade.OpenFile(this, settings);
+            var path = _fileDialogService.OpenFile(this, settings);
             if (path is null) return;
 
             var success = _archiveService.ExtractArchive(path, _configurationFacade.AppDataDirectory);
@@ -294,7 +298,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
                 FileName = "config.pxcfg"
             };
 
-            var path = _dialogFacade.SaveFile(this, settings);
+            var path = _fileDialogService.SaveFile(this, settings);
 
             if (path is not null)
             {
@@ -317,7 +321,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
                 FileName = $"routing_history_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
             };
 
-            var path = _dialogFacade.SaveFile(this, settings);
+            var path = _fileDialogService.SaveFile(this, settings);
 
             if (path is not null)
             {
@@ -345,7 +349,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
                 FileName = $"logs_history_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
             };
 
-            var path = _dialogFacade.SaveFile(this, settings);
+            var path = _fileDialogService.SaveFile(this, settings);
 
             if (path is not null)
             {
@@ -463,19 +467,19 @@ namespace Proxirae.Presentation.WPF.ViewModels
         [RelayCommand]
         private void OpenProxyServers()
         {
-            _dialogFacade.ShowDialog<ProxyServersViewModel>(this);
+            _modalDialogService.ShowDialog<ProxyServersViewModel>(this);
         }
 
         [RelayCommand]
         private void OpenProxyRules()
         {
-            _dialogFacade.ShowDialog<ProxyRulesViewModel>(this);
+            _modalDialogService.ShowDialog<ProxyRulesViewModel>(this);
         }
 
         [RelayCommand]
         private void OpenProxyChecker()
         {
-            _dialogFacade.ShowDialog<ProxyCheckerViewModel>(this);
+            _modalDialogService.ShowDialog<ProxyCheckerViewModel>(this);
         }
 
         [RelayCommand]
@@ -496,7 +500,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
         [RelayCommand]
         private void OpenOptions()
         {
-            _dialogFacade.ShowDialog<OptionsViewModel>(this);
+            _modalDialogService.ShowDialog<OptionsViewModel>(this);
         }
 
         [RelayCommand]
@@ -508,7 +512,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
         [RelayCommand]
         private void OpenAbout()
         {
-            _dialogFacade.ShowDialog<AboutViewModel>(this);
+            _modalDialogService.ShowDialog<AboutViewModel>(this);
         }
 
         public void Dispose()

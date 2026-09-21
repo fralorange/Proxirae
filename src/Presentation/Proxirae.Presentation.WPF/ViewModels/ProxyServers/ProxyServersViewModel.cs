@@ -4,15 +4,16 @@ using MvvmDialogs;
 using Proxirae.Application.Services.Proxies;
 using Proxirae.Application.Validators.ProxyRule;
 using Proxirae.Contracts.DTOs.Proxies;
-using Proxirae.Presentation.WPF.Facades.Dialog;
 using Proxirae.Presentation.WPF.Factories.ProxyChecker;
+using Proxirae.Presentation.WPF.Services.Dialog;
+using Proxirae.Presentation.WPF.Services.Dialog.Modal;
 using System.Collections.ObjectModel;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
 {
     public partial class ProxyServersViewModel : ObservableObject, IModalDialogViewModel
     {
-        private readonly DialogFacade _dialogFacade;
+        private readonly IModalDialogService _modalDialogService;
         private readonly IProxyService _proxyService;
         private readonly IProxyCheckerViewModelFactory _proxyCheckerFactory;
         private readonly IProxyRuleValidator _proxyRuleValidator;
@@ -30,9 +31,9 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
         private bool _hasChanges;
 
-        public ProxyServersViewModel(DialogFacade dialogFacade, IProxyService proxyService, IProxyCheckerViewModelFactory proxyCheckerFactory, IProxyRuleValidator proxyRuleValidator)
+        public ProxyServersViewModel(IModalDialogService dialogFacade, IProxyService proxyService, IProxyCheckerViewModelFactory proxyCheckerFactory, IProxyRuleValidator proxyRuleValidator)
         {
-            _dialogFacade = dialogFacade;
+            _modalDialogService = dialogFacade;
             _proxyService = proxyService;
             _proxyCheckerFactory = proxyCheckerFactory;
             _proxyRuleValidator = proxyRuleValidator;
@@ -56,7 +57,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         [RelayCommand]
         private async Task AddProxyServerAsync(CancellationToken cancellationToken)
         {
-            var viewModel = _dialogFacade.ShowDialog<AddProxyServerViewModel>(this);
+            var viewModel = _modalDialogService.ShowDialog<AddProxyServerViewModel>(this);
 
             if (viewModel.ProxyServer is not null)
             {
@@ -76,7 +77,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
 
             var viewModel = new EditProxyServerViewModel(proxyDetail);
 
-            _dialogFacade.ShowDialog(this, viewModel);
+            _modalDialogService.ShowDialog(this, viewModel);
 
             if (viewModel.ProxyServer is not null)
             {
@@ -111,7 +112,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
             }
 
             var viewModel = _proxyCheckerFactory.Create(detail);
-            _dialogFacade.ShowDialog(this, viewModel);
+            _modalDialogService.ShowDialog(this, viewModel);
         }
 
         [RelayCommand]

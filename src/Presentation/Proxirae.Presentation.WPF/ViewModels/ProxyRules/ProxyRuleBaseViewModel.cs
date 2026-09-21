@@ -4,7 +4,8 @@ using MvvmDialogs;
 using MvvmDialogs.FrameworkDialogs.OpenFile;
 using Proxirae.Contracts.DTOs.Rules;
 using Proxirae.Contracts.DTOs.Rules.Actions;
-using Proxirae.Presentation.WPF.Facades.Dialog;
+using Proxirae.Presentation.WPF.Services.Dialog.File;
+using Proxirae.Presentation.WPF.Services.Dialog.Modal;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -13,7 +14,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
 {
     public partial class ProxyRuleBaseViewModel : ObservableValidator, IModalDialogViewModel, IDisposable
     {
-        private readonly DialogFacade _dialogFacade;
+        private readonly IFileDialogService _fileDialogService;
 
         private bool? _dialogResult;
 
@@ -57,9 +58,9 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         [ObservableProperty]
         private int _priority;
 
-        public ProxyRuleBaseViewModel(DialogFacade dialogFacade, List<BaseActionDto> actions)
+        public ProxyRuleBaseViewModel(IFileDialogService fileDialogService, List<BaseActionDto> actions)
         {
-            _dialogFacade = dialogFacade;
+            _fileDialogService = fileDialogService;
 
             Actions = actions;
             SelectedProtocols.CollectionChanged += OnSelectedProtocolsCollectionChanged;
@@ -81,7 +82,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
                 Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*"
             };
 
-            var filePath = _dialogFacade.OpenFile(this, settings);
+            var filePath = _fileDialogService.OpenFile(this, settings);
             if (filePath is null)
             {
                 return;
