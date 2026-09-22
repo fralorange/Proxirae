@@ -33,6 +33,9 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         public ICollectionView ProxyRules { get; }
 
         [ObservableProperty]
+        private List<RuleProtocolDto> _protocols = [];
+
+        [ObservableProperty]
         private List<BaseActionDto> _actions = [];
 
         [ObservableProperty]
@@ -57,6 +60,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         [RelayCommand]
         private async Task LoadAsync(CancellationToken cancellationToken)
         {
+            Protocols = Enum.GetValues(typeof(RuleProtocolDto)).Cast<RuleProtocolDto>().Skip(1).ToList();
             Actions = await _actionFacade.GetActionsAsync(cancellationToken);
             var proxyRules = await _ruleService.GetAsync(cancellationToken);
 

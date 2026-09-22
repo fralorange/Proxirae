@@ -3,7 +3,6 @@ using Proxirae.Application.Factories.Rule;
 using Proxirae.Contracts.DTOs.Rules;
 using Proxirae.Contracts.DTOs.Rules.Actions;
 using Proxirae.Presentation.WPF.Services.Dialog.File;
-using Proxirae.Presentation.WPF.Services.Dialog.Modal;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
 {
