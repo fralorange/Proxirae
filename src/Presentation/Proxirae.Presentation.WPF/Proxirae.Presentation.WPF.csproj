@@ -36,7 +36,6 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
     <PackageReference Include="MvvmDialogs" Version="9.1.2" />
     <PackageReference Include="ResXLocalization.WPF" Version="1.1.0" />
-    <PackageReference Include="Sdl.MultiSelectComboBox" Version="1.0.103" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.12" />
     <PackageReference Include="System.Management" Version="10.0.12" />
   </ItemGroup>

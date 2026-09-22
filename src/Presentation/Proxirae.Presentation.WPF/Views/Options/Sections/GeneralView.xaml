@@ -1,46 +1,46 @@
 ﻿<UserControl x:Class="Proxirae.Presentation.WPF.Views.Options.Sections.GeneralView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Proxirae.Presentation.WPF.Views.Options.Sections" 
-             xmlns:sections="clr-namespace:Proxirae.Presentation.WPF.ViewModels.Options.Sections" 
-             xmlns:l="clr-namespace:RentADeveloper.ResXLocalization.WPF;assembly=ResXLocalization.WPF"
-             xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
              xmlns:core="clr-namespace:RentADeveloper.ResXLocalization;assembly=ResXLocalization.Core"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:l="clr-namespace:RentADeveloper.ResXLocalization.WPF;assembly=ResXLocalization.WPF"
+             xmlns:local="clr-namespace:Proxirae.Presentation.WPF.Views.Options.Sections"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
+             xmlns:sections="clr-namespace:Proxirae.Presentation.WPF.ViewModels.Options.Sections"
              d:DataContext="{d:DesignInstance Type=sections:GeneralViewModel}"
-             mc:Ignorable="d" 
-             Style="{StaticResource SectionWindow}">
+             Style="{StaticResource SectionWindow}"
+             mc:Ignorable="d">
 
     <Grid Margin="10">
-        <GroupBox Header="{l:Localize {x:Static res:LocalizationKeys.GeneralGroupHeaderLocalization}}"
-                  Style="{StaticResource SectionGroupBox}"
-                  VerticalAlignment="Top" 
-                  Padding="10">
+        <GroupBox Padding="10"
+                  VerticalAlignment="Top"
+                  Header="{l:Localize {x:Static res:LocalizationKeys.GeneralGroupHeaderLocalization}}"
+                  Style="{StaticResource SectionGroupBox}">
             <StackPanel>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="200" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.GeneralLanguage}}"
+                    <TextBlock VerticalAlignment="Center"
                                Style="{StaticResource SectionText}"
-                               VerticalAlignment="Center"/>
+                               Text="{l:Localize {x:Static res:LocalizationKeys.GeneralLanguage}}" />
 
                     <ComboBox Grid.Column="1"
-                              Style="{StaticResource SectionComboBox}"
                               ItemsSource="{Binding Languages}"
-                              SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}">
+                              SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}"
+                              Style="{StaticResource SectionComboBox}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Style="{StaticResource SectionText}">
                                     <TextBlock.Text>
                                         <MultiBinding Converter="{StaticResource NameToLocalizeConverter}"
                                                       ConverterParameter="GeneralLanguage">
-                                            <Binding Path="Name"/>
+                                            <Binding Path="Name" />
                                             <Binding Path="CurrentCulture"
-                                                     Source="{x:Static core:Localizer.Current}"/>
+                                                     Source="{x:Static core:Localizer.Current}" />
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>
@@ -49,10 +49,10 @@
                     </ComboBox>
                 </Grid>
 
-                <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.GeneralLanguageDescription}}" 
+                <TextBlock Margin="100,5,0,0"
                            Style="{StaticResource SectionSecondaryText}"
-                           Margin="100 5 0 0" 
-                           TextWrapping="Wrap"/>
+                           Text="{l:Localize {x:Static res:LocalizationKeys.GeneralLanguageDescription}}"
+                           TextWrapping="Wrap" />
             </StackPanel>
         </GroupBox>
     </Grid>

@@ -14,7 +14,7 @@
     <Color x:Key="MessageConfirmationFillColor">#FFE4F1FB</Color>
 
     <Color x:Key="IconColor">#FF5398CE</Color>
-    
+
     <Color x:Key="TitleBarColor">#FFF5F5F5</Color>
     <Color x:Key="TitleBarForegroundColor">#FF202124</Color>
 
@@ -25,7 +25,7 @@
     <Color x:Key="DisabledForegroundColor">#FF707070</Color>
     <Color x:Key="ForegroundColor">#FF202124</Color>
     <Color x:Key="SecondaryForegroundColor">#FF696969</Color>
-    
+
     <Color x:Key="BorderColor">#FFD0D0D0</Color>
     <Color x:Key="DisabledBorderColor">#FFD0D0D0</Color>
 
@@ -41,7 +41,7 @@
     <Color x:Key="StatusColor">#FF8B0000</Color>
 
     <Color x:Key="GridLineColor">#40808080</Color>
-    
+
     <Color x:Key="TitleBarButtonHoverColor">#E9ECEF</Color>
     <Color x:Key="TitleBarButtonPressedColor">#DDE2E6</Color>
     <Color x:Key="TitleBarCloseButtonHoverColor">#D9534F</Color>

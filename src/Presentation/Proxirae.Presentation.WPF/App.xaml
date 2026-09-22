@@ -4,13 +4,13 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Resources/Styles/Themes/Light.xaml"/>
-                <ResourceDictionary Source="/Resources/Styles/Brushes.xaml"/>
-                <ResourceDictionary Source="/Resources/Styles/Constants.xaml"/>
-                <ResourceDictionary Source="/Resources/Providers/Providers.xaml"/>
-                <ResourceDictionary Source="/Converters/Converters.xaml"/>
-                <ResourceDictionary Source="Resources/Styles/Templates.xaml"/>
-                <ResourceDictionary Source="Resources/Styles/Styles.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/Themes/Dark.xaml" />
+                <ResourceDictionary Source="/Resources/Styles/Brushes.xaml" />
+                <ResourceDictionary Source="/Resources/Styles/Constants.xaml" />
+                <ResourceDictionary Source="/Resources/Providers/Providers.xaml" />
+                <ResourceDictionary Source="/Converters/Converters.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Templates.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -1,81 +1,81 @@
 ﻿<controls:TitleBarWindow x:Class="Proxirae.Presentation.WPF.MainView"
                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                         xmlns:l="clr-namespace:RentADeveloper.ResXLocalization.WPF;assembly=ResXLocalization.WPF"
-                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                         xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
-                         xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
-                         xmlns:svg="https://github.com/dotnetprojects/SVGImage"
-                         xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
-                         xmlns:local="clr-namespace:Proxirae.Presentation.WPF"
+                         xmlns:behaviors="clr-namespace:Proxirae.Presentation.WPF.Behaviors"
                          xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
                          xmlns:converters="clr-namespace:Proxirae.Presentation.WPF.Converters"
-                         xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels"
-                         xmlns:behaviors="clr-namespace:Proxirae.Presentation.WPF.Behaviors"
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:l="clr-namespace:RentADeveloper.ResXLocalization.WPF;assembly=ResXLocalization.WPF"
+                         xmlns:local="clr-namespace:Proxirae.Presentation.WPF"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:md="https://github.com/fantasticfiasco/mvvm-dialogs"
+                         xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
                          xmlns:root="clr-namespace:Proxirae.Presentation.WPF"
-                         md:DialogServiceViews.IsRegistered="True"
-                         mc:Ignorable="d"
+                         xmlns:svg="https://github.com/dotnetprojects/SVGImage"
+                         xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
+                         xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels"
                          Title="{x:Static root:ProgramInfo.AppName}"
                          MinWidth="750"
                          MinHeight="500"
-                         Style="{StaticResource Window}"
+                         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+                         md:DialogServiceViews.IsRegistered="True"
                          ShowCenteredTitle="True"
-                         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
+                         Style="{StaticResource Window}"
+                         mc:Ignorable="d">
     <controls:TitleBarWindow.TitleBarIcon>
-        <svg:SVGImage Source="/Resources/Vectors/icon-silhouette.svg"
-                      SizeType="SizeToContent"
-                      Style="{StaticResource VectorIcon}"/>
+        <svg:SVGImage SizeType="SizeToContent"
+                      Source="/Resources/Vectors/icon-silhouette.svg"
+                      Style="{StaticResource VectorIcon}" />
     </controls:TitleBarWindow.TitleBarIcon>
-    
+
     <controls:TitleBarWindow.TitleBarMenuContent>
         <Menu Style="{StaticResource MainMenu}">
             <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuFile}}">
-                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuImportConf}}"
-                          Command="{Binding ImportConfigurationCommand}"/>
-                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuExportConf}}"
-                          Command="{Binding ExportConfigurationCommand}"/>
-                <Separator/>
-                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuExportRoutes}}"
-                          Command="{Binding ExportRoutesHistoryCommand}"/>
-                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuExportLogs}}"
-                          Command="{Binding ExportLogsHistoryCommand}"/>
-                <Separator/>
-                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuAutostart}}"
+                <MenuItem Command="{Binding ImportConfigurationCommand}"
+                          Header="{l:Localize {x:Static res:LocalizationKeys.MenuImportConf}}" />
+                <MenuItem Command="{Binding ExportConfigurationCommand}"
+                          Header="{l:Localize {x:Static res:LocalizationKeys.MenuExportConf}}" />
+                <Separator />
+                <MenuItem Command="{Binding ExportRoutesHistoryCommand}"
+                          Header="{l:Localize {x:Static res:LocalizationKeys.MenuExportRoutes}}" />
+                <MenuItem Command="{Binding ExportLogsHistoryCommand}"
+                          Header="{l:Localize {x:Static res:LocalizationKeys.MenuExportLogs}}" />
+                <Separator />
+                <MenuItem Command="{Binding UpdateAutostartCommand}"
+                          Header="{l:Localize {x:Static res:LocalizationKeys.MenuAutostart}}"
                           IsCheckable="True"
-                          IsChecked="{Binding Autostart, Mode=TwoWay}"
-                          Command="{Binding UpdateAutostartCommand}"/>
-                <Separator/>
-                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuExit}}"
-                          Command="{Binding ExitCommand}"/>
+                          IsChecked="{Binding Autostart, Mode=TwoWay}" />
+                <Separator />
+                <MenuItem Command="{Binding ExitCommand}"
+                          Header="{l:Localize {x:Static res:LocalizationKeys.MenuExit}}" />
             </MenuItem>
 
             <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuProxy}}">
-                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuProxyServers}}"
-                          Command="{Binding OpenProxyServersCommand}"/>
-                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuProxyRules}}"
-                          Command="{Binding OpenProxyRulesCommand}"/>
+                <MenuItem Command="{Binding OpenProxyServersCommand}"
+                          Header="{l:Localize {x:Static res:LocalizationKeys.MenuProxyServers}}" />
+                <MenuItem Command="{Binding OpenProxyRulesCommand}"
+                          Header="{l:Localize {x:Static res:LocalizationKeys.MenuProxyRules}}" />
             </MenuItem>
 
             <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuView}}">
-                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuResetLayout}}"
-                          Command="{Binding ResetLayoutCommand}"/>
+                <MenuItem Command="{Binding ResetLayoutCommand}"
+                          Header="{l:Localize {x:Static res:LocalizationKeys.MenuResetLayout}}" />
             </MenuItem>
 
             <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuTools}}">
-                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuProxyChecker}}"
-                          Command="{Binding OpenProxyCheckerCommand}"/>
-                <Separator/>
-                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuOptions}}"
-                          Command="{Binding OpenOptionsCommand}"/>
+                <MenuItem Command="{Binding OpenProxyCheckerCommand}"
+                          Header="{l:Localize {x:Static res:LocalizationKeys.MenuProxyChecker}}" />
+                <Separator />
+                <MenuItem Command="{Binding OpenOptionsCommand}"
+                          Header="{l:Localize {x:Static res:LocalizationKeys.MenuOptions}}" />
             </MenuItem>
 
             <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuHelp}}">
-                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuCheckForUpdates}}"
-                          Command="{Binding CheckForUpdatesCommand}"/>
-                <Separator/>
-                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.MenuAboutApp}}"
-                          Command="{Binding OpenAboutCommand}"/>
+                <MenuItem Command="{Binding CheckForUpdatesCommand}"
+                          Header="{l:Localize {x:Static res:LocalizationKeys.MenuCheckForUpdates}}" />
+                <Separator />
+                <MenuItem Command="{Binding OpenAboutCommand}"
+                          Header="{l:Localize {x:Static res:LocalizationKeys.MenuAboutApp}}" />
             </MenuItem>
         </Menu>
     </controls:TitleBarWindow.TitleBarMenuContent>
@@ -83,24 +83,24 @@
     <Grid Style="{StaticResource MainViewRoot}">
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"
-                           MinHeight="200"/>
-            <RowDefinition Height="5"/>
+                           MinHeight="200" />
+            <RowDefinition Height="5" />
             <RowDefinition Height="{Binding TabsHeight, Mode=TwoWay, Converter={StaticResource DoubleToGridLengthConverter}}"
-                           MinHeight="100"/>
+                           MinHeight="100" />
         </Grid.RowDefinitions>
 
         <tb:TaskbarIcon x:Name="TrayIcon"
-                        ToolTipText="{x:Static root:ProgramInfo.AppName}"
+                        DoubleClickCommand="{Binding RestoreCommand}"
                         IconSource="/Resources/Icons/icon.ico"
-                        DoubleClickCommand="{Binding RestoreCommand}">
+                        ToolTipText="{x:Static root:ProgramInfo.AppName}">
             <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu Style="{StaticResource MainContextMenu}"
-                             d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
-                    <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.TrayOpen}}"
-                              Command="{Binding RestoreCommand}"/>
-                    <Separator/>
-                    <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.TrayExit}}"
-                              Command="{Binding ExitCommand}"/>
+                <ContextMenu d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+                             Style="{StaticResource MainContextMenu}">
+                    <MenuItem Command="{Binding RestoreCommand}"
+                              Header="{l:Localize {x:Static res:LocalizationKeys.TrayOpen}}" />
+                    <Separator />
+                    <MenuItem Command="{Binding ExitCommand}"
+                              Header="{l:Localize {x:Static res:LocalizationKeys.TrayExit}}" />
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
@@ -108,63 +108,63 @@
         <DockPanel Grid.Row="0"
                    Style="{StaticResource ProcessPanel}">
             <StackPanel DockPanel.Dock="Left">
-                <Button Style="{StaticResource ProcessButton}"
-                        Margin="0 0 0 10"
+                <Button Margin="0,0,0,10"
                         Command="{Binding DisconnectCommand}"
-                        CommandParameter="{Binding ElementName=FlowsTable, Path=SelectedItem}">
-                    <svg:SVGImage Source="/Resources/Vectors/disconnect.svg"
-                                  RenderTransformOrigin="0.5,0.5"
+                        CommandParameter="{Binding ElementName=FlowsTable, Path=SelectedItem}"
+                        Style="{StaticResource ProcessButton}">
+                    <svg:SVGImage HorizontalContentAlignment="Center"
                                   VerticalContentAlignment="Center"
-                                  HorizontalContentAlignment="Center"
+                                  RenderTransformOrigin="0.5,0.5"
                                   SizeType="SizeToContent"
-                                  Style="{StaticResource ProcessButtonIcon}"/>
+                                  Source="/Resources/Vectors/disconnect.svg"
+                                  Style="{StaticResource ProcessButtonIcon}" />
                 </Button>
-                <Button Style="{StaticResource ProcessButton}"
-                        Command="{Binding EndCommand}"
-                        CommandParameter="{Binding ElementName=FlowsTable, Path=SelectedItem}">
-                    <svg:SVGImage Source="/Resources/Vectors/stop.svg"
-                                  RenderTransformOrigin="0.5,0.5"
+                <Button Command="{Binding EndCommand}"
+                        CommandParameter="{Binding ElementName=FlowsTable, Path=SelectedItem}"
+                        Style="{StaticResource ProcessButton}">
+                    <svg:SVGImage HorizontalContentAlignment="Center"
                                   VerticalContentAlignment="Center"
-                                  HorizontalContentAlignment="Center"
+                                  RenderTransformOrigin="0.5,0.5"
                                   SizeType="SizeToContent"
-                                  Style="{StaticResource ProcessButtonIcon}"/>
+                                  Source="/Resources/Vectors/stop.svg"
+                                  Style="{StaticResource ProcessButtonIcon}" />
                 </Button>
             </StackPanel>
 
             <DataGrid x:Name="FlowsTable"
+                      behaviors:ClearSelectionBehavior.IsEnabled="True"
                       DockPanel.Dock="Right"
-                      ItemsSource="{Binding Flows}"
                       IsReadOnly="True"
-                      Style="{StaticResource MainProcessTable}"
-                      behaviors:ClearSelectionBehavior.IsEnabled="True">
+                      ItemsSource="{Binding Flows}"
+                      Style="{StaticResource MainProcessTable}">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderApplication}}"
-                                            Width="*">
+                    <DataGridTemplateColumn Width="*"
+                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderApplication}}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal"
-                                            Margin="4 0">
+                                <StackPanel Margin="4,0"
+                                            Orientation="Horizontal">
                                     <Image Width="16"
                                            Height="16"
-                                           Margin="0 0 6 0"
-                                           Source="{Binding ProcessIcon, IsAsync=True}"/>
+                                           Margin="0,0,6,0"
+                                           Source="{Binding ProcessIcon, IsAsync=True}" />
 
                                     <TextBlock Style="{StaticResource MainDataGridText}"
-                                               Text="{Binding ProcessName, IsAsync=True}"/>
+                                               Text="{Binding ProcessName, IsAsync=True}" />
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderTarget}}"
-                                            Width="*">
+                    <DataGridTemplateColumn Width="*"
+                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderTarget}}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Style="{StaticResource MainDataGridText}">
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="{}{0}:{1}">
-                                            <Binding Path="Target.Address"/>
-                                            <Binding Path="Target.Port"/>
+                                            <Binding Path="Target.Address" />
+                                            <Binding Path="Target.Port" />
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>
@@ -172,42 +172,42 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderTime}}"
-                                            Width="*">
+                    <DataGridTemplateColumn Width="*"
+                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderTime}}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Style="{StaticResource MainDataGridText}"
-                                           Text="{Binding SecondsPassed, Converter={StaticResource SecondsToTimeConverters}, IsAsync=True}"/>
+                                           Text="{Binding SecondsPassed, Converter={StaticResource SecondsToTimeConverters}, IsAsync=True}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderAction}}"
-                                            Width="*">
+                    <DataGridTemplateColumn Width="*"
+                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderAction}}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Style="{StaticResource MainDataGridText}"
-                                           Text="{Binding ActionName}"/>
+                                           Text="{Binding ActionName}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderSent}}"
-                                            Width="*">
+                    <DataGridTemplateColumn Width="*"
+                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderSent}}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Style="{StaticResource MainDataGridText}"
-                                           Text="{Binding BytesSent, Converter={StaticResource BytesToSizeConverter}, IsAsync=True}"/>
+                                           Text="{Binding BytesSent, Converter={StaticResource BytesToSizeConverter}, IsAsync=True}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderReceived}}"
-                                            Width="*">
+                    <DataGridTemplateColumn Width="*"
+                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderReceived}}">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Style="{StaticResource MainDataGridText}"
-                                           Text="{Binding BytesReceived, Converter={StaticResource BytesToSizeConverter}, IsAsync=True}"/>
+                                           Text="{Binding BytesReceived, Converter={StaticResource BytesToSizeConverter}, IsAsync=True}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -216,61 +216,55 @@
         </DockPanel>
 
         <TabControl Grid.Row="2"
-                    Margin="0 -25 0 0"
-                    Style="{StaticResource MainLogPanel}"
-                    SelectedIndex="{Binding SelectedTabIndex}">
+                    Margin="0,-25,0,0"
+                    SelectedIndex="{Binding SelectedTabIndex}"
+                    Style="{StaticResource MainLogPanel}">
             <TabItem Header="{l:Localize {x:Static res:LocalizationKeys.TabHeaderRoutes}}"
                      IsSelected="True">
-                <ListBox ItemsSource="{Binding Routes}"
-                         Style="{StaticResource MainLogBox}"
+                <ListBox behaviors:ClearSelectionBehavior.IsEnabled="True"
+                         behaviors:SelectAllBehavior.IsEnabled="True"
+                         ItemsSource="{Binding Routes}"
                          SelectionMode="Extended"
-                         behaviors:ClearSelectionBehavior.IsEnabled="True"
-                         behaviors:SelectAllBehavior.IsEnabled="True">
+                         Style="{StaticResource MainLogBox}">
 
                     <ListBox.Resources>
                         <Style TargetType="ScrollViewer">
-                            <Setter Property="behaviors:AutoScrollBehavior.AutoScroll"
-                                    Value="{Binding Path=DataContext.RoutesAutoScroll,
-                                        RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                            <Setter Property="behaviors:AutoScrollBehavior.AutoScroll" Value="{Binding Path=DataContext.RoutesAutoScroll, RelativeSource={RelativeSource AncestorType=ListBox}}" />
                         </Style>
                     </ListBox.Resources>
 
                     <ListBox.InputBindings>
                         <KeyBinding Key="C"
-                                    Modifiers="Ctrl"
                                     Command="{Binding CopyCommand}"
-                                    CommandParameter="{Binding Path=SelectedItems,
-                                        RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                                    CommandParameter="{Binding Path=SelectedItems, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                    Modifiers="Ctrl" />
                     </ListBox.InputBindings>
 
                     <ListBox.ContextMenu>
-                        <ContextMenu Style="{StaticResource MainContextMenu}"
-                                     DataContext="{Binding Path=PlacementTarget.DataContext,
-                                RelativeSource={RelativeSource Mode=Self}}">
-                            <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.ContextCopy}}"
-                                      InputGestureText="Ctrl+C"
-                                      Command="{Binding CopyCommand}"
-                                      CommandParameter="{Binding PlacementTarget.SelectedItems,
-                                    RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                            <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.ContextSelectAll}}"
-                                      InputGestureText="Ctrl+A"
-                                      Command="ApplicationCommands.SelectAll"
-                                      CommandTarget="{Binding Path=PlacementTarget,
-                                    RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                            <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.ContextClear}}"
-                                      Command="{Binding ClearCommand}"
-                                      CommandParameter="Routes"/>
-                            <Separator/>
+                        <ContextMenu DataContext="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource Mode=Self}}"
+                                     Style="{StaticResource MainContextMenu}">
+                            <MenuItem Command="{Binding CopyCommand}"
+                                      CommandParameter="{Binding PlacementTarget.SelectedItems, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      Header="{l:Localize {x:Static res:LocalizationKeys.ContextCopy}}"
+                                      InputGestureText="Ctrl+C" />
+                            <MenuItem Command="ApplicationCommands.SelectAll"
+                                      CommandTarget="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      Header="{l:Localize {x:Static res:LocalizationKeys.ContextSelectAll}}"
+                                      InputGestureText="Ctrl+A" />
+                            <MenuItem Command="{Binding ClearCommand}"
+                                      CommandParameter="Routes"
+                                      Header="{l:Localize {x:Static res:LocalizationKeys.ContextClear}}" />
+                            <Separator />
                             <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.ContextAutoScroll}}"
                                       IsCheckable="True"
-                                      IsChecked="{Binding RoutesAutoScroll, Mode=TwoWay}"/>
+                                      IsChecked="{Binding RoutesAutoScroll, Mode=TwoWay}" />
                         </ContextMenu>
                     </ListBox.ContextMenu>
 
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel VirtualizingPanel.IsVirtualizing="True"
-                                                    VirtualizingPanel.VirtualizationMode="Recycling"/>
+                                                    VirtualizingPanel.VirtualizationMode="Recycling" />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
 
@@ -278,45 +272,44 @@
                         <DataTemplate>
                             <Grid Style="{StaticResource MainLogItemGrid}">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="20"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="20"/>
-                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Grid.Column="0"
-                                           Text="{Binding Timestamp, StringFormat='{}{0:HH:mm:ss}',
-                                                Converter={StaticResource UtcToLocalTimeConverter}}"
-                                           Margin="0 0 20 0"
-                                           ToolTip="{Binding Timestamp, StringFormat='{}{0:dd-MM-yyyy HH:mm:ss}'}"/>
+                                           Margin="0,0,20,0"
+                                           Text="{Binding Timestamp, StringFormat='{}{0:HH:mm:ss}', Converter={StaticResource UtcToLocalTimeConverter}}"
+                                           ToolTip="{Binding Timestamp, StringFormat='{}{0:dd-MM-yyyy HH:mm:ss}'}" />
                                 <TextBlock Grid.Column="1"
                                            TextTrimming="CharacterEllipsis">
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="{}{0} ({1})">
-                                            <Binding Path="ProcessName"/>
-                                            <Binding Path="ProcessId"/>
+                                            <Binding Path="ProcessName" />
+                                            <Binding Path="ProcessId" />
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>
                                 <TextBlock Grid.Column="2"
-                                           Text=" - "
-                                           HorizontalAlignment="Center"/>
+                                           HorizontalAlignment="Center"
+                                           Text=" - " />
                                 <TextBlock Grid.Column="3"
                                            TextTrimming="CharacterEllipsis">
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="{}{0}:{1}">
-                                            <Binding Path="Endpoint.Address"/>
-                                            <Binding Path="Endpoint.Port"/>
+                                            <Binding Path="Endpoint.Address" />
+                                            <Binding Path="Endpoint.Port" />
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>
                                 <TextBlock Grid.Column="4"
-                                           Text=" - "
-                                           HorizontalAlignment="Center"/>
+                                           HorizontalAlignment="Center"
+                                           Text=" - " />
                                 <TextBlock Grid.Column="5"
-                                           Text="{Binding ActionName}"/>
+                                           Text="{Binding ActionName}" />
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -324,78 +317,72 @@
             </TabItem>
 
             <TabItem Header="{l:Localize {x:Static res:LocalizationKeys.TabHeaderLogs}}">
-                <ListBox ItemsSource="{Binding Logs}"
-                         Style="{StaticResource MainLogBox}"
+                <ListBox behaviors:ClearSelectionBehavior.IsEnabled="True"
+                         behaviors:SelectAllBehavior.IsEnabled="True"
+                         ItemsSource="{Binding Logs}"
                          SelectionMode="Extended"
-                         behaviors:ClearSelectionBehavior.IsEnabled="True"
-                         behaviors:SelectAllBehavior.IsEnabled="True">
+                         Style="{StaticResource MainLogBox}">
 
                     <ListBox.Resources>
                         <Style TargetType="ScrollViewer">
-                            <Setter Property="behaviors:AutoScrollBehavior.AutoScroll"
-                                    Value="{Binding Path=DataContext.LogsAutoScroll,
-                                        RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                            <Setter Property="behaviors:AutoScrollBehavior.AutoScroll" Value="{Binding Path=DataContext.LogsAutoScroll, RelativeSource={RelativeSource AncestorType=ListBox}}" />
                         </Style>
                     </ListBox.Resources>
 
                     <ListBox.InputBindings>
                         <KeyBinding Key="C"
-                                    Modifiers="Ctrl"
                                     Command="{Binding CopyCommand}"
-                                    CommandParameter="{Binding Path=SelectedItems,
-                                        RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                                    CommandParameter="{Binding Path=SelectedItems, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                    Modifiers="Ctrl" />
                     </ListBox.InputBindings>
 
                     <ListBox.ContextMenu>
-                        <ContextMenu Style="{StaticResource MainContextMenu}"
-                                     DataContext="{Binding Path=PlacementTarget.DataContext,
-                                RelativeSource={RelativeSource Mode=Self}}">
-                            <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.ContextCopy}}"
-                                      InputGestureText="Ctrl+C"
-                                      Command="{Binding CopyCommand}"
-                                      CommandParameter="{Binding PlacementTarget.SelectedItems,
-                                    RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                            <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.ContextSelectAll}}"
-                                      InputGestureText="Ctrl+A"
-                                      Command="ApplicationCommands.SelectAll"
-                                      CommandTarget="{Binding Path=PlacementTarget,
-                                    RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
-                            <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.ContextClear}}"
-                                      Command="{Binding ClearCommand}"
-                                      CommandParameter="Logs"/>
-                            <Separator/>
+                        <ContextMenu DataContext="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource Mode=Self}}"
+                                     Style="{StaticResource MainContextMenu}">
+                            <MenuItem Command="{Binding CopyCommand}"
+                                      CommandParameter="{Binding PlacementTarget.SelectedItems, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      Header="{l:Localize {x:Static res:LocalizationKeys.ContextCopy}}"
+                                      InputGestureText="Ctrl+C" />
+                            <MenuItem Command="ApplicationCommands.SelectAll"
+                                      CommandTarget="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      Header="{l:Localize {x:Static res:LocalizationKeys.ContextSelectAll}}"
+                                      InputGestureText="Ctrl+A" />
+                            <MenuItem Command="{Binding ClearCommand}"
+                                      CommandParameter="Logs"
+                                      Header="{l:Localize {x:Static res:LocalizationKeys.ContextClear}}" />
+                            <Separator />
                             <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.ContextAutoScroll}}"
                                       IsCheckable="True"
-                                      IsChecked="{Binding Path=LogsAutoScroll, Mode=TwoWay}"/>
-                            <Separator/>
-                            <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.TabContextLogLevel}}"
-                                      Style="{StaticResource RadioMenuGroup}"
+                                      IsChecked="{Binding Path=LogsAutoScroll, Mode=TwoWay}" />
+                            <Separator />
+                            <MenuItem xmlns:local="clr-namespace:Proxirae.Contracts.DTOs.Logs;assembly=Proxirae.Contracts"
+                                      Header="{l:Localize {x:Static res:LocalizationKeys.TabContextLogLevel}}"
                                       ItemContainerStyle="{StaticResource RadioMenuItemContainer}"
-                                      xmlns:local="clr-namespace:Proxirae.Contracts.DTOs.Logs;assembly=Proxirae.Contracts">
-                                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.TabContextLogLevelDebug}}"
-                                          Style="{StaticResource RadioMenuItem}"
+                                      Style="{StaticResource RadioMenuGroup}">
+                                <MenuItem Command="{Binding ChangeLogLevelCommand}"
+                                          CommandParameter="{x:Static local:LogLevelDto.Debug}"
+                                          Header="{l:Localize {x:Static res:LocalizationKeys.TabContextLogLevelDebug}}"
                                           IsCheckable="True"
                                           IsChecked="{Binding SelectedLogLevel, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:LogLevelDto.Debug}, Mode=TwoWay}"
-                                          Command="{Binding ChangeLogLevelCommand}"
-                                          CommandParameter="{x:Static local:LogLevelDto.Debug}"/>
-                                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.TabContextLogLevelInfo}}"
-                                          Style="{StaticResource RadioMenuItem}"
+                                          Style="{StaticResource RadioMenuItem}" />
+                                <MenuItem Command="{Binding ChangeLogLevelCommand}"
+                                          CommandParameter="{x:Static local:LogLevelDto.Info}"
+                                          Header="{l:Localize {x:Static res:LocalizationKeys.TabContextLogLevelInfo}}"
                                           IsCheckable="True"
                                           IsChecked="{Binding SelectedLogLevel, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:LogLevelDto.Info}, Mode=TwoWay}"
-                                          Command="{Binding ChangeLogLevelCommand}"
-                                          CommandParameter="{x:Static local:LogLevelDto.Info}"/>
-                                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.TabContextLogLevelWarning}}"
-                                          Style="{StaticResource RadioMenuItem}"
+                                          Style="{StaticResource RadioMenuItem}" />
+                                <MenuItem Command="{Binding ChangeLogLevelCommand}"
+                                          CommandParameter="{x:Static local:LogLevelDto.Warning}"
+                                          Header="{l:Localize {x:Static res:LocalizationKeys.TabContextLogLevelWarning}}"
                                           IsCheckable="True"
                                           IsChecked="{Binding SelectedLogLevel, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:LogLevelDto.Warning}, Mode=TwoWay}"
-                                          Command="{Binding ChangeLogLevelCommand}"
-                                          CommandParameter="{x:Static local:LogLevelDto.Warning}"/>
-                                <MenuItem Header="{l:Localize {x:Static res:LocalizationKeys.TabContextLogLevelError}}"
-                                          Style="{StaticResource RadioMenuItem}"
+                                          Style="{StaticResource RadioMenuItem}" />
+                                <MenuItem Command="{Binding ChangeLogLevelCommand}"
+                                          CommandParameter="{x:Static local:LogLevelDto.Error}"
+                                          Header="{l:Localize {x:Static res:LocalizationKeys.TabContextLogLevelError}}"
                                           IsCheckable="True"
                                           IsChecked="{Binding SelectedLogLevel, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static local:LogLevelDto.Critical}, Mode=TwoWay}"
-                                          Command="{Binding ChangeLogLevelCommand}"
-                                          CommandParameter="{x:Static local:LogLevelDto.Error}"/>
+                                          Style="{StaticResource RadioMenuItem}" />
                             </MenuItem>
                         </ContextMenu>
                     </ListBox.ContextMenu>
@@ -403,8 +390,8 @@
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel VirtualizingPanel.IsVirtualizing="True"
-                                                    VirtualizingPanel.VirtualizationMode="Recycling"
-                                                    VirtualizingPanel.ScrollUnit="Item"/>
+                                                    VirtualizingPanel.ScrollUnit="Item"
+                                                    VirtualizingPanel.VirtualizationMode="Recycling" />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
 
@@ -412,23 +399,22 @@
                         <DataTemplate>
                             <Grid Style="{StaticResource MainLogItemGrid}">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="80"/>
-                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Grid.Column="0"
-                                           Text="{Binding Timestamp, StringFormat='{}{0:HH:mm:ss}',
-                                           Converter={StaticResource UtcToLocalTimeConverter}}"
-                                           Margin="0 0 0 0"
-                                           ToolTip="{Binding Timestamp, StringFormat='{}{0:dd-MM-yyyy HH:mm:ss}'}"/>
+                                           Margin="0,0,0,0"
+                                           Text="{Binding Timestamp, StringFormat='{}{0:HH:mm:ss}', Converter={StaticResource UtcToLocalTimeConverter}}"
+                                           ToolTip="{Binding Timestamp, StringFormat='{}{0:dd-MM-yyyy HH:mm:ss}'}" />
                                 <TextBlock Grid.Column="1"
-                                           Text="{Binding Level, StringFormat='{}{0}', Converter={StaticResource EnumToUpperStringConverter}}"
+                                           HorizontalAlignment="Center"
                                            Foreground="{Binding Level, Converter={StaticResource LogLevelToBrushConverter}}"
-                                           HorizontalAlignment="Center"/>
+                                           Text="{Binding Level, StringFormat='{}{0}', Converter={StaticResource EnumToUpperStringConverter}}" />
                                 <TextBlock Grid.Column="2"
                                            Text="{Binding Message}"
-                                           TextWrapping="NoWrap"/>
+                                           TextWrapping="NoWrap" />
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -436,8 +422,8 @@
             </TabItem>
         </TabControl>
 
-        <!--GridSplitter MUST be the last element for correct rendering-->
+        <!--  GridSplitter MUST be the last element for correct rendering  -->
         <GridSplitter Grid.Row="1"
-                       Style="{StaticResource ProcessLogsSplitter}"/>
+                      Style="{StaticResource ProcessLogsSplitter}" />
     </Grid>
 </controls:TitleBarWindow>

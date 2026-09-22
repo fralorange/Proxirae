@@ -3,10 +3,10 @@
                     xmlns:enum="clr-namespace:Proxirae.Contracts.DTOs.Proxies;assembly=Proxirae.Contracts"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <ObjectDataProvider x:Key="enumValues"
-                    MethodName="GetValues" 
-                    ObjectType="{x:Type system:Enum}">
+                        MethodName="GetValues"
+                        ObjectType="{x:Type system:Enum}">
         <ObjectDataProvider.MethodParameters>
-            <x:Type TypeName="enum:ProxyTypeDto"/>
+            <x:Type TypeName="enum:ProxyTypeDto" />
         </ObjectDataProvider.MethodParameters>
     </ObjectDataProvider>
 </ResourceDictionary>
