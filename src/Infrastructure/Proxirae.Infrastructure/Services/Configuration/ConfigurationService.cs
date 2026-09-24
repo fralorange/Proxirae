@@ -1,20 +1,24 @@
-﻿using Proxirae.Application.Facades.Configuration;
-using Proxirae.Application.Messenger;
-using Proxirae.Application.Stores;
+﻿using Proxirae.Application.Messenger;
+using Proxirae.Application.Persistence;
+using Proxirae.Application.Services.Configuration;
 using Proxirae.Contracts.Data.Rules;
 using Proxirae.Domain.Proxies;
 using Proxirae.Infrastructure.Persistence;
 
-namespace Proxirae.Infrastructure.Facades
+namespace Proxirae.Infrastructure.Services.Configuration
 {
-    public class ConfigurationFacade : IConfigurationFacade
+    public class ConfigurationService : IConfigurationService
     {
         private readonly PersistenceOptions _persistenceOptions;
         private readonly IPersistence<Proxy> _proxyPersistence;
         private readonly IPersistence<RuleData> _rulePersistence;
         private readonly IMessenger _messenger;
 
-        public ConfigurationFacade(PersistenceOptions persistenceOptions,
+        public string AppDataDirectory => _persistenceOptions.Directory;
+        public string ProxiesFilePath => _persistenceOptions.ProxiesFile;
+        public string RulesFilePath => _persistenceOptions.RulesFile;
+
+        public ConfigurationService(PersistenceOptions persistenceOptions,
                                    IPersistence<Proxy> proxyPersistence,
                                    IPersistence<RuleData> rulePersistence,
                                    IMessenger messenger)
@@ -24,9 +28,6 @@ namespace Proxirae.Infrastructure.Facades
             _rulePersistence = rulePersistence;
             _messenger = messenger;
         }
-
-        public string AppDataDirectory => _persistenceOptions.Directory;
-        public string[] ConfigurationFiles => [_persistenceOptions.RulesFile, _persistenceOptions.ProxiesFile];
 
         public async Task ReloadAsync(CancellationToken cancellationToken)
         {

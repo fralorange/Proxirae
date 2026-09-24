@@ -522,4 +522,25 @@
   <data name="WarningMessageEndProcess" xml:space="preserve">
     <value>Are you sure you want to end this process? Ending a process may cause unexpected behavior or data loss. Some applications may prevent the process from being terminated.</value>
   </data>
+  <data name="ErrorMessageConfigCorruptedOrIncorrent" xml:space="preserve">
+    <value>The configuration file is corrupted, unreadable, or the entered master password is incorrect. Make sure the file is valid and try again.</value>
+  </data>
+  <data name="ErrorMessageConfigCorruptedOrIncorrentTitle" xml:space="preserve">
+    <value>Configuration Error</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordImportTitle" xml:space="preserve">
+    <value>Import Configuration</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordImport" xml:space="preserve">
+    <value>Enter the master password to decrypt proxy credentials from the archive. If the file was saved without protection or you want to skip password restoration, click "Without Password".</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordImportAlt" xml:space="preserve">
+    <value>Without Password</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordExportTitle" xml:space="preserve">
+    <value>Export Configuration</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordExport" xml:space="preserve">
+    <value>Enter a master password to encrypt proxy credentials in the output file. This password will be required when importing the configuration on another device.</value>
+  </data>
 </root>

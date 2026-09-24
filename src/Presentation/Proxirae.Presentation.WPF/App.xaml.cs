@@ -31,6 +31,7 @@ namespace Proxirae.Presentation.WPF
                         .AddRepositories()
                         .AddStores()
                         .AddExporters()
+                        .AddSecurity()
                         .AddUnitsOfWork()
                         .AddValidators()
                         .AddMappers()

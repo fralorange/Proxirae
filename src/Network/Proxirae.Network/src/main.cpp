@@ -40,6 +40,7 @@
 #include "communication/pipes/win/WinPipeServer.h"
 #include "asyncio/io/stream/win/IocpStreamAdapter.h"
 #include "asyncio/io/datagram/win/IocpDatagramAdapter.h"
+#include "protection/win/WinProtector.h"
 #endif 
 
 using namespace Proxirae;
@@ -62,6 +63,7 @@ int main() {
 	IocpStreamAdapter streamAdapter;
 	IocpDatagramAdapter datagramAdapter;
 	WinPipeServer pipe(driver, streamAdapter);
+	WinProtector protector;
 #endif 
 	IpcChannel channel(pipe);
 	IpcMessenger messenger(channel);
@@ -70,7 +72,7 @@ int main() {
 
 	auto appDir = PathUtils::GetAppConfigDirectory();
 
-	ConfigurationLoader configLoader(configStore, appDir, logger);
+	ConfigurationLoader configLoader(configStore, appDir, logger, protector);
 	PreferencesLoader prefsLoader(prefsStore, appDir, logger);
 
 	configLoader.Load();

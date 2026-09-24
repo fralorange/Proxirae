@@ -5,8 +5,8 @@
 #include "persistence/configuration/ConfigurationLoader.h"
 
 namespace Proxirae {
-	ConfigurationLoader::ConfigurationLoader(Store<Configuration>& store, std::filesystem::path configDir, ILogger& logger)
-		: m_store(store), m_configDir(configDir), m_logger(logger) { }
+	ConfigurationLoader::ConfigurationLoader(Store<Configuration>& store, std::filesystem::path configDir, ILogger& logger, IProtector& protector)
+		: m_store(store), m_configDir(configDir), m_logger(logger), m_protector(protector) { }
 
 	void ConfigurationLoader::Load(LoadTarget target)
 	{
@@ -26,6 +26,19 @@ namespace Proxirae {
 
 			auto tempProxies = ReadJson<ProxyContract>(proxiesPath);
 			for (auto& proxy : tempProxies) {
+				if (!proxy.password.empty()) {
+					std::string unprotectedPassword;
+
+					if (m_protector.TryUnprotect(proxy.password, unprotectedPassword)) {
+						proxy.password = unprotectedPassword;
+					}
+					else {
+						m_logger.LogError(std::format("[Configuration] Failed to decrypt password for proxy {}:{}", proxy.address, proxy.port));
+						m_logger.LogDebug(std::format("[Configuration] Decryption failed for Proxy ID: {}", proxy.id));
+
+						proxy.password.clear();
+					}
+				}
 				newConfig->proxies.emplace(proxy.id, std::move(proxy));
 			}
 		}

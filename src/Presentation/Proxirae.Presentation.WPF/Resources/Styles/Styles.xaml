@@ -8,6 +8,13 @@
         <Setter Property="TitleBarBackground" Value="{DynamicResource TitleBarBrush}" />
     </Style>
 
+    <Style x:Key="NeutralInput"
+           TargetType="Control">
+        <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+    </Style>
+
     <Style x:Key="SectionWindow"
            TargetType="UserControl">
         <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
@@ -517,7 +524,7 @@
     </Style>
 
     <Style xmlns:svg="https://github.com/dotnetprojects/SVGImage"
-           x:Key="ConfirmationMessageIcon"
+           x:Key="InfoMessageIcon"
            BasedOn="{StaticResource MessageIcon}"
            TargetType="{x:Type svg:SVGImage}">
         <Setter Property="OverrideStrokeColor" Value="{DynamicResource MessageConfirmationStrokeColor}" />
@@ -727,17 +734,13 @@
     </Style>
 
     <Style x:Key="FilePickerInput"
+           BasedOn="{StaticResource NeutralInput}"
            TargetType="TextBox">
         <Style.Triggers>
             <Trigger Property="IsKeyboardFocusWithin" Value="True">
                 <Setter Property="BorderBrush" Value="{DynamicResource FocusBrush}" />
             </Trigger>
         </Style.Triggers>
-
-        <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
@@ -918,11 +921,8 @@
     </Style>
 
     <Style x:Key="ProxyServerEditorInput"
-           TargetType="Control">
-        <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-    </Style>
+           BasedOn="{StaticResource NeutralInput}"
+           TargetType="Control" />
 
     <Style x:Key="ProxyRulesViewRoot"
            TargetType="Grid">
@@ -975,11 +975,8 @@
     </Style>
 
     <Style x:Key="ProxyRulesEditorInput"
-           TargetType="Control">
-        <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-    </Style>
+           BasedOn="{StaticResource NeutralInput}"
+           TargetType="Control" />
 
     <Style x:Key="ProxyRulesEditorComboBox"
            BasedOn="{StaticResource ThemedComboBox}"
@@ -1005,11 +1002,8 @@
     </Style>
 
     <Style x:Key="ProxyCheckerInput"
-           TargetType="TextBox">
-        <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-    </Style>
+           BasedOn="{StaticResource NeutralInput}"
+           TargetType="TextBox" />
 
     <Style x:Key="ProxyCheckerProgressBar"
            TargetType="ProgressBar">
@@ -1054,11 +1048,8 @@
     </Style>
 
     <Style x:Key="SectionInput"
-           TargetType="Control">
-        <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-    </Style>
+           BasedOn="{StaticResource NeutralInput}"
+           TargetType="Control" />
 
     <Style x:Key="SectionComboBox"
            BasedOn="{StaticResource ThemedComboBox}"

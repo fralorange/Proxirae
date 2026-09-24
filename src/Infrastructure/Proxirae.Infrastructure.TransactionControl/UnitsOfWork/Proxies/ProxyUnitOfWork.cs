@@ -1,5 +1,5 @@
-﻿using Proxirae.Application.Repositories;
-using Proxirae.Application.Stores;
+﻿using Proxirae.Application.Persistence;
+using Proxirae.Application.Repositories;
 using Proxirae.Application.UnitsOfWork.Proxies;
 using Proxirae.Domain.Proxies;
 

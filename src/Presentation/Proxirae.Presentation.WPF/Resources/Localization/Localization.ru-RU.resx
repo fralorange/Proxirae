@@ -522,4 +522,25 @@
   <data name="WarningMessageEndProcess" xml:space="preserve">
     <value>Вы уверены, что хотите завершить этот процесс? Завершение процесса может привести к непредвиденным последствиям или потере данных. Некоторые приложения могут не позволить завершить процесс.</value>
   </data>
+  <data name="ErrorMessageConfigCorruptedOrIncorrent" xml:space="preserve">
+    <value>Файл конфигурации повреждён, имеет неверный формат или введён неверный мастер-пароль. Убедитесь в правильности пароля, целостности файла и попробуйте снова.</value>
+  </data>
+  <data name="ErrorMessageConfigCorruptedOrIncorrentTitle" xml:space="preserve">
+    <value>Ошибка конфигурации</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordImportTitle" xml:space="preserve">
+    <value>Импорт конфигурации</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordImport" xml:space="preserve">
+    <value>Введите мастер-пароль для расшифровки учётных данных прокси из архива. Если файл был сохранён без защиты или вы хотите пропустить восстановление паролей, нажмите "Без пароля".</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordImportAlt" xml:space="preserve">
+    <value>Без пароля</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordExportTitle" xml:space="preserve">
+    <value>Экспорт конфигурации</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordExport" xml:space="preserve">
+    <value>Введите мастер-пароль для шифрования учётных данных прокси в создаваемом файле. Этот пароль потребуется при импорте конфигурации на другом устройстве.</value>
+  </data>
 </root>

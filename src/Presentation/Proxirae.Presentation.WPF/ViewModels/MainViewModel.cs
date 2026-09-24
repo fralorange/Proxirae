@@ -4,15 +4,16 @@ using MvvmDialogs.FrameworkDialogs.OpenFile;
 using MvvmDialogs.FrameworkDialogs.SaveFile;
 using ObservableCollections;
 using Proxirae.Application.Exporters.Csv;
-using Proxirae.Application.Facades.Configuration;
 using Proxirae.Application.Models.Preferences.Appearance;
 using Proxirae.Application.Models.Preferences.Metrics;
 using Proxirae.Application.Services.Application;
 using Proxirae.Application.Services.Archive;
 using Proxirae.Application.Services.Browser;
 using Proxirae.Application.Services.Clipboard;
+using Proxirae.Application.Services.Configuration;
 using Proxirae.Application.Services.Flows;
 using Proxirae.Application.Services.Logs;
+using Proxirae.Application.Services.Package;
 using Proxirae.Application.Services.Preferences;
 using Proxirae.Application.Services.Preferences.Autostart;
 using Proxirae.Application.Services.Routes;
@@ -23,6 +24,7 @@ using Proxirae.Presentation.WPF.Extensions;
 using Proxirae.Presentation.WPF.Factories.Flow;
 using Proxirae.Presentation.WPF.Factories.Routes;
 using Proxirae.Presentation.WPF.Services.Dialog.File;
+using Proxirae.Presentation.WPF.Services.Dialog.Input;
 using Proxirae.Presentation.WPF.Services.Dialog.Message;
 using Proxirae.Presentation.WPF.Services.Dialog.Modal;
 using Proxirae.Presentation.WPF.ViewModels.About;
@@ -46,7 +48,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
         private readonly IFileDialogService _fileDialogService;
         private readonly IModalDialogService _modalDialogService;
         private readonly IMessageDialogService _messageDialogService;
-        private readonly IConfigurationFacade _configurationFacade;
+        private readonly IInputDialogService _inputDialogService;
         private readonly IRouteViewModelFactory _routeViewModelFactory;
         private readonly IFlowViewModelFactory _flowViewModelFactory;
         private readonly IFlowService _flowService;
@@ -54,7 +56,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
         private readonly IRouteService _routeService;
         private readonly IPreferencesService _preferencesService;
         private readonly IAutostartService _autostartService;
-        private readonly IArchiveService _archiveService;
+        private readonly IPackageService _packageService;
         private readonly ICsvExporter _csvExporter;
         private readonly IBrowserService _browserService;
 
@@ -97,7 +99,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
             IFileDialogService fileDialogService,
             IModalDialogService modalDialogService,
             IMessageDialogService messageDialogService,
-            IConfigurationFacade configurationFacade,
+            IInputDialogService inputDialogService,
             IRouteViewModelFactory routeViewModelFactory,
             IFlowViewModelFactory flowViewModelFactory,
             IFlowService flowService,
@@ -105,7 +107,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
             IRouteService routeService,
             IPreferencesService preferencesService,
             IAutostartService autostartService,
-            IArchiveService archiveService,
+            IPackageService packageService,
             ICsvExporter csvExporter,
             IBrowserService browserService)
         {
@@ -114,7 +116,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
             _fileDialogService = fileDialogService;
             _modalDialogService = modalDialogService;
             _messageDialogService = messageDialogService;
-            _configurationFacade = configurationFacade;
+            _inputDialogService = inputDialogService;
             _routeViewModelFactory = routeViewModelFactory;
             _flowViewModelFactory = flowViewModelFactory;
             _flowService = flowService;
@@ -122,7 +124,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
             _routeService = routeService;
             _preferencesService = preferencesService;
             _autostartService = autostartService;
-            _archiveService = archiveService;
+            _packageService = packageService;
             _csvExporter = csvExporter;
             _browserService = browserService;
 
@@ -269,7 +271,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
         }
 
         [RelayCommand]
-        private async Task ImportConfiguration(CancellationToken cancellationToken)
+        private async Task ImportConfigurationAsync(CancellationToken cancellationToken)
         {
             var settings = new OpenFileDialogSettings
             {
@@ -281,16 +283,30 @@ namespace Proxirae.Presentation.WPF.ViewModels
             var path = _fileDialogService.ShowOpenFileDialog(this, settings);
             if (path is null) return;
 
-            var success = _archiveService.ExtractArchive(path, _configurationFacade.AppDataDirectory);
-
-            if (success)
+            var success = await _packageService.ImportAsync(path, ct =>
             {
-                await _configurationFacade.ReloadAsync(cancellationToken);
+                var (masterPassword, result) = _inputDialogService.ShowText(
+                    this,
+                    "ConfigMasterPasswordImport",
+                    "ConfigMasterPasswordImportTitle",
+                    "ConfigMasterPasswordImportAlt");
+
+                if (result == InputDialogResult.Cancel || result == InputDialogResult.None)
+                {
+                    return Task.FromResult<string?>(null);
+                }
+
+                return Task.FromResult<string?>(masterPassword);
+            }, cancellationToken);
+
+            if (!success)
+            {
+                _messageDialogService.ShowError(this, "ConfigCorruptedOrIncorrent", "ConfigCorruptedOrIncorrentTitle");
             }
         }
 
         [RelayCommand]
-        private void ExportConfiguration()
+        private async Task ExportConfigurationAsync(CancellationToken cancellationToken)
         {
             var settings = new SaveFileDialogSettings
             {
@@ -299,12 +315,29 @@ namespace Proxirae.Presentation.WPF.ViewModels
                 Filter = "Proxirae Configuration (*.pxcfg)|*.pxcfg",
                 DefaultExt = ".pxcfg",
                 AddExtension = true,
+                OverwritePrompt = true,
                 FileName = "config.pxcfg"
             };
 
             var path = _fileDialogService.ShowSaveFileDialog(this, settings);
+            if (path is null) return;
 
-            if (path is not null && !_archiveService.CreateArchive(path, _configurationFacade.ConfigurationFiles))
+            var success = await _packageService.ExportAsync(path, ct =>
+            {
+                var (masterPassword, result) = _inputDialogService.ShowText(
+                    this,
+                    "ConfigMasterPasswordExport",
+                    "ConfigMasterPasswordExportTitle");
+
+                if (result != InputDialogResult.Ok)
+                {
+                    return Task.FromResult<string?>(null);
+                }
+
+                return Task.FromResult<string?>(masterPassword);
+            }, cancellationToken);
+
+            if (!success)
             {
                 _messageDialogService.ShowError(this, "ConfigDoesNotExist", "ConfigDoesNotExistTitle");
             }

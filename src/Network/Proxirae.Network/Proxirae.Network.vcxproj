@@ -200,6 +200,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\interception\correlation\win\WinUdpLookupTable.cpp" />
     <ClCompile Include="src\interception\routing\PacketFilter.cpp" />
     <ClCompile Include="src\interception\handling\UdpHandler.cpp" />
+    <ClCompile Include="src\protection\win\WinProtector.cpp" />
     <ClCompile Include="src\proxification\Socks5ProxyBase.cpp" />
     <ClCompile Include="src\proxification\datagram\UdpSocks5Proxy.cpp" />
     <ClCompile Include="src\runtime\Host.cpp" />
@@ -276,6 +277,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\controllers\test\TestController.h" />
     <ClInclude Include="include\communication\channels\handlers\preferences\PreferencesPipeHandler.h" />
     <ClInclude Include="include\communication\channels\handlers\test\TestPipeHandler.h" />
+    <ClInclude Include="include\protection\IProtector.h" />
     <ClInclude Include="include\environment\handle_types.h" />
     <ClInclude Include="include\interception\correlation\DispatcherCorrelator.h" />
     <ClInclude Include="include\interception\correlation\IPacketCorrelator.h" />
@@ -297,6 +299,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\contracts\rule\RuleContract.h" />
     <ClInclude Include="include\contracts\rule\RuleProtocol.h" />
     <ClInclude Include="include\persistence\connections\ConnectionState.h" />
+    <ClInclude Include="include\protection\win\WinProtector.h" />
     <ClInclude Include="include\proxification\datagram\IDatagramProxy.h" />
     <ClInclude Include="include\proxification\Socks5ProxyBase.h" />
     <ClInclude Include="include\proxification\datagram\UdpSocks5Proxy.h" />
