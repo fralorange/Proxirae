@@ -9,9 +9,11 @@ using Proxirae.Application.Services.Application;
 using Proxirae.Application.Services.Archive;
 using Proxirae.Application.Services.Browser;
 using Proxirae.Application.Services.Clipboard;
+using Proxirae.Application.Services.Configuration;
 using Proxirae.Application.Services.Flows;
 using Proxirae.Application.Services.Localization;
 using Proxirae.Application.Services.Logs;
+using Proxirae.Application.Services.Package;
 using Proxirae.Application.Services.Preferences;
 using Proxirae.Application.Services.Preferences.Autostart;
 using Proxirae.Application.Services.Proxies;
@@ -23,6 +25,7 @@ using Proxirae.Application.Validators.ProxyRule;
 using Proxirae.Infrastructure;
 using Proxirae.Infrastructure.Mappers.Rule;
 using Proxirae.Infrastructure.Mappers.Rule.Action;
+using Proxirae.Infrastructure.Services.Configuration;
 using Proxirae.Presentation.WPF.Factories.Flow;
 using Proxirae.Presentation.WPF.Factories.ProxyChecker;
 using Proxirae.Presentation.WPF.Factories.Routes;
@@ -31,6 +34,7 @@ using Proxirae.Presentation.WPF.Services.Archive;
 using Proxirae.Presentation.WPF.Services.Browser;
 using Proxirae.Presentation.WPF.Services.Clipboard;
 using Proxirae.Presentation.WPF.Services.Dialog.File;
+using Proxirae.Presentation.WPF.Services.Dialog.Input;
 using Proxirae.Presentation.WPF.Services.Dialog.Message;
 using Proxirae.Presentation.WPF.Services.Dialog.Modal;
 using Proxirae.Presentation.WPF.Services.Localization;
@@ -75,12 +79,15 @@ namespace Proxirae.Presentation.WPF
             services.AddSingleton<IProcessInfoService, ProcessInfoService>();
             services.AddTransient<IBrowserService, BrowserService>();
             services.AddTransient<IUiService, WpfUiService>();
-            services.AddTransient<IArchiveService, PxcfgService>();
+            services.AddTransient<IArchiveService, ArchiveService>();
             services.AddSingleton<ILocalizationService, LocalizationService>();
             services.AddSingleton<IThemeService, WpfThemeService>();
             services.AddSingleton<IModalDialogService, ModalDialogService>();
             services.AddTransient<IFileDialogService, FileDialogService>();
             services.AddSingleton<IMessageDialogService, MessageDialogService>();
+            services.AddSingleton<IInputDialogService, InputDialogService>();
+            services.AddTransient<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IPackageService, PackageService>();
 
             return services;
         }
@@ -107,7 +114,6 @@ namespace Proxirae.Presentation.WPF
         {
             services.AddSingleton<ActionFacade>();
             services.AddSingleton<RouteFacade>();
-            services.AddConfigurationFacade();
 
             return services;
         }

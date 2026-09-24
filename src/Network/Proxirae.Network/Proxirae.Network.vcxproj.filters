@@ -231,6 +231,9 @@
     <ClCompile Include="src\interception\correlation\win\WinUdpLookupTable.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\protection\win\WinProtector.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\interception\diversion\win\WinPacketContext.h">
@@ -597,6 +600,12 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\interception\correlation\win\WinUdpLookupTable.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\protection\IProtector.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\protection\win\WinProtector.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

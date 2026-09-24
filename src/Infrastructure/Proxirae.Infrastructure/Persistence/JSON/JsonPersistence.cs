@@ -1,4 +1,4 @@
-﻿using Proxirae.Application.Stores;
+﻿using Proxirae.Application.Persistence;
 using System.Text.Json;
 
 namespace Proxirae.Infrastructure.Persistence.JSON

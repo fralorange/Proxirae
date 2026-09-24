@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MvvmDialogs;
+using Proxirae.Application.Security.Protection;
 using Proxirae.Application.Services.Proxies;
 using Proxirae.Application.Validators.ProxyRule;
 using Proxirae.Contracts.DTOs.Proxies;
@@ -18,6 +19,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         private readonly IProxyService _proxyService;
         private readonly IProxyCheckerViewModelFactory _proxyCheckerFactory;
         private readonly IProxyRuleValidator _proxyRuleValidator;
+        private readonly IProtector _protector;
 
         private bool? dialogResult;
         public bool? DialogResult
@@ -33,16 +35,18 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         private bool _hasChanges;
 
         public ProxyServersViewModel(IModalDialogService dialogFacade,
-                                     IMessageDialogService messageDialogService, 
+                                     IMessageDialogService messageDialogService,
                                      IProxyService proxyService,
                                      IProxyCheckerViewModelFactory proxyCheckerFactory,
-                                     IProxyRuleValidator proxyRuleValidator)
+                                     IProxyRuleValidator proxyRuleValidator,
+                                     IProtector protector)
         {
             _modalDialogService = dialogFacade;
             _messageDialogService = messageDialogService;
             _proxyService = proxyService;
             _proxyCheckerFactory = proxyCheckerFactory;
             _proxyRuleValidator = proxyRuleValidator;
+            _protector = protector;
         }
 
         [RelayCommand]
@@ -81,7 +85,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
                 return;
             }
 
-            var viewModel = new EditProxyServerViewModel(proxyDetail);
+            var viewModel = new EditProxyServerViewModel(_protector, proxyDetail);
 
             _modalDialogService.ShowDialog(this, viewModel);
 
