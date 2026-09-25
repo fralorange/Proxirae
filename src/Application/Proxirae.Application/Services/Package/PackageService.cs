@@ -27,7 +27,7 @@ namespace Proxirae.Application.Services.Package
             _cryptographer = cryptographer;
         }
 
-        public async Task<bool> ExportAsync(
+        public async Task<bool?> ExportAsync(
             string archivePath,
             Func<CancellationToken, Task<string?>> masterPasswordProvider,
             CancellationToken token = default)
@@ -88,7 +88,7 @@ namespace Proxirae.Application.Services.Package
 
                             if (string.IsNullOrWhiteSpace(masterPassword))
                             {
-                                return false; 
+                                return null; 
                             }
                         }
 

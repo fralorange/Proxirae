@@ -337,7 +337,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
                 return Task.FromResult<string?>(masterPassword);
             }, cancellationToken);
 
-            if (!success)
+            if (success == false)
             {
                 _messageDialogService.ShowError(this, "ConfigDoesNotExist", "ConfigDoesNotExistTitle");
             }

@@ -2,7 +2,7 @@
 {
     public interface IPackageService
     {
-        Task<bool> ExportAsync(
+        Task<bool?> ExportAsync(
             string archivePath,
             Func<CancellationToken, Task<string?>> masterPasswordProvider,
             CancellationToken token = default);
