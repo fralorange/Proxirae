@@ -1,6 +1,5 @@
 #include <format>
 
-#include "environment/inet.h"
 #include "interception/handling/UdpHandler.h"
 
 namespace Proxirae {
@@ -16,7 +15,7 @@ namespace Proxirae {
 		auto& packetCtx = ctx.packetCtx;
 
 		if (packetCtx.IsOutbound()) {
-			if (WinDivertHelperNtohs(packetCtx.GetSourcePort()) == m_redirectPort) {
+			if (packetCtx.GetSourcePort() == m_redirectPort) {
 				ThreeTuple key{
 					.srcAddress = packetCtx.GetDestinationAddress(),
 					.srcPort = packetCtx.GetDestinationPort(),
@@ -59,7 +58,7 @@ namespace Proxirae {
 					));
 				}
 
-				packetCtx.SetDestination(packetCtx.GetSourceAddress(), WinDivertHelperHtons(m_redirectPort));
+				packetCtx.SetDestination(packetCtx.GetSourceAddress(), m_redirectPort);
 
 				m_logger.LogDebug(std::format(
 					"[UdpHandler] Redirected UDP outbound: {} -> {} (redirect port {})",

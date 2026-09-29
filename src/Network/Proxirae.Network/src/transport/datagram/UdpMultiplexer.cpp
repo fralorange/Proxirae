@@ -2,6 +2,8 @@
 
 #include "transport/datagram/UdpMultiplexer.h"
 #include "environment/sock.h"
+#include "environment/inet.h"
+#include "utils/SocketUtils.h"
 
 namespace Proxirae {
 	class UdpMultiplexer::UdpProcessor {
@@ -85,12 +87,22 @@ namespace Proxirae {
 					if (res.remoteAddr.ss_family == AF_INET) {
 						const auto* addrIn = reinterpret_cast<const sockaddr_in*>(&res.remoteAddr);
 
-						Endpoint clientEndpoint(addrIn->sin_addr.s_addr, addrIn->sin_port);
+						IpAddress ip = SocketUtils::FromSockAddr(*addrIn);
+						std::uint16_t port = ntohs(addrIn->sin_port);
+
+						Endpoint clientEndpoint(ip, port);
 
 						ProcessPacket(payload, clientEndpoint);
 					}
-					else {
-						// IPv6 ...
+					else if (res.remoteAddr.ss_family == AF_INET6) {
+						const auto* addrIn = reinterpret_cast<const sockaddr_in6*>(&res.remoteAddr);
+
+						IpAddress ip = SocketUtils::FromSockAddr(*addrIn);
+						std::uint16_t port = ntohs(addrIn->sin6_port);
+
+						Endpoint clientEndpoint(ip, port);
+
+						ProcessPacket(payload, clientEndpoint);
 					}
 				}
 				else if (!res.success) {
@@ -116,32 +128,46 @@ namespace Proxirae {
 			}
 
 			if (!session) {
-				session = std::make_shared<UdpSession>(shared, endpoint, adapter, proxyFactory, logger);
+				auto candidate = std::make_shared<UdpSession>(shared, endpoint, adapter, proxyFactory, logger);
 
 				ThreeTuple key{
-					.srcAddress = session->GetAddress(),
-					.srcPort = session->GetPort(),
+					.srcAddress = candidate->GetAddress(),
+					.srcPort = candidate->GetPort(),
 					.protocol = IPPROTO_UDP
 				};
 
 				auto optKey = connections.FindKey(key);
 				if (!optKey.has_value()) {
-					session->Terminate();
+					candidate->Terminate();
 					return;
 				}
 
 				auto optEntry = connections.GetConnection(*optKey);
 				if (!optEntry.has_value()) {
-					session->Terminate();
+					candidate->Terminate();
 					return;
 				}
 
-				if (!session->Establish(*optKey, *optEntry)) {
+				if (!candidate->Establish(*optKey, *optEntry)) {
 					return;
 				}
 
-				std::lock_guard<std::mutex> lock(sessionsMtx);
-				sessions.push_back(session);
+				{
+					std::lock_guard<std::mutex> lock(sessionsMtx);
+					auto it = std::find_if(sessions.begin(), sessions.end(),
+						[&](const auto& s) {
+							return s->GetAddress() == endpoint.GetAddress() && s->GetPort() == endpoint.GetPort();
+						});
+
+					if (it != sessions.end()) {
+						candidate->Terminate();
+						session = *it;
+					}
+					else {
+						sessions.push_back(candidate);
+						session = candidate;
+					}
+				}
 			}
 
 			session->OnData(payload);

@@ -19,19 +19,24 @@ namespace Proxirae {
 
 		auto& context = ctxOpt.value();
 
-		FiveTuple fullKey {
-			.srcAddress = WinDivertHelperNtohl(context.IsOutbound() ? context.GetSourceAddress() : context.GetDestinationAddress()),
-			.srcPort = WinDivertHelperNtohs(context.IsOutbound() ? context.GetSourcePort() : context.GetDestinationPort()),
-			.dstAddress = WinDivertHelperNtohl(context.IsOutbound() ? context.GetDestinationAddress() : context.GetSourceAddress()),
-			.dstPort = WinDivertHelperNtohs(context.IsOutbound() ? context.GetDestinationPort() : context.GetSourcePort()),
+		FiveTuple fullKey{
+			.srcAddress = context.IsOutbound() ? context.GetSourceAddress() : context.GetDestinationAddress(),
+			.srcPort = context.IsOutbound() ? context.GetSourcePort() : context.GetDestinationPort(),
+			.dstAddress = context.IsOutbound() ? context.GetDestinationAddress() : context.GetSourceAddress(),
+			.dstPort = context.IsOutbound() ? context.GetDestinationPort() : context.GetSourcePort(),
 			.protocol = context.GetProtocol()
 		};
 
 		FiveTuple bindKey = fullKey;
-		bindKey.dstAddress = 0;
+		bindKey.dstAddress = IpAddress{};
+		bindKey.dstAddress.isIPv6 = fullKey.dstAddress.isIPv6;
 		bindKey.dstPort = 0;
 
-		if (m_lookupTable->CanAssociate(bindKey)) {
+		FiveTuple anyBindKey = bindKey;
+		anyBindKey.srcAddress = IpAddress{};
+		anyBindKey.srcAddress.isIPv6 = fullKey.srcAddress.isIPv6;
+
+		if (m_lookupTable.has_value() && (m_lookupTable->CanAssociate(bindKey) || m_lookupTable->CanAssociate(anyBindKey))) {
 			callback(context); // Connection existed before we started capturing, so we don't have the socket event for it. Just pass it through.
 
 			return true;
@@ -65,84 +70,95 @@ namespace Proxirae {
 			return false;
 		}
 
+		bool isIPv6 = (metadata.IPv6 == 1);
+
+		IpAddress srcAddr{};
+		srcAddr.isIPv6 = isIPv6;
+		if (isIPv6) {
+			std::copy(std::begin(metadata.Socket.LocalAddr), std::end(metadata.Socket.LocalAddr), srcAddr.data.begin());
+		}
+		else {
+			srcAddr.data[0] = metadata.Socket.LocalAddr[0];
+		}
+
+		IpAddress dstAddr{};
+		dstAddr.isIPv6 = isIPv6;
+		if (isIPv6) {
+			std::copy(std::begin(metadata.Socket.RemoteAddr), std::end(metadata.Socket.RemoteAddr), dstAddr.data.begin());
+		}
+		else {
+			dstAddr.data[0] = metadata.Socket.RemoteAddr[0];
+		}
+
+		FiveTuple key{
+			.srcAddress = srcAddr,
+			.srcPort = metadata.Socket.LocalPort,
+			.dstAddress = dstAddr,
+			.dstPort = metadata.Socket.RemotePort,
+			.protocol = metadata.Socket.Protocol
+		};
+
 		if (metadata.Event == WINDIVERT_EVENT_SOCKET_BIND || metadata.Event == WINDIVERT_EVENT_SOCKET_CONNECT) {
-			if (metadata.IPv6 == 0) {
-				FiveTuple key{
-					.srcAddress = metadata.Socket.LocalAddr[0],
-					.srcPort = metadata.Socket.LocalPort,
-					.dstAddress = metadata.Socket.RemoteAddr[0],
-					.dstPort = metadata.Socket.RemotePort,
-					.protocol = metadata.Socket.Protocol
-				};
+			AssociationEntry entry{
+				.processId = metadata.Socket.ProcessId
+			};
 
-				AssociationEntry entry{
-					.processId = metadata.Socket.ProcessId
-				};
+			m_associations.AddAssociation(key, entry);
+			m_guard.AcquireProcess(metadata.Socket.ProcessId);
 
-				m_associations.AddAssociation(key, entry);
-				m_guard.AcquireProcess(metadata.Socket.ProcessId);
+			for (auto it = m_pending.begin(); it != m_pending.end(); ) {
+				const auto& [pktKey, pendingPacket] = *it;
 
-				for (auto it = m_pending.begin(); it != m_pending.end(); ) {
-					const auto& [pktKey, pendingPacket] = *it;
+				bool srcMatch = (pktKey.srcAddress == key.srcAddress) || key.srcAddress.IsAny();
+				bool match = srcMatch && (pktKey.srcPort == key.srcPort) && (pktKey.protocol == key.protocol);
 
-					bool match = (pktKey.srcAddress == key.srcAddress &&
-						pktKey.srcPort == key.srcPort &&
-						pktKey.protocol == key.protocol);
+				if (match && metadata.Event == WINDIVERT_EVENT_SOCKET_CONNECT) {
+					match = (pktKey.dstAddress == key.dstAddress && pktKey.dstPort == key.dstPort);
+				}
 
-					if (match && metadata.Event == WINDIVERT_EVENT_SOCKET_CONNECT) {
-						match = (pktKey.dstAddress == key.dstAddress && pktKey.dstPort == key.dstPort);
+				if (match) {
+					auto ctxOpt = WinPacketContext::TryCreate(
+						pendingPacket.data.data(),
+						pendingPacket.length,
+						pendingPacket.metadata
+					);
+
+					if (ctxOpt.has_value()) {
+						auto& ctx = ctxOpt.value();
+						ctx.SetProcessId(entry.processId);
+						callback(ctx);
 					}
 
-					if (match) {
-						auto ctxOpt = WinPacketContext::TryCreate(
-							pendingPacket.data.data(),
-							pendingPacket.length,
-							pendingPacket.metadata
-						);
-
-						if (ctxOpt.has_value()) {
-							auto& ctx = ctxOpt.value();
-							ctx.SetProcessId(entry.processId);
-							callback(ctx);
-						}
-
-						it = m_pending.erase(it);
-					}
-					else {
-						++it;
-					}
+					it = m_pending.erase(it);
+				}
+				else {
+					++it;
 				}
 			}
 
 			return true;
 		}
 		else if (metadata.Event == WINDIVERT_EVENT_SOCKET_CLOSE) {
-			if (metadata.IPv6 == 0) {
-				FiveTuple key{
-					.srcAddress = metadata.Socket.LocalAddr[0],
-					.srcPort = metadata.Socket.LocalPort,
-					.dstAddress = metadata.Socket.RemoteAddr[0],
-					.dstPort = metadata.Socket.RemotePort,
-					.protocol = metadata.Socket.Protocol
-				};
-
+			if (m_associations.AssociationExists(key)) {
 				m_associations.RemoveAssociation(key);
 				m_guard.ReleaseProcess(metadata.Socket.ProcessId);
+			}
 
-				if (m_lookupTable.has_value()) {
-					FiveTuple bindKey{
-						.srcAddress = key.srcAddress,
-						.srcPort = key.srcPort,
-						.dstAddress = 0,
-						.dstPort = 0,
-						.protocol = key.protocol
-					};
+			FiveTuple bindKey = key;
+			bindKey.dstAddress = IpAddress{};
+			bindKey.dstAddress.isIPv6 = key.dstAddress.isIPv6;
+			bindKey.dstPort = 0;
 
-					m_lookupTable->TryRemoveBind(bindKey);
+			if (m_associations.AssociationExists(bindKey)) {
+				m_associations.RemoveAssociation(bindKey);
+				m_guard.ReleaseProcess(metadata.Socket.ProcessId);
+			}
 
-					if (m_lookupTable->IsEmpty()) {
-						m_lookupTable.reset();
-					}
+			if (m_lookupTable.has_value()) {
+				m_lookupTable->TryRemoveBind(bindKey);
+
+				if (m_lookupTable->IsEmpty()) {
+					m_lookupTable.reset();
 				}
 			}
 

@@ -3,17 +3,19 @@
 #include <string>
 #include <cstdint>
 
+#include "primitives/ip/IpAddress.h"
+
 namespace Proxirae {
 	class Endpoint {
 	public:
-		Endpoint(std::uint32_t address, std::uint16_t port);
+		Endpoint(const IpAddress& address, std::uint16_t port);
 		
-		std::uint32_t GetAddress() const;
+		IpAddress GetAddress() const;
 		std::uint16_t GetPort() const;
 
 		std::string ToString() const;
 	private:
-		std::uint32_t m_address;
+		IpAddress m_address;
 		std::uint16_t m_port;
 	};
 }

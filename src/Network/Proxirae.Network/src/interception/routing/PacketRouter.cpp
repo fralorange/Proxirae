@@ -16,7 +16,7 @@ namespace Proxirae {
 
 		RouteContract route{
 			.timestamp = std::chrono::system_clock::now(),
-			.address = ctx.GetDestinationAddress(),
+			.address = ctx.GetDestinationAddress().ToString(),
 			.port = ctx.GetDestinationPort(),
 		};
 

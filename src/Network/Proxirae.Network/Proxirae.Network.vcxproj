@@ -200,6 +200,8 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\interception\correlation\win\WinUdpLookupTable.cpp" />
     <ClCompile Include="src\interception\routing\PacketFilter.cpp" />
     <ClCompile Include="src\interception\handling\UdpHandler.cpp" />
+    <ClCompile Include="src\primitives\ip\IpAddress.cpp" />
+    <ClCompile Include="src\primitives\ip\IpAddressHash.cpp" />
     <ClCompile Include="src\protection\win\WinProtector.cpp" />
     <ClCompile Include="src\proxification\Socks5ProxyBase.cpp" />
     <ClCompile Include="src\proxification\datagram\UdpSocks5Proxy.cpp" />
@@ -254,6 +256,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\interception\routing\RuleEvaluator.cpp" />
     <ClCompile Include="src\transport\datagram\UdpMultiplexer.cpp" />
     <ClCompile Include="src\transport\datagram\UdpSession.cpp" />
+    <ClCompile Include="src\utils\SocketUtils.cpp" />
     <ClCompile Include="src\utils\JsonUtils.cpp" />
     <ClCompile Include="src\utils\PathUtils.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
@@ -277,6 +280,8 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\controllers\test\TestController.h" />
     <ClInclude Include="include\communication\channels\handlers\preferences\PreferencesPipeHandler.h" />
     <ClInclude Include="include\communication\channels\handlers\test\TestPipeHandler.h" />
+    <ClInclude Include="include\primitives\ip\IpAddress.h" />
+    <ClInclude Include="include\primitives\ip\IpAddressHash.h" />
     <ClInclude Include="include\protection\IProtector.h" />
     <ClInclude Include="include\environment\handle_types.h" />
     <ClInclude Include="include\interception\correlation\DispatcherCorrelator.h" />
@@ -381,6 +386,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\transport\datagram\UdpBinder.h" />
     <ClInclude Include="include\transport\datagram\UdpMultiplexer.h" />
     <ClInclude Include="include\transport\datagram\UdpSession.h" />
+    <ClInclude Include="include\utils\SocketUtils.h" />
     <ClInclude Include="include\utils\JsonUtils.h" />
     <ClInclude Include="include\utils\PathUtils.h" />
     <ClInclude Include="include\utils\StringUtils.h" />

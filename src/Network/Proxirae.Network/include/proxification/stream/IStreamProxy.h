@@ -2,7 +2,6 @@
 
 #include <string_view>
 #include <span>
-#include <functional>
 
 #include "asyncio/io/IoCallback.h"
 

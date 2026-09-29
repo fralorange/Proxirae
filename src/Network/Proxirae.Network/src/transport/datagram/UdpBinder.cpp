@@ -16,7 +16,7 @@ namespace Proxirae {
 
 	std::uint16_t UdpBinder::Bind(std::uint16_t requestedPort)
 	{
-		NativeSocket sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		NativeSocket sock = socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
 
 		if (sock == InvalidNativeSocket) {
 			m_logger.LogError(std::format("[UdpBinder] Failed to create socket: error {}", GetSocketError()));
@@ -24,11 +24,18 @@ namespace Proxirae {
 			return 0;
 		}
 
-		struct sockaddr_in sockAddr;
+		int v6only = 0;
+		if (setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<const char*>(&v6only), sizeof(v6only)) == SocketError) {
+			m_logger.LogError(std::format("[UdpBinder] Failed to set IPV6_V6ONLY=0: error {}", GetSocketError()));
+			CloseSocket(sock);
 
-		std::memset(&sockAddr, 0, sizeof(sockAddr));
-		sockAddr.sin_port = 0;
-		sockAddr.sin_family = AF_INET;
+			return 0;
+		}
+
+		struct sockaddr_in6 sockAddr{};
+		sockAddr.sin6_family = AF_INET6;
+		sockAddr.sin6_port = htons(requestedPort);
+		sockAddr.sin6_addr = in6addr_any;
 
 		if (bind(sock, reinterpret_cast<struct sockaddr*>(&sockAddr), sizeof(sockAddr)) == SocketError) {
 			m_logger.LogError(std::format("[UdpBinder] Bind failed: error {}", GetSocketError()));
@@ -37,7 +44,7 @@ namespace Proxirae {
 			return 0;
 		}
 
-		struct sockaddr_in boundAddr {};
+		struct sockaddr_in6 boundAddr {};
 		NativeSocketLen len = sizeof(boundAddr);
 		if (getsockname(sock, reinterpret_cast<struct sockaddr*>(&boundAddr), &len) == SocketError) {
 			m_logger.LogError(std::format("[UdpBinder] getsockname failed: error {}", GetSocketError()));
@@ -46,9 +53,9 @@ namespace Proxirae {
 		}
 
 		m_socket = sock;
-
 		m_driver.Attach(m_socket);
-		return ntohs(boundAddr.sin_port);
+
+		return ntohs(boundAddr.sin6_port);
 	}
 
 	NativeSocket UdpBinder::ReleaseSocket()

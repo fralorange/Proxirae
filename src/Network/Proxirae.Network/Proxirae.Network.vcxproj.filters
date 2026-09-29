@@ -234,6 +234,15 @@
     <ClCompile Include="src\protection\win\WinProtector.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\primitives\ip\IpAddress.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\primitives\ip\IpAddressHash.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\SocketUtils.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\interception\diversion\win\WinPacketContext.h">
@@ -606,6 +615,15 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\protection\win\WinProtector.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\primitives\ip\IpAddress.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\primitives\ip\IpAddressHash.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\SocketUtils.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

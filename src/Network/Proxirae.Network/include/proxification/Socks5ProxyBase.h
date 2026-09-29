@@ -29,5 +29,8 @@ namespace Proxirae {
 
         static bool SendExact(NativeSocket sock, std::span<const char> buffer);
         static bool RecvExact(NativeSocket sock, std::span<char> buffer);
+
+    private:
+        NativeSocket ResolveDomain();
     };
 }

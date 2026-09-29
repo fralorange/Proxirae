@@ -1,6 +1,7 @@
 #include "transport/datagram/UdpSession.h"
 #include "environment/sock.h"
 #include "utils/UuidUtils.h"
+#include "utils/SocketUtils.h"
 
 namespace Proxirae {
 	class UdpSession::UdpBridge {
@@ -18,11 +19,9 @@ namespace Proxirae {
 		std::atomic<bool> isStopping{ false };
 
 		std::string targetAddress;
-		std::uint16_t targetPortHost{ 0 };
+		std::uint16_t targetPort{ 0 };
 
 		std::string proxyId;
-		std::uint32_t dstAddress{ 0 };
-		std::uint16_t dstPort{ 0 };
 		std::int64_t processId{ -1 };
 
 		std::atomic<std::uint64_t> bytesSent{ 0 };
@@ -46,18 +45,14 @@ namespace Proxirae {
 				return false;
 			}
 
-			char targetHost[INET_ADDRSTRLEN];
-			inet_ntop(AF_INET, &key.dstAddress, targetHost, sizeof(targetHost));
-			targetAddress = targetHost;
-			targetPortHost = ntohs(key.dstPort);
+			targetAddress = key.dstAddress.ToString();
+			targetPort = key.dstPort;
 
 			if (!proxy->Connect()) {
 				return false;
 			}
 
 			proxyId = *entry.proxyId;
-			dstAddress = key.dstAddress;
-			dstPort = key.dstPort;
 			processId = entry.processId.has_value() ? *entry.processId : -1;
 
 			ForwardToClient(self);
@@ -71,7 +66,9 @@ namespace Proxirae {
 				return;
 			}
 
-			proxy->Disconnect();
+			if (proxy) {
+				proxy->Disconnect();
+			}
 		}
 
 		void ForwardToProxy(std::shared_ptr<UdpSession> self, std::span<const std::byte> payload) {
@@ -81,9 +78,10 @@ namespace Proxirae {
 
 			lastSeen = std::chrono::steady_clock::now();
 
-			proxy->Send(payload, targetAddress, targetPortHost, [this, self](const IoResult& res) {
+			proxy->Send(payload, targetAddress, targetPort, [this, self](const IoResult& res) {
 				if (!res.success || res.bytesTransferred == 0) {
-					if (!isStopping) logger.LogDebug(std::format("[UdpSession] Client connection closed ({}:{})", endpoint.GetAddress(), endpoint.GetPort()));
+					if (!isStopping) 
+						logger.LogDebug(std::format("[UdpSession] Client connection closed ({}:{})", endpoint.GetAddress().ToString(), endpoint.GetPort()));
 					self->Terminate();
 
 					return;
@@ -108,17 +106,15 @@ namespace Proxirae {
 
 				bytesReceived.fetch_add(res.bytesTransferred, std::memory_order_relaxed);
 
-				struct sockaddr_in clientAddr {};
-				clientAddr.sin_family = AF_INET;
-				clientAddr.sin_addr.s_addr = endpoint.GetAddress(); 
-				clientAddr.sin_port = endpoint.GetPort();           
+				sockaddr_storage clientAddrStorage{};
+				int addrLen = SocketUtils::ToSockAddr(endpoint, clientAddrStorage);
 
 				auto payload = std::span<const std::byte>(proxyBuffer.data(), res.bytesTransferred);
 
 				adapter.AsyncSendTo(
 					shared, 
-					reinterpret_cast<const sockaddr*>(&clientAddr), 
-					sizeof(clientAddr), 
+					reinterpret_cast<const sockaddr*>(&clientAddrStorage),
+					addrLen,
 					payload, 
 					[this, self, bytes = res.bytesTransferred](const auto& wRes) {
 					
@@ -184,8 +180,8 @@ namespace Proxirae {
 
 		return FlowContract{
 			.id = m_id,
-			.targetAddress = m_bridge->dstAddress,
-			.targetPort = m_bridge->dstPort,
+			.targetAddress = m_bridge->targetAddress,
+			.targetPort = m_bridge->targetPort,
 			.processId = m_bridge->processId,
 			.secondsPassed = static_cast<std::uint64_t>(seconds),
 			.proxyId = m_bridge->proxyId,
@@ -200,7 +196,7 @@ namespace Proxirae {
 		return m_id;
 	}
 
-	std::uint32_t UdpSession::GetAddress() const
+	IpAddress UdpSession::GetAddress() const
 	{
 		return m_bridge->endpoint.GetAddress();
 	}

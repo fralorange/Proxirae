@@ -3,11 +3,12 @@
 #include "interception/diversion/win/WinPacketContext.h"
 
 namespace Proxirae {
-	WinPacketContext::WinPacketContext(std::uint8_t* rawData, std::uint32_t rawDataLen, PacketMetadata metadata, PWINDIVERT_IPHDR ipHdr, UINT8 protocol, PWINDIVERT_TCPHDR tcpHdr, PWINDIVERT_UDPHDR udpHdr, std::uint32_t payloadLen)
+	WinPacketContext::WinPacketContext(std::uint8_t* rawData, std::uint32_t rawDataLen, PacketMetadata metadata, PWINDIVERT_IPHDR ipHdr, PWINDIVERT_IPV6HDR ipv6Hdr, UINT8 protocol, PWINDIVERT_TCPHDR tcpHdr, PWINDIVERT_UDPHDR udpHdr, std::uint32_t payloadLen)
 		: m_rawData(rawData), 
 		  m_rawDataLen(rawDataLen), 
 		  m_metadata(metadata), 
-		  m_ipHdr(ipHdr), 
+		  m_ipHdr(ipHdr),
+		  m_ipv6Hdr(ipv6Hdr),
 		  m_protocol(protocol), 
 		  m_tcpHdr(tcpHdr), 
 		  m_udpHdr(udpHdr), 
@@ -17,6 +18,7 @@ namespace Proxirae {
 	std::optional<WinPacketContext> WinPacketContext::TryCreate(const std::uint8_t* buffer, std::uint32_t len, PacketMetadata metadata)
 	{
 		PWINDIVERT_IPHDR ipHdr;
+		PWINDIVERT_IPV6HDR ipv6Hdr;
 		std::uint8_t protocol;
 		PWINDIVERT_TCPHDR tcpHdr;
 		PWINDIVERT_UDPHDR udpHdr;
@@ -26,7 +28,7 @@ namespace Proxirae {
 			buffer,
 			len,
 			&ipHdr,
-			nullptr,
+			&ipv6Hdr,
 			&protocol,
 			nullptr, nullptr,
 			&tcpHdr,
@@ -39,11 +41,16 @@ namespace Proxirae {
 			return std::nullopt;
 		}
 
-		if (!ipHdr || (!tcpHdr && !udpHdr)) {
+		if ((!ipHdr && !ipv6Hdr) || (!tcpHdr && !udpHdr)) {
 			return std::nullopt;
 		}
 
-		return WinPacketContext(const_cast<std::uint8_t*>(buffer), len, metadata, ipHdr, protocol, tcpHdr, udpHdr, payloadLen);
+		return WinPacketContext(const_cast<std::uint8_t*>(buffer), len, metadata, ipHdr, ipv6Hdr, protocol, tcpHdr, udpHdr, payloadLen);
+	}
+
+	bool WinPacketContext::IsIPv6() const
+	{
+		return m_ipv6Hdr != nullptr;
 	}
 
 	bool WinPacketContext::IsTcp() const
@@ -94,23 +101,45 @@ namespace Proxirae {
 		return m_payloadLen > 0;
 	}
 
-	std::uint32_t WinPacketContext::GetSourceAddress() const
+	IpAddress WinPacketContext::GetSourceAddress() const
 	{
-		return m_ipHdr->SrcAddr;
+		IpAddress addr{};
+
+		if (m_ipv6Hdr) {
+			addr.isIPv6 = true;
+			WinDivertHelperNtohIpv6Address(m_ipv6Hdr->SrcAddr, addr.data.data());
+		}
+		else if (m_ipHdr) {
+			addr.isIPv6 = false;
+			addr.data[0] = WinDivertHelperNtohl(m_ipHdr->SrcAddr);
+		}
+
+		return addr;
 	}
 
-	std::uint32_t WinPacketContext::GetDestinationAddress() const
+	IpAddress WinPacketContext::GetDestinationAddress() const
 	{
-		return m_ipHdr->DstAddr;
+		IpAddress addr{};
+
+		if (m_ipv6Hdr) {
+			addr.isIPv6 = true;
+			WinDivertHelperNtohIpv6Address(m_ipv6Hdr->DstAddr, addr.data.data());
+		}
+		else if (m_ipHdr) {
+			addr.isIPv6 = false;
+			addr.data[0] = WinDivertHelperNtohl(m_ipHdr->DstAddr);
+		}
+
+		return addr;
 	}
 
 	std::uint16_t WinPacketContext::GetSourcePort() const
 	{
 		if (m_protocol == IPPROTO_TCP) {
-			return m_tcpHdr->SrcPort;
+			return WinDivertHelperNtohs(m_tcpHdr->SrcPort);
 		}
 		else if (m_protocol == IPPROTO_UDP) {
-			return m_udpHdr->SrcPort;
+			return WinDivertHelperNtohs(m_udpHdr->SrcPort);
 		}
 
 		return 0;
@@ -119,10 +148,10 @@ namespace Proxirae {
 	std::uint16_t WinPacketContext::GetDestinationPort() const
 	{
 		if (m_protocol == IPPROTO_TCP) {
-			return m_tcpHdr->DstPort;
+			return WinDivertHelperNtohs(m_tcpHdr->DstPort);
 		}
 		else if (m_protocol == IPPROTO_UDP) {
-			return m_udpHdr->DstPort;
+			return WinDivertHelperNtohs(m_udpHdr->DstPort);
 		}
 
 		return 0;
@@ -135,12 +164,12 @@ namespace Proxirae {
 
 	Endpoint WinPacketContext::GetSourceEndpoint() const
 	{
-		return Endpoint(m_ipHdr->SrcAddr, m_tcpHdr ? m_tcpHdr->SrcPort : m_udpHdr->SrcPort);
+		return Endpoint(GetSourceAddress(), GetSourcePort());
 	}
 
 	Endpoint WinPacketContext::GetDestinationEndpoint() const
 	{
-		return Endpoint(m_ipHdr->DstAddr, m_tcpHdr ? m_tcpHdr->DstPort : m_udpHdr->DstPort);
+		return Endpoint(GetDestinationAddress(), GetDestinationPort());
 	}
 
 	std::optional<std::uint32_t> WinPacketContext::GetProcessId() const
@@ -163,29 +192,39 @@ namespace Proxirae {
 		return m_metadata;
 	}
 
-	void WinPacketContext::SetSource(std::uint32_t addr, std::uint16_t port)
+	void WinPacketContext::SetSource(const IpAddress& addr, std::uint16_t port)
 	{
-		m_ipHdr->SrcAddr = addr;
+		if (m_ipv6Hdr && addr.isIPv6) {
+			WinDivertHelperHtonIpv6Address(addr.data.data(), m_ipv6Hdr->SrcAddr);
+		}
+		else if (m_ipHdr && !addr.isIPv6) {
+			m_ipHdr->SrcAddr = WinDivertHelperHtonl(addr.data[0]);
+		}
 
 		if (m_protocol == IPPROTO_TCP) {
-			m_tcpHdr->SrcPort = port;
+			m_tcpHdr->SrcPort = WinDivertHelperHtons(port);
 		}
 		else if (m_protocol == IPPROTO_UDP) {
-			m_udpHdr->SrcPort = port;
+			m_udpHdr->SrcPort = WinDivertHelperHtons(port);
 		}
 
 		m_isModified = true;
 	}
 
-	void WinPacketContext::SetDestination(std::uint32_t addr, std::uint16_t port)
+	void WinPacketContext::SetDestination(const IpAddress& addr, std::uint16_t port)
 	{
-		m_ipHdr->DstAddr = addr;
+		if (m_ipv6Hdr && addr.isIPv6) {
+			WinDivertHelperHtonIpv6Address(addr.data.data(), m_ipv6Hdr->DstAddr);
+		}
+		else if (m_ipHdr && !addr.isIPv6) {
+			m_ipHdr->DstAddr = WinDivertHelperHtonl(addr.data[0]);
+		}
 
 		if (m_protocol == IPPROTO_TCP) {
-			m_tcpHdr->DstPort = port;
+			m_tcpHdr->DstPort = WinDivertHelperHtons(port);
 		}
 		else if (m_protocol == IPPROTO_UDP) {
-			m_udpHdr->DstPort = port;
+			m_udpHdr->DstPort = WinDivertHelperHtons(port);
 		}
 
 		m_isModified = true;

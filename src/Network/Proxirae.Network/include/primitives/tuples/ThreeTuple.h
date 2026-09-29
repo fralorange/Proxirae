@@ -2,9 +2,11 @@
 
 #include <cstdint>
 
+#include "primitives/ip/IpAddress.h"
+
 namespace Proxirae {
 	struct ThreeTuple {
-		std::uint32_t srcAddress = 0;
+		IpAddress srcAddress{};
 		std::uint16_t srcPort = 0;
 		std::uint8_t protocol = 0;
 
