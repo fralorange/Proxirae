@@ -243,6 +243,9 @@
     <ClCompile Include="src\utils\SocketUtils.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\persistence\virtuals\VirtualTable.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\interception\diversion\win\WinPacketContext.h">
@@ -624,6 +627,12 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\utils\SocketUtils.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\persistence\virtuals\VirtualTable.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\persistence\virtuals\VirtualEntry.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

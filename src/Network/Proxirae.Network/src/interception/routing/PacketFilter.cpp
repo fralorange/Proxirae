@@ -7,9 +7,21 @@ namespace Proxirae {
 	{
 		std::ostringstream filter;
 
+		const std::string tcpExclusions =
+			" and tcp.SrcPort != 139 and tcp.DstPort != 139"
+			" and tcp.SrcPort != 445 and tcp.DstPort != 445";
+
+		const std::string udpExclusions =
+			" and udp.SrcPort != 67 and udp.DstPort != 67"
+			" and udp.SrcPort != 68 and udp.DstPort != 68"
+			" and udp.SrcPort != 137 and udp.DstPort != 137"
+			" and udp.SrcPort != 138 and udp.DstPort != 138"
+			" and udp.SrcPort != 5353 and udp.DstPort != 5353"
+			" and udp.SrcPort != 5355 and udp.DstPort != 5355";
+
 		filter << "(";
 
-		filter << "(ip and tcp";
+		filter << "(ip and tcp" << tcpExclusions;
 		for (const auto& [_, p] : config->proxies) {
 			if (p.address.find(':') == std::string::npos) {
 				filter << " and (ip.SrcAddr != " << p.address << " or tcp.SrcPort != " << p.port << ")"
@@ -20,7 +32,7 @@ namespace Proxirae {
 
 		filter << " or ";
 
-		filter << "(ipv6 and tcp";
+		filter << "(ipv6 and tcp" << tcpExclusions;
 		for (const auto& [_, p] : config->proxies) {
 			if (p.address.find(':') != std::string::npos) {
 				filter << " and (ipv6.SrcAddr != " << p.address << " or tcp.SrcPort != " << p.port << ")"
@@ -31,7 +43,7 @@ namespace Proxirae {
 
 		filter << " or ";
 
-		filter << "(ip and udp";
+		filter << "(ip and udp" << udpExclusions;
 		for (const auto& [_, p] : config->proxies) {
 			if (p.address.find(':') == std::string::npos) {
 				filter << " and (ip.SrcAddr != " << p.address << " or udp.SrcPort != " << p.port << ")"
@@ -42,7 +54,7 @@ namespace Proxirae {
 
 		filter << " or ";
 
-		filter << "(ipv6 and udp";
+		filter << "(ipv6 and udp" << udpExclusions;
 		for (const auto& [_, p] : config->proxies) {
 			if (p.address.find(':') != std::string::npos) {
 				filter << " and (ipv6.SrcAddr != " << p.address << " or udp.SrcPort != " << p.port << ")"

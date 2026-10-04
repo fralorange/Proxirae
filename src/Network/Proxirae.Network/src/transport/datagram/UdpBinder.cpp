@@ -32,6 +32,21 @@ namespace Proxirae {
 			return 0;
 		}
 
+		int dontFragment = 0;
+		if (setsockopt(sock, IPPROTO_IP, IP_DONTFRAGMENT, reinterpret_cast<const char*>(&dontFragment), sizeof(dontFragment)) == SocketError) {
+			m_logger.LogError(std::format("[UdpBinder] Failed to set IP_DONTFRAGMENT=0: error {}", GetSocketError()));
+			CloseSocket(sock);
+
+			return 0;
+		}
+
+		if (setsockopt(sock, IPPROTO_IPV6, IPV6_DONTFRAG, reinterpret_cast<const char*>(&dontFragment), sizeof(dontFragment)) == SocketError) {
+			m_logger.LogError(std::format("[UdpBinder] Failed to set IPV6_DONTFRAG=0: error {}", GetSocketError()));
+			CloseSocket(sock);
+
+			return 0;
+		}
+
 		struct sockaddr_in6 sockAddr{};
 		sockAddr.sin6_family = AF_INET6;
 		sockAddr.sin6_port = htons(requestedPort);

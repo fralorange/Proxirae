@@ -155,15 +155,13 @@ namespace Proxirae {
             return;
         }
 
-        auto recvBuffer = std::make_shared<std::vector<std::byte>>(65536);
-
-        m_adapter.AsyncRecvFrom(m_udpRelay, *recvBuffer, [this, buffer, recvBuffer, callback = std::move(callback)](const IoDatagramResult& res) {
+        m_adapter.AsyncRecvFrom(m_udpRelay, m_internalRecvBuffer, [this, buffer, callback = std::move(callback)](const IoDatagramResult& res) {
             if (!res.success || res.bytesTransferred < 4) {
                 callback(res, "", 0);
                 return;
             }
 
-            const auto* data = recvBuffer->data();
+            const auto* data = m_internalRecvBuffer.data();
 
             if (data[2] != std::byte{ 0x00 }) {
                 callback(IoResult{ false, 0, 0 }, "", 0);
@@ -238,11 +236,23 @@ namespace Proxirae {
 
     bool UdpSocks5Proxy::RequestUdpAssociate(NativeSocket sock)
     {
-        std::vector<char> assReq{
-            0x05, 0x03, 0x00,
-            0x01, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00
-        };
+        struct sockaddr_storage localAddr {};
+        NativeSocketLen addrLen = sizeof(localAddr);
+
+        if (getsockname(sock, reinterpret_cast<struct sockaddr*>(&localAddr), &addrLen) == SocketError) {
+            m_logger.LogError(std::format("[SOCKS5] Failed to get sock name: error {}", GetSocketError()));
+            return false;
+        }
+
+        std::vector<char> assReq;
+
+        if (localAddr.ss_family == AF_INET6) {
+            assReq = { 0x05, 0x03, 0x00, 0x04 };
+            assReq.insert(assReq.end(), 18, 0x00);
+        }
+        else {
+            assReq = { 0x05, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+        }
 
         if (!SendExact(sock, assReq)) return false;
 

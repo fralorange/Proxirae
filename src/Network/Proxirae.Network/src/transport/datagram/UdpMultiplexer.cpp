@@ -11,6 +11,7 @@ namespace Proxirae {
 		NativeSocket shared;
 		IIoDatagramAdapter& adapter;
 		ConnectionTable& connections;
+		VirtualTable& virtuals;
 		IFlowMonitor& monitor;
 		IProxyFactory& proxyFactory;
 		ILogger& logger;
@@ -20,10 +21,12 @@ namespace Proxirae {
 
 		std::mutex sessionsMtx;
 		std::vector<std::shared_ptr<UdpSession>> sessions;
+		std::vector<Endpoint> pendingSessions;
+
 		std::vector<std::byte> recvBuffer;
 
-		UdpProcessor(NativeSocket socket, IIoDatagramAdapter& adapter, ConnectionTable& connections, IFlowMonitor& monitor, IProxyFactory& factory, ILogger& logger)
-			: shared(socket), adapter(adapter), connections(connections), monitor(monitor), proxyFactory(factory), logger(logger)
+		UdpProcessor(NativeSocket socket, IIoDatagramAdapter& adapter, ConnectionTable& connections, VirtualTable& virtuals, IFlowMonitor& monitor, IProxyFactory& factory, ILogger& logger)
+			: shared(socket), adapter(adapter), connections(connections), virtuals(virtuals), monitor(monitor), proxyFactory(factory), logger(logger)
 		{
 			recvBuffer.resize(65536);
 		}
@@ -117,60 +120,85 @@ namespace Proxirae {
 
 		void ProcessPacket(std::span<const std::byte> payload, const Endpoint& endpoint) {
 			std::shared_ptr<UdpSession> session;
+			bool isEstablishing = false;
+
 			{
 				std::lock_guard<std::mutex> lock(sessionsMtx);
+
 				auto it = std::find_if(sessions.begin(), sessions.end(),
 					[&](const auto& s) { return s->GetAddress() == endpoint.GetAddress() && s->GetPort() == endpoint.GetPort(); });
 
 				if (it != sessions.end()) {
 					session = *it;
 				}
-			}
+				else {
+					auto pendingIt = std::find_if(pendingSessions.begin(), pendingSessions.end(),
+						[&](const auto& e) { return e.GetAddress() == endpoint.GetAddress() && e.GetPort() == endpoint.GetPort(); });
 
-			if (!session) {
-				auto candidate = std::make_shared<UdpSession>(shared, endpoint, adapter, proxyFactory, logger);
-
-				ThreeTuple key{
-					.srcAddress = candidate->GetAddress(),
-					.srcPort = candidate->GetPort(),
-					.protocol = IPPROTO_UDP
-				};
-
-				auto optKey = connections.FindKey(key);
-				if (!optKey.has_value()) {
-					candidate->Terminate();
-					return;
-				}
-
-				auto optEntry = connections.GetConnection(*optKey);
-				if (!optEntry.has_value()) {
-					candidate->Terminate();
-					return;
-				}
-
-				if (!candidate->Establish(*optKey, *optEntry)) {
-					return;
-				}
-
-				{
-					std::lock_guard<std::mutex> lock(sessionsMtx);
-					auto it = std::find_if(sessions.begin(), sessions.end(),
-						[&](const auto& s) {
-							return s->GetAddress() == endpoint.GetAddress() && s->GetPort() == endpoint.GetPort();
-						});
-
-					if (it != sessions.end()) {
-						candidate->Terminate();
-						session = *it;
+					if (pendingIt != pendingSessions.end()) {
+						isEstablishing = true;
 					}
 					else {
-						sessions.push_back(candidate);
-						session = candidate;
+						pendingSessions.push_back(endpoint);
 					}
 				}
 			}
 
-			session->OnData(payload);
+			if (session) {
+				session->OnData(payload);
+				return;
+			}
+
+			if (isEstablishing) {
+				return;
+			}
+
+			auto candidate = std::make_shared<UdpSession>(shared, endpoint, adapter, proxyFactory, logger);
+
+			ThreeTuple key{
+				.srcAddress = candidate->GetAddress(),
+				.srcPort = candidate->GetPort(),
+				.protocol = IPPROTO_UDP
+			};
+
+			auto optVirtual = virtuals.ResolveVirtual(key);
+			if (!optVirtual.has_value()) {
+				candidate->Terminate();
+				return;
+			}
+
+			const auto& realTuple = optVirtual->realTuple;
+			bool success = false;
+
+			if (connections.ConnectionExists(realTuple)) {
+				auto optEntry = connections.GetConnection(realTuple);
+				if (optEntry.has_value()) {
+					success = candidate->Establish(realTuple, *optEntry);
+				}
+			}
+
+			{
+				std::lock_guard<std::mutex> lock(sessionsMtx);
+
+				auto pendingIt = std::find_if(pendingSessions.begin(), pendingSessions.end(),
+					[&](const auto& e) { return e.GetAddress() == endpoint.GetAddress() && e.GetPort() == endpoint.GetPort(); });
+
+				if (pendingIt != pendingSessions.end()) {
+					pendingSessions.erase(pendingIt);
+				}
+
+				if (success) {
+					sessions.push_back(candidate);
+					session = candidate;
+				}
+			}
+
+			if (session) {
+				session->OnData(payload);
+			}
+			else {
+				candidate->Terminate();
+			}
 		}
 
 		void CollectLoop() {
@@ -194,16 +222,19 @@ namespace Proxirae {
 				for (auto& session : expired) {
 					monitor.ReportFlowClosed(session->GetFlow());
 
-					ThreeTuple key{
+					ThreeTuple vKey{
 							.srcAddress = session->GetAddress(),
 							.srcPort = session->GetPort(),
 							.protocol = IPPROTO_UDP
 					};
 
-					auto optKey = connections.FindKey(key);
-					if (optKey.has_value()) {
-						connections.RemoveConnection(*optKey);
+					auto optVirtual = virtuals.ResolveVirtual(vKey);
+					if (optVirtual.has_value()) {
+						connections.RemoveConnection(optVirtual->realTuple);
 					}
+
+					connections.RemoveAlias(vKey);
+					virtuals.RemoveVirtual(vKey);
 
 					session->Terminate();
 				}
@@ -247,8 +278,8 @@ namespace Proxirae {
 	};
 
 
-	UdpMultiplexer::UdpMultiplexer(UdpBinder& binder, IIoDatagramAdapter& adapter, ConnectionTable& connections, IFlowMonitor& monitor, IProxyFactory& factory, ILogger& logger)
-		: m_processor(std::make_unique<UdpProcessor>(binder.ReleaseSocket(), adapter, connections, monitor, factory, logger)) {
+	UdpMultiplexer::UdpMultiplexer(UdpBinder& binder, IIoDatagramAdapter& adapter, ConnectionTable& connections, VirtualTable& virtuals, IFlowMonitor& monitor, IProxyFactory& factory, ILogger& logger)
+		: m_processor(std::make_unique<UdpProcessor>(binder.ReleaseSocket(), adapter, connections, virtuals, monitor, factory, logger)) {
 	}
 
 	UdpMultiplexer::~UdpMultiplexer() = default;

@@ -39,13 +39,17 @@ namespace Proxirae {
 		ctx->wsaBuf.buf = reinterpret_cast<CHAR*>(ctx->buffer.data());
 		ctx->wsaBuf.len = static_cast<ULONG>(ctx->buffer.size());
 
+		if (destAddr && destLen > 0 && destLen <= static_cast<NativeSocketLen>(sizeof(ctx->destAddr))) {
+			std::memcpy(&ctx->destAddr, destAddr, destLen);
+		}
+
 		int result = WSASendTo(
 			static_cast<SOCKET>(handle),
 			&ctx->wsaBuf,
 			1,
 			nullptr,
 			0,
-			destAddr, 
+			reinterpret_cast<const sockaddr*>(&ctx->destAddr),
 			destLen, 
 			&ctx->overlapped,
 			nullptr

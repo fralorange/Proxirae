@@ -7,5 +7,5 @@
 namespace Proxirae::SocketUtils {
 	IpAddress FromSockAddr(const sockaddr_in6& addr);
 	IpAddress FromSockAddr(const sockaddr_in& addr);
-	int ToSockAddr(const Endpoint& endpoint, sockaddr_storage& outStorage);
+	int ToSockAddr(const Endpoint& endpoint, sockaddr_storage& outStorage, int targetFamily = AF_INET6);
 }

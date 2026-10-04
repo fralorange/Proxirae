@@ -87,15 +87,21 @@ namespace Proxirae {
 
                 if (rowPort == bindKey.srcPort) {
                     bool isAnyAddr = true;
+
                     for (int i = 0; i < 16; ++i) {
                         if (row.dwLocalAddr.u.Byte[i] != 0) {
                             isAnyAddr = false;
                             break;
                         }
+                    }
 
-                        if (isAnyAddr || std::memcmp(&row.dwLocalAddr, bindKey.srcAddress.data.data(), 16) == 0) {
-                            return true;
-                        }
+                    if (isAnyAddr ||
+                        std::memcmp(
+                            &row.dwLocalAddr,
+                            bindKey.srcAddress.data.data(),
+                            16
+                        ) == 0) {
+                        return true;
                     }
                 }
             }

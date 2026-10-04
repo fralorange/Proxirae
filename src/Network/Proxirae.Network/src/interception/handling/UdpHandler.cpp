@@ -3,8 +3,8 @@
 #include "interception/handling/UdpHandler.h"
 
 namespace Proxirae {
-	UdpHandler::UdpHandler(std::uint16_t redirectPort, ConnectionTable& connections, ILogger& logger)
-		: m_redirectPort(redirectPort), m_connections(connections), m_logger(logger) { }
+	UdpHandler::UdpHandler(std::uint16_t redirectPort, ConnectionTable& connections, VirtualTable& virtuals, ILogger& logger)
+		: m_redirectPort(redirectPort), m_connections(connections), m_virtuals(virtuals), m_logger(logger) { }
 
 	bool UdpHandler::Handle(HandleContext& ctx)
 	{
@@ -16,16 +16,19 @@ namespace Proxirae {
 
 		if (packetCtx.IsOutbound()) {
 			if (packetCtx.GetSourcePort() == m_redirectPort) {
-				ThreeTuple key{
+				ThreeTuple vKey{
 					.srcAddress = packetCtx.GetDestinationAddress(),
 					.srcPort = packetCtx.GetDestinationPort(),
 					.protocol = packetCtx.GetProtocol(),
 				};
 
-				auto it = m_connections.FindKey(key);
+				auto optVirtual = m_virtuals.ResolveVirtual(vKey);
 
-				if (it.has_value()) {
-					packetCtx.SetSource(it->dstAddress, it->dstPort);
+				if (optVirtual.has_value()) {
+					const auto& real = optVirtual->realTuple;
+					
+					packetCtx.SetSource(real.dstAddress, real.dstPort);
+					packetCtx.SetDestination(real.srcAddress, real.srcPort);
 
 					m_logger.LogDebug(std::format(
 						"[UdpHandler] Restored UDP source: {} -> {}",
@@ -58,12 +61,21 @@ namespace Proxirae {
 					));
 				}
 
+				auto vPort = m_virtuals.AddVirtual({ key });
+				if (vPort == 0) {
+					m_logger.LogError("[UdpHandler] VirtualTable port pool exhausted!");
+					return false;
+				}
+
+				m_connections.AddAlias({ key.srcAddress, vPort, key.protocol }, key);
+
+				packetCtx.SetSource(packetCtx.GetSourceAddress(), vPort);
 				packetCtx.SetDestination(packetCtx.GetSourceAddress(), m_redirectPort);
 
 				m_logger.LogDebug(std::format(
-					"[UdpHandler] Redirected UDP outbound: {} -> {} (redirect port {})",
-					packetCtx.GetSourceEndpoint().ToString(),
-					packetCtx.GetDestinationEndpoint().ToString(),
+					"[UdpHandler] Redirected UDP outbound: {} (vPort {}) -> redirect port {}",
+					key.srcAddress.ToString(),
+					vPort,
 					m_redirectPort
 				));
 			}

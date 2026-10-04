@@ -200,6 +200,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\interception\correlation\win\WinUdpLookupTable.cpp" />
     <ClCompile Include="src\interception\routing\PacketFilter.cpp" />
     <ClCompile Include="src\interception\handling\UdpHandler.cpp" />
+    <ClCompile Include="src\persistence\virtuals\VirtualTable.cpp" />
     <ClCompile Include="src\primitives\ip\IpAddress.cpp" />
     <ClCompile Include="src\primitives\ip\IpAddressHash.cpp" />
     <ClCompile Include="src\protection\win\WinProtector.cpp" />
@@ -280,6 +281,8 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\controllers\test\TestController.h" />
     <ClInclude Include="include\communication\channels\handlers\preferences\PreferencesPipeHandler.h" />
     <ClInclude Include="include\communication\channels\handlers\test\TestPipeHandler.h" />
+    <ClInclude Include="include\persistence\virtuals\VirtualEntry.h" />
+    <ClInclude Include="include\persistence\virtuals\VirtualTable.h" />
     <ClInclude Include="include\primitives\ip\IpAddress.h" />
     <ClInclude Include="include\primitives\ip\IpAddressHash.h" />
     <ClInclude Include="include\protection\IProtector.h" />

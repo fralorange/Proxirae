@@ -3,6 +3,7 @@
 
 #include "persistence/connections/ConnectionTable.h"
 #include "persistence/associations/AssociationTable.h"
+#include "persistence/virtuals/VirtualTable.h"
 #include "diagnostics/journal/JournalLogger.h"
 #include "runtime/Engine.h"
 #include "runtime/Daemon.h"
@@ -102,6 +103,7 @@ int main() {
 	WinPacketDiverter diverter(correlator, configStore, logger);
 #endif 
 	ConnectionTable connections;
+	VirtualTable virtuals;
 
 	RuleEvaluator evaluator;
 
@@ -134,13 +136,13 @@ int main() {
 	}
 
 	TcpHandler tcpHandler(tcpPort, connections, logger);
-	UdpHandler udpHandler(udpPort, connections, logger);
+	UdpHandler udpHandler(udpPort, connections, virtuals, logger);
 
 	handler.RegisterHandler(tcpHandler);
 	handler.RegisterHandler(udpHandler);
 
 	TcpMultiplexer tcpMultiplexer(tcpListener, connections, monitor, logger, tcpPort);
-	UdpMultiplexer udpMultiplexer(udpBinder, datagramAdapter, connections, monitor, factory, logger);
+	UdpMultiplexer udpMultiplexer(udpBinder, datagramAdapter, connections, virtuals, monitor, factory, logger);
 
 	DispatcherMultiplexer multiplexer;
 	multiplexer.Register(tcpMultiplexer);
@@ -155,7 +157,7 @@ int main() {
 	ConfigurationPipeHandler confHandler(configLoader, diverter);
 	PreferencesPipeHandler prefHandler(prefsLoader);
 	FlowPipeHandler flowHandler(sessionController);
-	TestPipeHandler testHandler(testController);
+	TestPipeHandler testHandler(testController, protector);
 
 	channel.RegisterHandler(PipeMessageType::Cmd_ReloadProxies, confHandler);
 	channel.RegisterHandler(PipeMessageType::Cmd_ReloadRules, confHandler);

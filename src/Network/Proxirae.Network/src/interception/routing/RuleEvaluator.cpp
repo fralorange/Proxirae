@@ -18,7 +18,7 @@ namespace Proxirae {
             return false;
         }
 
-        if (!m_portCriteria.IsMatch(rule.ports, ntohs(ctx.GetDestinationPort()))) {
+        if (!m_portCriteria.IsMatch(rule.ports, ctx.GetDestinationPort())) {
             return false;
         }
 

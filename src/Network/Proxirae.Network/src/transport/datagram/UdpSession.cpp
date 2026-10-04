@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "transport/datagram/UdpSession.h"
 #include "environment/sock.h"
 #include "utils/UuidUtils.h"
@@ -27,12 +29,22 @@ namespace Proxirae {
 		std::atomic<std::uint64_t> bytesSent{ 0 };
 		std::atomic<std::uint64_t> bytesReceived{ 0 };
 
-		std::chrono::steady_clock::time_point lastSeen;
+		std::atomic<std::uint64_t> lastSeen;
 
 		UdpBridge(NativeSocket shared, Endpoint endpoint, IIoDatagramAdapter& adapter, ILogger& logger, IProxyFactory& factory)
 			: shared(shared), endpoint(endpoint), adapter(adapter), logger(logger), proxyFactory(factory) {
 			proxyBuffer.resize(65536);
-			lastSeen = std::chrono::steady_clock::now();
+			UpdateLastSeen();
+		}
+
+		void UpdateLastSeen() {
+			auto now = std::chrono::steady_clock::now().time_since_epoch();
+			lastSeen.store(std::chrono::duration_cast<std::chrono::milliseconds>(now).count(), std::memory_order_relaxed);
+		}
+
+		std::chrono::steady_clock::time_point GetLastSeen() const {
+			auto ms = lastSeen.load(std::memory_order_relaxed);
+			return std::chrono::steady_clock::time_point(std::chrono::milliseconds(ms));
 		}
 
 		bool Open(std::shared_ptr<UdpSession> self, const FiveTuple& key, const ConnectionEntry& entry) {
@@ -76,7 +88,7 @@ namespace Proxirae {
 				return;
 			}
 
-			lastSeen = std::chrono::steady_clock::now();
+			UpdateLastSeen();
 
 			proxy->Send(payload, targetAddress, targetPort, [this, self](const IoResult& res) {
 				if (!res.success || res.bytesTransferred == 0) {
@@ -104,18 +116,22 @@ namespace Proxirae {
 					return;
 				}
 
+				UpdateLastSeen();
 				bytesReceived.fetch_add(res.bytesTransferred, std::memory_order_relaxed);
 
 				sockaddr_storage clientAddrStorage{};
 				int addrLen = SocketUtils::ToSockAddr(endpoint, clientAddrStorage);
 
-				auto payload = std::span<const std::byte>(proxyBuffer.data(), res.bytesTransferred);
+				auto payload = std::make_shared<std::vector<std::byte>>(
+					proxyBuffer.data(),
+					proxyBuffer.data() + res.bytesTransferred
+				);
 
 				adapter.AsyncSendTo(
 					shared, 
 					reinterpret_cast<const sockaddr*>(&clientAddrStorage),
 					addrLen,
-					payload, 
+					*payload, 
 					[this, self, bytes = res.bytesTransferred](const auto& wRes) {
 					
 					if (!wRes.success) {
@@ -123,9 +139,9 @@ namespace Proxirae {
 						self->Terminate();
 						return;
 					}
-
-					ForwardToClient(self); 
 				});
+
+				ForwardToClient(self);
 			});
 		}
 	};
@@ -159,13 +175,24 @@ namespace Proxirae {
 		m_bridge->Close();
 	}
 
-	bool UdpSession::IsExpired(std::chrono::seconds timeout) const
+	bool UdpSession::IsExpired(std::chrono::seconds baseTimeout) const
 	{
 		if (m_bridge->isStopping) {
 			return true;
 		}
 
-		return m_bridge->lastSeen + timeout < std::chrono::steady_clock::now();
+		std::uint16_t destPort = m_bridge->targetPort;
+
+		std::chrono::seconds actualTimeout = baseTimeout;
+
+		if (destPort == 53 || destPort == 123) {
+			actualTimeout = std::chrono::seconds(15);
+		}
+		else if (destPort >= 10000) {
+			actualTimeout = std::chrono::minutes(5);
+		}
+
+		return m_bridge->GetLastSeen() + actualTimeout < std::chrono::steady_clock::now();
 	}
 
 	void UdpSession::OnData(std::span<const std::byte> payload)

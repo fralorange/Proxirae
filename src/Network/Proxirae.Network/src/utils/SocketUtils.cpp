@@ -31,31 +31,42 @@ namespace Proxirae::SocketUtils {
 		return ip;
 	}
 
-	int ToSockAddr(const Endpoint& endpoint, sockaddr_storage& outStorage)
-	{
-		std::memset(&outStorage, 0, sizeof(outStorage));
-		const IpAddress& ip = endpoint.GetAddress();
-		std::uint16_t netPort = htons(endpoint.GetPort());
+    int ToSockAddr(const Endpoint& endpoint, sockaddr_storage& outStorage, int targetFamily)
+    {
+        std::memset(&outStorage, 0, sizeof(outStorage));
+        const IpAddress& ip = endpoint.GetAddress();
+        std::uint16_t netPort = htons(endpoint.GetPort());
 
-		if (!ip.isIPv6) {
-			auto* addr4 = reinterpret_cast<sockaddr_in*>(&outStorage);
-			addr4->sin_family = AF_INET;
-			addr4->sin_port = netPort;
-			addr4->sin_addr.s_addr = htonl(ip.data[0]); 
+        if (targetFamily == AF_INET6) {
+            auto* addr6 = reinterpret_cast<sockaddr_in6*>(&outStorage);
+            addr6->sin6_family = AF_INET6;
+            addr6->sin6_port = netPort;
 
-			return sizeof(sockaddr_in);
-		}
-		else {
-			auto* addr6 = reinterpret_cast<sockaddr_in6*>(&outStorage);
-			addr6->sin6_family = AF_INET6;
-			addr6->sin6_port = netPort;
+            if (!ip.isIPv6) {
+                addr6->sin6_addr.s6_bytes[10] = 0xFF;
+                addr6->sin6_addr.s6_bytes[11] = 0xFF;
 
-			for (std::size_t i = 0; i < 4; ++i) {
-				std::uint32_t netWord = htonl(ip.data[i]);
-				std::memcpy(&addr6->sin6_addr.s6_bytes[i * 4], &netWord, 4);
-			}
+                std::uint32_t netIpv4 = htonl(ip.data[0]);
+                std::memcpy(&addr6->sin6_addr.s6_bytes[12], &netIpv4, 4);
+            }
+            else {
+                for (std::size_t i = 0; i < 4; ++i) {
+                    std::uint32_t netWord = htonl(ip.data[i]);
+                    std::memcpy(&addr6->sin6_addr.s6_bytes[i * 4], &netWord, 4);
+                }
+            }
+            return sizeof(sockaddr_in6);
+        }
 
-			return sizeof(sockaddr_in6);
-		}
-	}
+        if (targetFamily == AF_INET) {
+            auto* addr4 = reinterpret_cast<sockaddr_in*>(&outStorage);
+            addr4->sin_family = AF_INET;
+            addr4->sin_port = netPort;
+            addr4->sin_addr.s_addr = htonl(ip.data[0]); 
+
+            return sizeof(sockaddr_in);
+        }
+
+        return 0;
+    }
 }
