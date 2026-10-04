@@ -246,6 +246,24 @@
     <ClCompile Include="src\persistence\virtuals\VirtualTable.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\proxification\ProxyBase.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\proxification\HttpsProxyBase.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\proxification\stream\TcpHttpsProxy.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\proxification\datagram\UdpHttpsProxy.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\proxification\stream\TestableTcpHttpsProxy.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\proxification\TestableProxyFactory.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\interception\diversion\win\WinPacketContext.h">
@@ -635,6 +653,30 @@
     <ClInclude Include="include\persistence\virtuals\VirtualEntry.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="include\proxification\HttpsProxyBase.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\proxification\ProxyBase.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\proxification\stream\TcpHttpsProxy.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\proxification\datagram\UdpHttpsProxy.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\proxification\stream\TestableTcpHttpsProxy.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\proxification\TestableProxyFactory.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\proxification\stream\DiagnosticsCallback.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\proxification\TestableProxyBase.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="conanfile.py" />
@@ -644,6 +686,9 @@
       <Filter>Файлы заголовков</Filter>
     </None>
     <None Include="src\proxification\stream\TestableTcpSocks5Proxy.inl">
+      <Filter>Файлы заголовков</Filter>
+    </None>
+    <None Include="src\proxification\stream\TestableTcpHttpsProxy.inl">
       <Filter>Файлы заголовков</Filter>
     </None>
   </ItemGroup>

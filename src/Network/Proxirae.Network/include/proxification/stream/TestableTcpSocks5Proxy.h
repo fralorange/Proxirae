@@ -1,31 +1,19 @@
 #pragma once
 
-#include <functional>
-#include <cstdint>
-#include <chrono>
-
 #include "proxification/stream/TcpSocks5Proxy.h"
-#include "proxification/stream/TestStage.h"
+#include "proxification/TestableProxyBase.h"
 
 namespace Proxirae {
-	using DiagnosticsCallback = std::function<void(TestStage stage, std::uint64_t latencyMs, bool success)>;
+    class TestableTcpSocks5Proxy : public TcpSocks5Proxy, public TestableProxyBase {
+    public:
+        template <typename... Args>
+        TestableTcpSocks5Proxy(DiagnosticsCallback callback, Args&&... args);
 
-	class TestableTcpSocks5Proxy : public TcpSocks5Proxy {
-	public:
-		
-		template <typename... Args>
-		TestableTcpSocks5Proxy(DiagnosticsCallback callback, Args&&... args);
-
-	protected:
-		NativeSocket ConnectToProxy() override;
-		bool PerformHandshake(NativeSocket sock) override;
-		bool ConnectToTarget(NativeSocket sock, std::string_view targetAddress, std::uint16_t targetPort) override;
-
-	private:
-		DiagnosticsCallback m_callback;
-
-		void Report(TestStage stage, std::chrono::steady_clock::time_point start, std::chrono::steady_clock::time_point end, bool success);
-	};
+    protected:
+        NativeSocket ConnectToProxy() override;
+        bool PerformHandshake(NativeSocket sock) override;
+        bool ConnectToTarget(NativeSocket sock, std::string_view targetAddress, std::uint16_t targetPort) override;
+    };
 }
 
 #include "proxification/stream/TestableTcpSocks5Proxy.inl"

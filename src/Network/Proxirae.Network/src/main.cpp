@@ -151,8 +151,10 @@ int main() {
 	Engine engine(diverter, handler, router, stopSource.get_token());
 	Daemon daemon(multiplexer, logger, monitor, stopSource.get_token());
 
+	TestableProxyFactory testableProxyFactory(driver, streamAdapter, logger);
+
 	SessionController sessionController(daemon, processManager);
-	TestController testController(messenger, driver, streamAdapter, logger);
+	TestController testController(messenger, testableProxyFactory, logger);
 
 	ConfigurationPipeHandler confHandler(configLoader, diverter);
 	PreferencesPipeHandler prefHandler(prefsLoader);
