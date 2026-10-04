@@ -201,8 +201,14 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\interception\routing\PacketFilter.cpp" />
     <ClCompile Include="src\interception\handling\UdpHandler.cpp" />
     <ClCompile Include="src\protection\win\WinProtector.cpp" />
+    <ClCompile Include="src\proxification\datagram\UdpHttpsProxy.cpp" />
+    <ClCompile Include="src\proxification\HttpsProxyBase.cpp" />
+    <ClCompile Include="src\proxification\ProxyBase.cpp" />
     <ClCompile Include="src\proxification\Socks5ProxyBase.cpp" />
     <ClCompile Include="src\proxification\datagram\UdpSocks5Proxy.cpp" />
+    <ClCompile Include="src\proxification\stream\TcpHttpsProxy.cpp" />
+    <ClCompile Include="src\proxification\stream\TestableTcpHttpsProxy.cpp" />
+    <ClCompile Include="src\proxification\TestableProxyFactory.cpp" />
     <ClCompile Include="src\runtime\Host.cpp" />
     <ClCompile Include="src\controllers\session\SessionController.cpp" />
     <ClCompile Include="src\controllers\test\TestController.cpp" />
@@ -301,8 +307,16 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\persistence\connections\ConnectionState.h" />
     <ClInclude Include="include\protection\win\WinProtector.h" />
     <ClInclude Include="include\proxification\datagram\IDatagramProxy.h" />
+    <ClInclude Include="include\proxification\datagram\UdpHttpsProxy.h" />
+    <ClInclude Include="include\proxification\HttpsProxyBase.h" />
+    <ClInclude Include="include\proxification\ProxyBase.h" />
     <ClInclude Include="include\proxification\Socks5ProxyBase.h" />
     <ClInclude Include="include\proxification\datagram\UdpSocks5Proxy.h" />
+    <ClInclude Include="include\proxification\stream\DiagnosticsCallback.h" />
+    <ClInclude Include="include\proxification\stream\TcpHttpsProxy.h" />
+    <ClInclude Include="include\proxification\stream\TestableTcpHttpsProxy.h" />
+    <ClInclude Include="include\proxification\TestableProxyBase.h" />
+    <ClInclude Include="include\proxification\TestableProxyFactory.h" />
     <ClInclude Include="include\runtime\Daemon.h" />
     <ClInclude Include="include\runtime\Host.h" />
     <ClInclude Include="include\contracts\route\RouteContract.h" />
@@ -396,6 +410,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <None Include="deps\windivert\conanfile.py" />
     <None Include="src\communication\channels\messengers\IpcMessenger.inl" />
     <None Include="src\persistence\Store.inl" />
+    <None Include="src\proxification\stream\TestableTcpHttpsProxy.inl" />
     <None Include="src\proxification\stream\TestableTcpSocks5Proxy.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
