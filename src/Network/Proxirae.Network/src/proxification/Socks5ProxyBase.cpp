@@ -1,47 +1,10 @@
 #include <format>
+#include <vector>
 
 #include "proxification/Socks5ProxyBase.h"
 #include "environment/sock.h"
 
 namespace Proxirae {
-	Socks5ProxyBase::Socks5ProxyBase(std::string_view address, std::uint16_t port, IAsyncDriver& driver, ILogger& logger)
-		: m_address(address), m_port(port), m_driver(driver), m_logger(logger) { }
-
-	Socks5ProxyBase::Socks5ProxyBase(std::string_view address, std::uint16_t port, std::string_view username, std::string_view password, IAsyncDriver& driver, ILogger& logger)
-		: Socks5ProxyBase(address, port, driver, logger) 
-	{
-		m_username = username;
-		m_password = password;
-	}
-
-	NativeSocket Socks5ProxyBase::ConnectToProxy()
-	{
-		NativeSocket sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-		if (sock == InvalidNativeSocket) {
-			m_logger.LogError(std::format("[SOCKS5] Socket creation failed: error {}", GetSocketError()));
-
-			return InvalidNativeSocket;
-		}
-
-		struct sockaddr_in proxyAddr {};
-
-		inet_pton(AF_INET, m_address.c_str(), &proxyAddr.sin_addr.s_addr);
-		proxyAddr.sin_port = htons(m_port);
-		proxyAddr.sin_family = AF_INET;
-
-		m_logger.LogDebug(std::format("[SOCKS5] Connecting to {}:{}", m_address, m_port));
-
-		if (connect(sock, reinterpret_cast<struct sockaddr*>(&proxyAddr), sizeof(proxyAddr)) == SocketError) {
-			m_logger.LogError(std::format("[SOCKS5] Connection failed to {}:{}", m_address, m_port));
-			CloseSocket(sock);
-
-			return InvalidNativeSocket;
-		}
-
-		return sock;
-	}
-
 	bool Socks5ProxyBase::PerformHandshake(NativeSocket sock) {
 		bool requiresAuth = !m_username.empty() && !m_password.empty();
 
@@ -113,42 +76,6 @@ namespace Proxirae {
 		}
 
 		m_logger.LogDebug(std::format("[SOCKS5] Handshake successful with {}:{}", m_address, m_port));
-
-		return true;
-	}
-
-	bool Socks5ProxyBase::SendExact(NativeSocket sock, std::span<const char> buffer)
-	{
-		std::size_t totalSent = 0;
-		std::size_t length = buffer.size();
-
-		while (totalSent < length) {
-			int bytesSent = send(sock, buffer.data() + totalSent, static_cast<int>(length - totalSent), 0);
-
-			if (bytesSent == SocketError) {
-				return false;
-			}
-
-			totalSent += bytesSent;
-		}
-
-		return true;
-	}
-
-	bool Socks5ProxyBase::RecvExact(NativeSocket sock, std::span<char> buffer)
-	{
-		std::size_t totalReceived = 0;
-		std::size_t length = buffer.size();
-
-		while (totalReceived < length) {
-			int bytesReceived = recv(sock, buffer.data() + totalReceived, static_cast<int>(length - totalReceived), 0);
-
-			if (bytesReceived <= 0) {
-				return false;
-			}
-
-			totalReceived += bytesReceived;
-		}
 
 		return true;
 	}
