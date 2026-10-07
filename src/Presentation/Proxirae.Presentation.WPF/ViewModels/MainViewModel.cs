@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MvvmDialogs.FrameworkDialogs.OpenFile;
 using MvvmDialogs.FrameworkDialogs.SaveFile;
@@ -7,10 +7,8 @@ using Proxirae.Application.Exporters.Csv;
 using Proxirae.Application.Models.Preferences.Appearance;
 using Proxirae.Application.Models.Preferences.Metrics;
 using Proxirae.Application.Services.Application;
-using Proxirae.Application.Services.Archive;
 using Proxirae.Application.Services.Browser;
 using Proxirae.Application.Services.Clipboard;
-using Proxirae.Application.Services.Configuration;
 using Proxirae.Application.Services.Flows;
 using Proxirae.Application.Services.Logs;
 using Proxirae.Application.Services.Package;
@@ -36,7 +34,9 @@ using Proxirae.Presentation.WPF.ViewModels.ProxyRules;
 using Proxirae.Presentation.WPF.ViewModels.ProxyServers;
 using Proxirae.Presentation.WPF.ViewModels.Routes;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.Threading.Channels;
 using AppPreferences = Proxirae.Application.Models.Preferences.Preferences;
 
 namespace Proxirae.Presentation.WPF.ViewModels
@@ -66,6 +66,8 @@ namespace Proxirae.Presentation.WPF.ViewModels
         [ObservableProperty]
         private ObservableCollection<FlowViewModel> _flows = [];
 
+        private readonly ConcurrentDictionary<Guid, FlowViewModel> _flowsById = new();
+
         private ObservableFixedSizeRingBuffer<LogViewModel> _logsBuffer;
 
         [ObservableProperty]
@@ -89,6 +91,14 @@ namespace Proxirae.Presentation.WPF.ViewModels
         private bool _autostart;
 
         private CancellationTokenSource? _tabsHeightDebouceToken;
+
+        private readonly Channel<LogDto> _logChannel =
+            Channel.CreateUnbounded<LogDto>(new UnboundedChannelOptions { SingleReader = true });
+
+        private readonly Channel<RouteDto> _routeChannel =
+            Channel.CreateUnbounded<RouteDto>(new UnboundedChannelOptions { SingleReader = true });
+
+        private readonly CancellationTokenSource _pumpCts = new();
 
         [ObservableProperty]
         private double _tabsHeight;
@@ -149,6 +159,9 @@ namespace Proxirae.Presentation.WPF.ViewModels
 
             _routeService.RouteReceived += OnRouteReceived;
 
+            _ = PumpLogsAsync(_pumpCts.Token);
+            _ = PumpRoutesAsync(_pumpCts.Token);
+
             _selectedLogLevel = Enum.Parse<LogLevelDto>(_preferencesService.Current.Engine.LogLevel);
             _autostart = _preferencesService.Current.System.IsAutostartEnabled;
             _tabsHeight = _preferencesService.Current.Appearance.TabsHeight;
@@ -195,64 +208,152 @@ namespace Proxirae.Presentation.WPF.ViewModels
             }
         }
 
-        private async void OnRouteReceived(RouteDto route)
+        private void OnRouteReceived(RouteDto route)
         {
-            var routeViewModel = await _routeViewModelFactory.CreateAsync(route, CancellationToken.None);
-
-            if (routeViewModel is null)
-            {
-                return;
-            }
-
-            WinApp.Current.Dispatcher.Invoke(() =>
-            {
-                _routesBuffer.AddLast(routeViewModel);
-
-                ExportRoutesHistoryCommand.NotifyCanExecuteChanged();
-            });
+            _routeChannel.Writer.TryWrite(route);
         }
 
         private void OnLogReceived(LogDto log)
         {
-            WinApp.Current.Dispatcher.Invoke(() =>
-            {
-                _logsBuffer.AddLast(new(log));
+            _logChannel.Writer.TryWrite(log);
+        }
 
-                ExportLogsHistoryCommand.NotifyCanExecuteChanged();
-            });
+        private async Task PumpRoutesAsync(CancellationToken cancellationToken)
+        {
+            var batch = new List<RouteDto>(256);
+
+            try
+            {
+                while (await _routeChannel.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
+                {
+                    while (_routeChannel.Reader.TryRead(out var route))
+                    {
+                        batch.Add(route);
+                    }
+
+                    await Task.Delay(TimeSpan.FromMilliseconds(50), cancellationToken).ConfigureAwait(false);
+
+                    if (batch.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    var swap = batch;
+                    batch = new List<RouteDto>(256);
+
+                    var viewModels = new List<RouteViewModel>(swap.Count);
+
+                    foreach (var route in swap)
+                    {
+                        var viewModel = await _routeViewModelFactory.CreateAsync(route, cancellationToken).ConfigureAwait(false);
+                        if (viewModel is not null)
+                        {
+                            viewModels.Add(viewModel);
+                        }
+                    }
+
+                    await WinApp.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        foreach (var viewModel in viewModels)
+                        {
+                            _routesBuffer.AddLast(viewModel);
+                        }
+
+                        ExportRoutesHistoryCommand.NotifyCanExecuteChanged();
+                    });
+                }
+            }
+            catch (OperationCanceledException)
+            {
+            }
+        }
+
+        private async Task PumpLogsAsync(CancellationToken cancellationToken)
+        {
+            var batch = new List<LogViewModel>(256);
+
+            try
+            {
+                while (await _logChannel.Reader.WaitToReadAsync(cancellationToken).ConfigureAwait(false))
+                {
+                    while (_logChannel.Reader.TryRead(out var log))
+                    {
+                        batch.Add(new LogViewModel(log));
+                    }
+
+                    await Task.Delay(TimeSpan.FromMilliseconds(50), cancellationToken).ConfigureAwait(false);
+
+                    if (batch.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    var swap = batch;
+                    batch = new List<LogViewModel>(256);
+
+                    await WinApp.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        foreach (var viewModel in swap)
+                        {
+                            _logsBuffer.AddLast(viewModel);
+                        }
+
+                        ExportLogsHistoryCommand.NotifyCanExecuteChanged();
+                    });
+                }
+            }
+            catch (OperationCanceledException)
+            {
+            }
         }
 
         private async void OnFlowsUpdated(IEnumerable<FlowDto> flows)
         {
-            var activeIds = flows.Select(f => f.Id).ToHashSet();
+            var snapshot = flows.ToList();
+            var activeIds = snapshot.Select(f => f.Id).ToHashSet();
 
-            var existingIds = Flows.Select(x => x.Id).ToHashSet();
-            var newFlowDtos = flows.Where(f => !existingIds.Contains(f.Id)).ToList();
+            var toCreate = new List<FlowDto>();
 
-            var newViewModels = new List<FlowViewModel>();
-
-            foreach (var flow in newFlowDtos)
+            foreach (var flow in snapshot)
             {
-                var vm = await _flowViewModelFactory.CreateAsync(flow, CancellationToken.None);
-                if (vm != null) newViewModels.Add(vm);
+                if (!_flowsById.ContainsKey(flow.Id))
+                {
+                    toCreate.Add(flow);
+                }
             }
 
-            WinApp.Current.Dispatcher.Invoke(() =>
+            var newViewModels = new List<FlowViewModel>(toCreate.Count);
+
+            foreach (var flow in toCreate)
             {
-                var ghosts = Flows.Where(f => !activeIds.Contains(f.Id)).ToList();
-                foreach (var ghost in ghosts)
+                var vm = await _flowViewModelFactory.CreateAsync(flow, CancellationToken.None);
+                if (vm is not null)
                 {
-                    Flows.Remove(ghost);
+                    newViewModels.Add(vm);
+                }
+            }
+
+            await WinApp.Current.Dispatcher.InvokeAsync(() =>
+            {
+                foreach (var pair in _flowsById)
+                {
+                    if (!activeIds.Contains(pair.Key) && _flowsById.TryRemove(pair.Key, out var ghost))
+                    {
+                        Flows.Remove(ghost);
+                    }
                 }
 
-                foreach (var flow in flows)
+                foreach (var flow in snapshot)
                 {
-                    var existing = Flows.FirstOrDefault(x => x.Id == flow.Id);
-                    existing?.Update(flow);
+                    if (_flowsById.TryGetValue(flow.Id, out var existing))
+                    {
+                        existing.Update(flow);
+                    }
                 }
 
                 foreach (var vm in newViewModels)
                 {
+                    _flowsById[vm.Id] = vm;
                     Flows.Add(vm);
                 }
             });
@@ -262,8 +363,7 @@ namespace Proxirae.Presentation.WPF.ViewModels
         {
             WinApp.Current.Dispatcher.Invoke(() =>
             {
-                var target = Enumerable.FirstOrDefault(Flows, x => x.Id == flow.Id);
-                if (target is not null)
+                if (_flowsById.TryRemove(flow.Id, out var target))
                 {
                     Flows.Remove(target);
                 }
@@ -561,6 +661,10 @@ namespace Proxirae.Presentation.WPF.ViewModels
             _flowService.FlowsUpdated -= OnFlowsUpdated;
             _flowService.FlowClosed -= OnFlowDeleted;
             _logService.LogReceived -= OnLogReceived;
+            _routeService.RouteReceived -= OnRouteReceived;
+
+            _pumpCts.Cancel();
+            _pumpCts.Dispose();
         }
     }
 }

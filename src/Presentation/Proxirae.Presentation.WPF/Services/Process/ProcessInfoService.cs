@@ -20,7 +20,7 @@ namespace Proxirae.Presentation.WPF.Services.Process
 
         public async Task<ProcessInfo?> GetProcessInfoAsync(long processId, CancellationToken cancellationToken)
         {
-            if (processId < int.MinValue && processId > int.MaxValue) return null;
+            if (processId < int.MinValue || processId > int.MaxValue) return null;
 
             return await _cache.GetOrCreateAsync(
                 key: $"ProcessInfo_{processId}",

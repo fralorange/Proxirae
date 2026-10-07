@@ -134,9 +134,13 @@
             <DataGrid x:Name="FlowsTable"
                       behaviors:ClearSelectionBehavior.IsEnabled="True"
                       DockPanel.Dock="Right"
+                      EnableColumnVirtualization="True"
+                      EnableRowVirtualization="True"
                       IsReadOnly="True"
                       ItemsSource="{Binding Flows}"
-                      Style="{StaticResource MainProcessTable}">
+                      Style="{StaticResource MainProcessTable}"
+                      VirtualizingPanel.ScrollUnit="Item"
+                      VirtualizingPanel.VirtualizationMode="Recycling">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Width="*"
                                             Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderApplication}}">
@@ -147,10 +151,10 @@
                                     <Image Width="16"
                                            Height="16"
                                            Margin="0,0,6,0"
-                                           Source="{Binding ProcessIcon, IsAsync=True}" />
+                                           Source="{Binding ProcessIcon}" />
 
                                     <TextBlock Style="{StaticResource MainDataGridText}"
-                                               Text="{Binding ProcessName, IsAsync=True}" />
+                                               Text="{Binding ProcessName}" />
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -177,7 +181,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Style="{StaticResource MainDataGridText}"
-                                           Text="{Binding SecondsPassed, Converter={StaticResource SecondsToTimeConverters}, IsAsync=True}" />
+                                           Text="{Binding SecondsPassed, Converter={StaticResource SecondsToTimeConverters}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -197,7 +201,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Style="{StaticResource MainDataGridText}"
-                                           Text="{Binding BytesSent, Converter={StaticResource BytesToSizeConverter}, IsAsync=True}" />
+                                           Text="{Binding BytesSent, Converter={StaticResource BytesToSizeConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -207,7 +211,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Style="{StaticResource MainDataGridText}"
-                                           Text="{Binding BytesReceived, Converter={StaticResource BytesToSizeConverter}, IsAsync=True}" />
+                                           Text="{Binding BytesReceived, Converter={StaticResource BytesToSizeConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
