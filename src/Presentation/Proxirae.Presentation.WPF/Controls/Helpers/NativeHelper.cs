@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 
 namespace Proxirae.Presentation.WPF.Controls.Helpers
 {
