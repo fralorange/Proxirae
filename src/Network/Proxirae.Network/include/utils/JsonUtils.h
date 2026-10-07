@@ -2,18 +2,18 @@
 
 #include <nlohmann/json.hpp>
 
-#include "contracts/proxy/ProxyContract.h"
-#include "contracts/proxy/ProxyTestContract.h"
-#include "contracts/rule/RuleContract.h"
-#include "contracts/rule/RuleActionContract.h"
-#include "contracts/flow/FlowContract.h"
-#include "contracts/log/LogContract.h"
-#include "contracts/route/RouteContract.h"
-#include "persistence/preferences/Preferences.h"
-#include "contracts/flow/FlowDisconnectContract.h"
-#include "contracts/flow/FlowDestroyContract.h"
-#include "contracts/test/TestContract.h"
-#include "contracts/test/TestProgressContract.h"
+#include "core/contracts/proxy/ProxyContract.h"
+#include "core/contracts/proxy/ProxyTestContract.h"
+#include "core/contracts/rule/RuleContract.h"
+#include "core/contracts/rule/RuleActionContract.h"
+#include "core/contracts/flow/FlowContract.h"
+#include "core/contracts/log/LogContract.h"
+#include "core/contracts/route/RouteContract.h"
+#include "features/persistence/preferences/Preferences.h"
+#include "core/contracts/flow/FlowDisconnectContract.h"
+#include "core/contracts/flow/FlowDestroyContract.h"
+#include "core/contracts/test/TestContract.h"
+#include "core/contracts/test/TestProgressContract.h"
 
 namespace Proxirae {
 	void from_json(const nlohmann::json& j, ProxyContract& p);
