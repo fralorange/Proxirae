@@ -55,7 +55,7 @@ namespace Proxirae {
 			.processId = packetCtx.GetProcessId()
 		};
 
-		m_connections.AddConnection(key, entry);
+		m_connections.Add(key, entry);
 
 		packetCtx.SetDestination(packetCtx.GetSourceAddress(), m_redirectPort);
 
@@ -98,7 +98,7 @@ namespace Proxirae {
 			.protocol = ctx.GetProtocol()
 		};
 
-		if (m_connections.ConnectionExists(key)) {
+		if (m_connections.Exists(key)) {
 			ctx.SetDestination(ctx.GetSourceAddress(), m_redirectPort);
 
 			m_logger.LogDebug(std::format(

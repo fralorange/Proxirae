@@ -1,7 +1,7 @@
 #include "persistence/connections/ConnectionTable.h"
 
 namespace Proxirae {
-	void ConnectionTable::AddConnection(const FiveTuple& key, const ConnectionEntry& entry) {
+	void ConnectionTable::Add(const FiveTuple& key, const ConnectionEntry& entry) {
 		std::lock_guard<std::mutex> lock(m_mutex);
 
 		m_connections.insert_or_assign(key, entry);
@@ -10,7 +10,7 @@ namespace Proxirae {
 		m_indexes.insert_or_assign(iKey, key);
 	}
 
-	void ConnectionTable::RemoveConnection(const FiveTuple& key) {
+	void ConnectionTable::Remove(const FiveTuple& key) {
 		std::lock_guard<std::mutex> lock(m_mutex);
 
 		m_connections.erase(key);
@@ -31,7 +31,7 @@ namespace Proxirae {
 		m_indexes.erase(alias);
 	}
 
-	std::optional<std::reference_wrapper<const ConnectionEntry>> ConnectionTable::GetConnection(const FiveTuple& key) const {
+	std::optional<std::reference_wrapper<const ConnectionEntry>> ConnectionTable::Get(const FiveTuple& key) const {
 		std::lock_guard<std::mutex> lock(m_mutex);
 
 		auto it = m_connections.find(key);
@@ -56,7 +56,7 @@ namespace Proxirae {
 		return std::nullopt;
 	}
 
-	bool ConnectionTable::ConnectionExists(const FiveTuple& key) const 
+	bool ConnectionTable::Exists(const FiveTuple& key) const 
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 

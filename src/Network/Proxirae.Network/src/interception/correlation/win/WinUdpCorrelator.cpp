@@ -3,8 +3,8 @@
 #include "environment/inet.h"
 
 namespace Proxirae {
-	WinUdpCorrelator::WinUdpCorrelator(IProcessGuard& monitor, AssociationTable& associations)
-		: m_guard(monitor), m_associations(associations), m_lookupTable(WinUdpLookupTable::TryCreate()) {
+	WinUdpCorrelator::WinUdpCorrelator(IProcessGuard& monitor, AssociationTable& associations, std::optional<WinUdpLookupTable> lookupTable, std::uint16_t redirectPort)
+		: m_guard(monitor), m_associations(associations), m_lookupTable(std::move(lookupTable)), m_redirectPort(redirectPort) {
 	}
 
 	WinUdpCorrelator::~WinUdpCorrelator() = default;
@@ -36,18 +36,27 @@ namespace Proxirae {
 		anyBindKey.srcAddress = IpAddress{};
 		anyBindKey.srcAddress.isIPv6 = fullKey.srcAddress.isIPv6;
 
-		if (m_lookupTable.has_value() && (m_lookupTable->CanAssociate(bindKey) || m_lookupTable->CanAssociate(anyBindKey))) {
-			callback(context); // Connection existed before we started capturing, so we don't have the socket event for it. Just pass it through.
+		const bool isPreExistingConnection =
+			m_lookupTable.has_value() &&
+			(m_lookupTable->CanAssociate(bindKey) ||
+				m_lookupTable->CanAssociate(anyBindKey)); // Connection existed before we started capturing, so we don't have the socket event for it. Just pass it through.
+
+		const bool isRedirectTraffic =
+			context.IsOutbound() &&
+			context.GetSourcePort() == m_redirectPort;
+
+		if (isPreExistingConnection || isRedirectTraffic) {
+			callback(context); 
 
 			return true;
 		}
 
-		if (m_associations.AssociationExists(fullKey)) {
-			context.SetProcessId(m_associations.GetAssociation(fullKey).value().processId);
+		if (m_associations.Exists(fullKey)) {
+			context.SetProcessId(m_associations.Get(fullKey).value().processId);
 			callback(context);
 		}
-		else if (m_associations.AssociationExists(bindKey)) {
-			context.SetProcessId(m_associations.GetAssociation(bindKey).value().processId);
+		else if (m_associations.Exists(bindKey)) {
+			context.SetProcessId(m_associations.Get(bindKey).value().processId);
 			callback(context);
 		}
 		else {
@@ -103,7 +112,7 @@ namespace Proxirae {
 				.processId = metadata.Socket.ProcessId
 			};
 
-			m_associations.AddAssociation(key, entry);
+			m_associations.Add(key, entry);
 			m_guard.AcquireProcess(metadata.Socket.ProcessId);
 
 			for (auto it = m_pending.begin(); it != m_pending.end(); ) {
@@ -139,8 +148,8 @@ namespace Proxirae {
 			return true;
 		}
 		else if (metadata.Event == WINDIVERT_EVENT_SOCKET_CLOSE) {
-			if (m_associations.AssociationExists(key)) {
-				m_associations.RemoveAssociation(key);
+			if (m_associations.Exists(key)) {
+				m_associations.Remove(key);
 				m_guard.ReleaseProcess(metadata.Socket.ProcessId);
 			}
 
@@ -149,8 +158,8 @@ namespace Proxirae {
 			bindKey.dstAddress.isIPv6 = key.dstAddress.isIPv6;
 			bindKey.dstPort = 0;
 
-			if (m_associations.AssociationExists(bindKey)) {
-				m_associations.RemoveAssociation(bindKey);
+			if (m_associations.Exists(bindKey)) {
+				m_associations.Remove(bindKey);
 				m_guard.ReleaseProcess(metadata.Socket.ProcessId);
 			}
 

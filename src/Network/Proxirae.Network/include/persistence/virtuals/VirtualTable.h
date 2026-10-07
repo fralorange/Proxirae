@@ -17,10 +17,10 @@ namespace Proxirae {
 		explicit VirtualTable(std::uint16_t startPort = 60000, std::uint16_t endPort = 65000);
 		~VirtualTable() = default;
 
-		std::uint16_t AddVirtual(const VirtualEntry& entry);
-		void RemoveVirtual(const ThreeTuple& key);
+		std::uint16_t FindOrAdd(const VirtualEntry& entry);
+		void Remove(const ThreeTuple& key);
 		
-		std::optional<VirtualEntry> ResolveVirtual(const ThreeTuple& key) const;
+		std::optional<VirtualEntry> Resolve(const ThreeTuple& key) const;
 
 	private:
 		mutable std::mutex m_mutex;

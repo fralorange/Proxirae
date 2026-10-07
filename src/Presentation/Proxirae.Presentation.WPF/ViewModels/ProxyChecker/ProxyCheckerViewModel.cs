@@ -130,7 +130,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyChecker
             IsSuccess = false;
             IsFailed = false;
             LatencyMessage = string.Empty;
-            StatusMessage = "Starting test...";
+            StatusMessage = "Starting";
             IsTesting = true;
 
             var testDto = new TestDto

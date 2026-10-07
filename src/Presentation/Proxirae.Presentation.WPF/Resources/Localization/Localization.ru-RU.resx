@@ -543,4 +543,7 @@
   <data name="TextInputMessageConfigMasterPasswordExport" xml:space="preserve">
     <value>Введите мастер-пароль для шифрования учётных данных прокси в создаваемом файле. Этот пароль потребуется при импорте конфигурации на другом устройстве.</value>
   </data>
+  <data name="ProxyCheckerProgressStarting" xml:space="preserve">
+    <value>Начинаем тест...</value>
+  </data>
 </root>

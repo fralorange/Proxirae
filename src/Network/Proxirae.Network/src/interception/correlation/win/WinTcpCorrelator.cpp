@@ -28,14 +28,14 @@ namespace Proxirae {
 			.protocol = context.GetProtocol()
 		};
 
-		if (context.IsTcpAck() && context.HasPayload() || context.IsTcpAck() && !m_associations.AssociationExists(key)) {
+		if (context.IsTcpAck() && context.HasPayload() || context.IsTcpAck() && !m_associations.Exists(key)) {
 			callback(context); // Connection existed before we started capturing, so we don't have the socket event for it. Just pass it through.
 
 			return true;
 		}
 
-		if (m_associations.AssociationExists(key)) {
-			auto associationOpt = m_associations.GetAssociation(key);
+		if (m_associations.Exists(key)) {
+			auto associationOpt = m_associations.Get(key);
 			context.SetProcessId(associationOpt.value().processId);
 
 			callback(context);
@@ -81,6 +81,7 @@ namespace Proxirae {
 			else {
 				dstAddr.data[0] = metadata.Socket.RemoteAddr[0]; 
 			}
+
 			// Reminder for future: WinDivert always stores SOCKET layer data in Host Byte Order.
 			FiveTuple key{
 				.srcAddress = srcAddr,
@@ -92,7 +93,7 @@ namespace Proxirae {
 
 			if (metadata.Event == WINDIVERT_EVENT_SOCKET_CONNECT) {
 				AssociationEntry entry{ .processId = metadata.Socket.ProcessId };
-				m_associations.AddAssociation(key, entry);
+				m_associations.Add(key, entry);
 				m_guard.AcquireProcess(metadata.Socket.ProcessId);
 
 				auto [it, end] = m_pending.equal_range(key);
@@ -108,7 +109,7 @@ namespace Proxirae {
 				}
 			}
 			else if (metadata.Event == WINDIVERT_EVENT_SOCKET_CLOSE) {
-				m_associations.RemoveAssociation(key);
+				m_associations.Remove(key);
 				m_guard.ReleaseProcess(metadata.Socket.ProcessId);
 			}
 

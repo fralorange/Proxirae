@@ -77,7 +77,7 @@ namespace Proxirae {
 				continue;
 			}
 
-			auto optEntry = m_connections.GetConnection(*optKey);
+			auto optEntry = m_connections.Get(*optKey);
 			if (!optEntry.has_value()) {
 				session->Terminate();
 				continue;
@@ -103,7 +103,7 @@ namespace Proxirae {
 
 					auto optKey = m_connections.FindKey(key);
 					if (optKey.has_value()) {
-						m_connections.RemoveConnection(*optKey);
+						m_connections.Remove(*optKey);
 					}
 				}
 			});

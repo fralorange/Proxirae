@@ -8,7 +8,7 @@ namespace Proxirae {
 		}
 	}
 
-	std::uint16_t VirtualTable::AddVirtual(const VirtualEntry& entry)
+	std::uint16_t VirtualTable::FindOrAdd(const VirtualEntry& entry)
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 
@@ -33,7 +33,7 @@ namespace Proxirae {
 		return allocatedPort;
 	}
 
-	void VirtualTable::RemoveVirtual(const ThreeTuple& key)
+	void VirtualTable::Remove(const ThreeTuple& key)
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 
@@ -45,7 +45,7 @@ namespace Proxirae {
 		}
 	}
 
-	std::optional<VirtualEntry> VirtualTable::ResolveVirtual(const ThreeTuple& key) const
+	std::optional<VirtualEntry> VirtualTable::Resolve(const ThreeTuple& key) const
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 

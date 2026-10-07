@@ -58,7 +58,7 @@ namespace Proxirae {
 		auto optOutKey = m_connections.FindKey(outKey);
 
 		if (optOutKey.has_value()) {
-			auto outIt = m_connections.GetConnection(*optOutKey);
+			auto outIt = m_connections.Get(*optOutKey);
 			if (outIt.has_value()) {
 				return RuleActionContract{ RuleAction::Proxy, outIt->get().proxyId };
 			}
@@ -73,7 +73,7 @@ namespace Proxirae {
 		auto optInKey = m_connections.FindKey(inKey);
 
 		if (optInKey.has_value()) {
-			auto inIt = m_connections.GetConnection(*optInKey);
+			auto inIt = m_connections.Get(*optInKey);
 			if (inIt.has_value()) {
 				return RuleActionContract{ RuleAction::Proxy, inIt->get().proxyId };
 			}

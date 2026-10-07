@@ -543,4 +543,7 @@
   <data name="TextInputMessageConfigMasterPasswordExport" xml:space="preserve">
     <value>Enter a master password to encrypt proxy credentials in the output file. This password will be required when importing the configuration on another device.</value>
   </data>
+  <data name="ProxyCheckerProgressStarting" xml:space="preserve">
+    <value>Starting test...</value>
+  </data>
 </root>

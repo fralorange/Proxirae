@@ -22,11 +22,11 @@ namespace Proxirae {
 					.protocol = packetCtx.GetProtocol(),
 				};
 
-				auto optVirtual = m_virtuals.ResolveVirtual(vKey);
+				auto optVirtual = m_virtuals.Resolve(vKey);
 
 				if (optVirtual.has_value()) {
 					const auto& real = optVirtual->realTuple;
-					
+
 					packetCtx.SetSource(real.dstAddress, real.dstPort);
 					packetCtx.SetDestination(real.srcAddress, real.srcPort);
 
@@ -46,13 +46,13 @@ namespace Proxirae {
 					.protocol = packetCtx.GetProtocol()
 				};
 
-				if (!m_connections.ConnectionExists(key)) {
+				if (!m_connections.Exists(key)) {
 					ConnectionEntry entry{
 						.proxyId = ctx.proxyId,
 						.processId = packetCtx.GetProcessId()
 					};
 
-					m_connections.AddConnection(key, entry);
+					m_connections.Add(key, entry);
 
 					m_logger.LogDebug(std::format(
 						"[UdpHandler] Recorded new UDP session: {} -> {}",
@@ -61,7 +61,7 @@ namespace Proxirae {
 					));
 				}
 
-				auto vPort = m_virtuals.AddVirtual({ key });
+				auto vPort = m_virtuals.FindOrAdd({ key });
 				if (vPort == 0) {
 					m_logger.LogError("[UdpHandler] VirtualTable port pool exhausted!");
 					return false;

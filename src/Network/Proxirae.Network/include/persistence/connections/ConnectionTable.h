@@ -16,17 +16,17 @@
 namespace Proxirae {
 	class ConnectionTable {
 	public:
-		void AddConnection(const FiveTuple& key, const ConnectionEntry& entry);
-		void RemoveConnection(const FiveTuple& key);
+		void Add(const FiveTuple& key, const ConnectionEntry& entry);
+		void Remove(const FiveTuple& key);
 
 		void AddAlias(const ThreeTuple& alias, const FiveTuple& key);
 		void RemoveAlias(const ThreeTuple& alias);
 
-		std::optional<std::reference_wrapper<const ConnectionEntry>> GetConnection(const FiveTuple& key) const;
+		std::optional<std::reference_wrapper<const ConnectionEntry>> Get(const FiveTuple& key) const;
 
 		std::optional<FiveTuple> FindKey(const ThreeTuple& key);
 
-		bool ConnectionExists(const FiveTuple& key) const;
+		bool Exists(const FiveTuple& key) const;
 
 	private:
 		mutable std::mutex m_mutex;

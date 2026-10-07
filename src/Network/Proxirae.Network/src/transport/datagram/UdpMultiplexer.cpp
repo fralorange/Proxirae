@@ -161,7 +161,7 @@ namespace Proxirae {
 				.protocol = IPPROTO_UDP
 			};
 
-			auto optVirtual = virtuals.ResolveVirtual(key);
+			auto optVirtual = virtuals.Resolve(key);
 			if (!optVirtual.has_value()) {
 				candidate->Terminate();
 				return;
@@ -170,8 +170,8 @@ namespace Proxirae {
 			const auto& realTuple = optVirtual->realTuple;
 			bool success = false;
 
-			if (connections.ConnectionExists(realTuple)) {
-				auto optEntry = connections.GetConnection(realTuple);
+			if (connections.Exists(realTuple)) {
+				auto optEntry = connections.Get(realTuple);
 				if (optEntry.has_value()) {
 					success = candidate->Establish(realTuple, *optEntry);
 				}
@@ -228,13 +228,13 @@ namespace Proxirae {
 							.protocol = IPPROTO_UDP
 					};
 
-					auto optVirtual = virtuals.ResolveVirtual(vKey);
+					auto optVirtual = virtuals.Resolve(vKey);
 					if (optVirtual.has_value()) {
-						connections.RemoveConnection(optVirtual->realTuple);
+						connections.Remove(optVirtual->realTuple);
 					}
 
 					connections.RemoveAlias(vKey);
-					virtuals.RemoveVirtual(vKey);
+					virtuals.Remove(vKey);
 
 					session->Terminate();
 				}
