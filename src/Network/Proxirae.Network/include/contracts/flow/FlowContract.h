@@ -8,7 +8,7 @@
 namespace Proxirae {
 	struct FlowContract {
 		std::string id;
-		std::uint32_t targetAddress;
+		std::string targetAddress;
 		std::uint16_t targetPort;
 		std::int64_t processId;
 		std::uint64_t secondsPassed;

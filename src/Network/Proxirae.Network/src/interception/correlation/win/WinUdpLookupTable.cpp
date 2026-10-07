@@ -1,36 +1,57 @@
+#include "environment/inet.h"
+
 #include <windows.h>
 #include <iphlpapi.h>
 #include <cstdint>
+#include <cstddef>
 
 #include "interception/correlation/win/WinUdpLookupTable.h"
-#include "environment/inet.h"
 
 #pragma comment(lib, "iphlpapi.lib")
 
 namespace Proxirae {
     class WinUdpLookupTable::Snapshot {
     public:
-        std::vector<MIB_UDPROW> rows;
+        std::vector<MIB_UDPROW> ipv4Rows;
+        std::vector<MIB_UDP6ROW> ipv6Rows;
 
-        Snapshot(PMIB_UDPTABLE table) {
-            if (table && table->dwNumEntries > 0) {
-                rows.assign(table->table, table->table + table->dwNumEntries);
+        Snapshot(PMIB_UDPTABLE table4, PMIB_UDP6TABLE table6) {
+            if (table4 && table4->dwNumEntries > 0) {
+                ipv4Rows.assign(table4->table, table4->table + table4->dwNumEntries);
+            }
+            if (table6 && table6->dwNumEntries > 0) {
+                ipv6Rows.assign(table6->table, table6->table + table6->dwNumEntries);
             }
         }
     };
 
     std::optional<WinUdpLookupTable> WinUdpLookupTable::TryCreate()
     {
-        DWORD size = 0;
+        DWORD size4 = 0;
+        PMIB_UDPTABLE table4 = nullptr;
+        std::vector<std::byte> buffer4;
 
-        if (GetUdpTable(nullptr, &size, TRUE) == ERROR_INSUFFICIENT_BUFFER) {
-            std::vector<std::byte> buffer(size);
-            auto pUdpTable = reinterpret_cast<PMIB_UDPTABLE>(buffer.data());
-
-            if (GetUdpTable(pUdpTable, &size, TRUE) == NO_ERROR) {
-                auto snapshot = std::make_unique<Snapshot>(pUdpTable);
-                return WinUdpLookupTable(std::move(snapshot));
+        if (GetExtendedUdpTable(nullptr, &size4, FALSE, AF_INET, UDP_TABLE_BASIC, 0) == ERROR_INSUFFICIENT_BUFFER) {
+            buffer4.resize(size4);
+            if (GetExtendedUdpTable(buffer4.data(), &size4, FALSE, AF_INET, UDP_TABLE_BASIC, 0) == NO_ERROR) {
+                table4 = reinterpret_cast<PMIB_UDPTABLE>(buffer4.data());
             }
+        }
+
+        DWORD size6 = 0;
+        PMIB_UDP6TABLE table6 = nullptr;
+        std::vector<std::byte> buffer6;
+
+        if (GetExtendedUdpTable(nullptr, &size6, FALSE, AF_INET6, UDP_TABLE_BASIC, 0) == ERROR_INSUFFICIENT_BUFFER) {
+            buffer6.resize(size6);
+            if (GetExtendedUdpTable(buffer6.data(), &size6, FALSE, AF_INET6, UDP_TABLE_BASIC, 0) == NO_ERROR) {
+                table6 = reinterpret_cast<PMIB_UDP6TABLE>(buffer6.data());
+            }
+        }
+
+        if (table4 || table6) {
+            auto snapshot = std::make_unique<Snapshot>(table4, table6);
+            return WinUdpLookupTable(std::move(snapshot));
         }
 
         return std::nullopt;
@@ -49,14 +70,39 @@ namespace Proxirae {
             return false;
         }
 
-        for (const auto& row : m_snapshot->rows) {
+        if (!bindKey.srcAddress.isIPv6) {
+            for (const auto& row : m_snapshot->ipv4Rows) {
+                std::uint16_t rowPort = ntohs(static_cast<std::uint16_t>(row.dwLocalPort));
 
-            std::uint16_t rowPort = ntohs(static_cast<std::uint16_t>(row.dwLocalPort));
-            std::uint32_t rowAddr = ntohl(row.dwLocalAddr);
+                if (rowPort == bindKey.srcPort) {
+                    if (row.dwLocalAddr == bindKey.srcAddress.data[0] || row.dwLocalAddr == 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+        else {
+            for (const auto& row : m_snapshot->ipv6Rows) {
+                std::uint16_t rowPort = ntohs(static_cast<std::uint16_t>(row.dwLocalPort));
 
-            if (rowPort == bindKey.srcPort) {
-                if (rowAddr == bindKey.srcAddress || rowAddr == INADDR_ANY) {
-                    return true;
+                if (rowPort == bindKey.srcPort) {
+                    bool isAnyAddr = true;
+
+                    for (int i = 0; i < 16; ++i) {
+                        if (row.dwLocalAddr.u.Byte[i] != 0) {
+                            isAnyAddr = false;
+                            break;
+                        }
+                    }
+
+                    if (isAnyAddr ||
+                        std::memcmp(
+                            &row.dwLocalAddr,
+                            bindKey.srcAddress.data.data(),
+                            16
+                        ) == 0) {
+                        return true;
+                    }
                 }
             }
         }
@@ -66,7 +112,7 @@ namespace Proxirae {
 
     bool WinUdpLookupTable::IsEmpty() const
     {
-        return !m_snapshot || m_snapshot->rows.empty();
+        return !m_snapshot || (m_snapshot->ipv4Rows.empty() && m_snapshot->ipv6Rows.empty());
     }
 
     bool WinUdpLookupTable::TryRemoveBind(const FiveTuple& bindKey) const
@@ -75,22 +121,46 @@ namespace Proxirae {
             return false;
         }
 
-        auto& rows = m_snapshot->rows;
+        if (!bindKey.srcAddress.isIPv6) {
+            auto& rows = m_snapshot->ipv4Rows;
+            
+            for (std::size_t i = 0; i < rows.size(); ++i) {
+                std::uint16_t rowPort = ntohs(static_cast<std::uint16_t>(rows[i].dwLocalPort));
 
-        for (size_t i = 0; i < rows.size(); ++i) {
-            std::uint16_t rowPort = ntohs(static_cast<std::uint16_t>(rows[i].dwLocalPort));
-            std::uint32_t rowAddr = ntohl(rows[i].dwLocalAddr);
+                if (rowPort == bindKey.srcPort) {
+                    if (rows[i].dwLocalAddr == bindKey.srcAddress.data[0] || rows[i].dwLocalAddr == 0) {
+                        rows[i] = rows.back();
+                        rows.pop_back();
 
-            if (rowPort == bindKey.srcPort) {
-                if (rowAddr == bindKey.srcAddress || rowAddr == INADDR_ANY) {
-                    rows[i] = rows.back();
-                    rows.pop_back();
+                        return true;
+                    }
+                }
+            }
+        }
+        else {
+            auto& rows = m_snapshot->ipv6Rows;
 
-                    return true;
+            for (std::size_t i = 0; i < rows.size(); ++i) {
+                std::uint16_t rowPort = ntohs(static_cast<std::uint16_t>(rows[i].dwLocalPort));
+
+                if (rowPort == bindKey.srcPort) {
+                    bool isAnyAddr = true;
+                    for (int j = 0; j < 16; ++j) {
+                        if (rows[i].dwLocalAddr.u.Byte[j] != 0) {
+                            isAnyAddr = false;
+                            break;
+                        }
+                    }
+
+                    if (isAnyAddr || std::memcmp(&rows[i].dwLocalAddr, bindKey.srcAddress.data.data(), 16) == 0) {
+                        rows[i] = rows.back();
+                        rows.pop_back();
+                        return true;
+                    }
                 }
             }
         }
 
-        return false; 
+        return false;
     }
 }

@@ -14,7 +14,6 @@ namespace Proxirae {
 
 		if (!SendExact(sock, greeting)) {
 			m_logger.LogError(std::format("[SOCKS5] Handshake greeting send failed ({}:{})", m_address, m_port));
-			CloseSocket(sock);
 
 			return false;
 		}
@@ -22,7 +21,6 @@ namespace Proxirae {
 		char response[2]{};
 		if (!RecvExact(sock, response)) {
 			m_logger.LogError(std::format("[SOCKS5] Handshake response read failed ({}:{})", m_address, m_port));
-			CloseSocket(sock);
 
 			return false;
 		}
@@ -30,7 +28,6 @@ namespace Proxirae {
 		if (!requiresAuth) {
 			if (response[0] != 0x05 || response[1] != 0x00) {
 				m_logger.LogError(std::format("[SOCKS5] Negotiation 'No Auth' rejected by {}:{}", m_address, m_port));
-				CloseSocket(sock);
 
 				return false;
 			}
@@ -38,7 +35,6 @@ namespace Proxirae {
 		else {
 			if (response[0] != 0x05 || response[1] != 0x02) {
 				m_logger.LogError(std::format("[SOCKS5] Negotiation 'User/Password' rejected by {}:{}", m_address, m_port));
-				CloseSocket(sock);
 
 				return false;
 			}
@@ -54,7 +50,6 @@ namespace Proxirae {
 
 			if (!SendExact(sock, authReq)) {
 				m_logger.LogError(std::format("[SOCKS5] Auth credentials send failed ({}:{})", m_address, m_port));
-				CloseSocket(sock);
 
 				return false;
 			}
@@ -62,14 +57,12 @@ namespace Proxirae {
 			char authResp[2]{};
 			if (!RecvExact(sock, authResp)) {
 				m_logger.LogError(std::format("[SOCKS5] Auth response read failed ({}:{})", m_address, m_port));
-				CloseSocket(sock);
 
 				return false;
 			}
 
 			if (authResp[1] != 0x00) {
 				m_logger.LogError(std::format("[SOCKS5] Authentication failed: invalid credentials ({}:{})", m_address, m_port));
-				CloseSocket(sock);
 
 				return false;
 			}

@@ -10,12 +10,12 @@
 namespace Proxirae {
 	class AssociationTable {
 	public:
-		void AddAssociation(const FiveTuple& key, const AssociationEntry& entry);
-		void RemoveAssociation(const FiveTuple& key);
+		void Add(const FiveTuple& key, const AssociationEntry& entry);
+		void Remove(const FiveTuple& key);
 
-		std::optional<AssociationEntry> GetAssociation(const FiveTuple& key) const;
+		std::optional<AssociationEntry> Get(const FiveTuple& key) const;
 
-		bool AssociationExists(const FiveTuple& key) const;
+		bool Exists(const FiveTuple& key) const;
 
 	private:
 		std::unordered_map<FiveTuple, AssociationEntry, FiveTupleHash> m_associations;

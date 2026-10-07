@@ -1,7 +1,6 @@
 #include <format>
 
 #include "environment/sock.h"
-#include "environment/inet.h"
 #include "transport/stream/TcpSession.h"
 #include "utils/UuidUtils.h"
 
@@ -23,9 +22,10 @@ namespace Proxirae {
 		std::vector<std::byte> clientBuffer;
 		std::vector<std::byte> proxyBuffer;
 
+		std::string targetAddress;
+		std::uint16_t targetPort{ 0 };
+
 		std::string proxyId;
-		std::uint32_t dstAddress{ 0 };
-		std::uint16_t dstPort{ 0 };
 		std::int64_t processId{ 0 };
 
 		std::atomic<std::uint64_t> bytesSent{ 0 };
@@ -46,17 +46,14 @@ namespace Proxirae {
 
 			proxy = proxyFactory.CreateStream(*entry.proxyId);
 
-			char targetHost[INET_ADDRSTRLEN];
-			inet_ntop(AF_INET, &key.dstAddress, targetHost, sizeof(targetHost));
-			int targetPort = ntohs(key.dstPort);
+			targetAddress = key.dstAddress.ToString();
+			targetPort = key.dstPort;
 
-			if (!proxy->Connect(targetHost, targetPort)) {
+			if (!proxy->Connect(targetAddress, targetPort)) {
 				return false;
 			}
 
 			proxyId = *entry.proxyId;
-			dstAddress = key.dstAddress;
-			dstPort = key.dstPort;
 			processId = entry.processId.has_value() ? *entry.processId : -1;
 
 			ForwardToProxy(self);
@@ -89,7 +86,8 @@ namespace Proxirae {
 
 			adapter.AsyncRead(client, std::span(clientBuffer), [this, self](const IoResult& res) {
 				if (!res.success || res.bytesTransferred == 0) {
-					if (!isStopping) logger.LogDebug(std::format("[TcpSession] Client connection closed ({}:{})", endpoint.GetAddress(), endpoint.GetPort()));
+					if (!isStopping) 
+						logger.LogDebug(std::format("[TcpSession] Client connection closed ({}:{})", endpoint.GetAddress().ToString(), endpoint.GetPort()));
 					self->Terminate();
 
 					return;
@@ -186,8 +184,8 @@ namespace Proxirae {
 
 		return FlowContract{
 			.id = m_id,
-			.targetAddress = m_bridge->dstAddress,
-			.targetPort = m_bridge->dstPort,
+			.targetAddress = m_bridge->targetAddress,
+			.targetPort = m_bridge->targetPort,
 			.processId = m_bridge->processId,
 			.secondsPassed = static_cast<std::uint64_t>(seconds),
 			.proxyId = m_bridge->proxyId,
@@ -202,7 +200,7 @@ namespace Proxirae {
 		return m_id;
 	}
 
-	std::uint32_t TcpSession::GetAddress() const
+	IpAddress TcpSession::GetAddress() const
 	{
 		return m_bridge->endpoint.GetAddress();
 	}

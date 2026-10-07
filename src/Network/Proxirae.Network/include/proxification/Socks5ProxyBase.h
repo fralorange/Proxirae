@@ -5,8 +5,8 @@
 namespace Proxirae {
     class Socks5ProxyBase : public ProxyBase {
     protected:
-        using ProxyBase::ProxyBase; 
+        using ProxyBase::ProxyBase;
 
-        virtual bool PerformHandshake(NativeSocket sock);
+        bool PerformHandshake(NativeSocket sock) override;
     };
 }

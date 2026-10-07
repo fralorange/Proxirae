@@ -109,12 +109,12 @@ namespace Proxirae {
 		struct in6_addr ipv6Addr{};
 
 		if (inet_pton(AF_INET, targetAddrStr.c_str(), &ipv4Addr) == 1) {
-			connReq.push_back(0x01); 
+			connReq.push_back(0x01); // IPv4
 			const char* ipBytes = reinterpret_cast<const char*>(&ipv4Addr.s_addr);
 			connReq.insert(connReq.end(), ipBytes, ipBytes + 4);
 		}
 		else if (inet_pton(AF_INET6, targetAddrStr.c_str(), &ipv6Addr) == 1) {
-			connReq.push_back(0x04);
+			connReq.push_back(0x04); // IPv6
 			const char* ipBytes = reinterpret_cast<const char*>(&ipv6Addr.s6_addr);
 			connReq.insert(connReq.end(), ipBytes, ipBytes + 16);
 		}
@@ -125,7 +125,7 @@ namespace Proxirae {
 				return false;
 			}
 
-			connReq.push_back(0x03); 
+			connReq.push_back(0x03); // Domain
 			connReq.push_back(static_cast<char>(targetAddrStr.length()));
 			connReq.insert(connReq.end(), targetAddrStr.begin(), targetAddrStr.end());
 		}

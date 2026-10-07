@@ -11,6 +11,7 @@
 #include "primitives/endpoints/Endpoint.h"
 #include "proxification/IProxyFactory.h"
 #include "primitives/tuples/FiveTuple.h"
+#include "primitives/ip/IpAddress.h"
 #include "contracts/flow/FlowContract.h"
 
 namespace Proxirae {
@@ -27,7 +28,7 @@ namespace Proxirae {
 		FlowContract GetFlow() const;
 
 		std::string_view GetId() const;
-		std::uint32_t GetAddress() const;
+		IpAddress GetAddress() const;
 		std::uint16_t GetPort() const;
 
 	private:

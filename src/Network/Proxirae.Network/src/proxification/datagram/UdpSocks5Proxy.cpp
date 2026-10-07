@@ -49,8 +49,8 @@ namespace Proxirae {
             return false;
         }
 
-        m_tcpControl = proxySocket;
-        m_udpData = relaySocket;
+        m_tcpReceiver = proxySocket;
+        m_udpRelay = relaySocket;
 
         m_connected = true;
         m_logger.LogInfo(std::format("[SOCKS5] Associate tunnel established at {}:{}", m_bindAddress, m_bindPort));
@@ -61,13 +61,12 @@ namespace Proxirae {
     void UdpSocks5Proxy::Disconnect() {
         if (!m_connected) return;
 
-        shutdown(m_tcpControl, ShutdownBoth);
-        CloseSocket(m_tcpControl);
+        shutdown(m_tcpReceiver, ShutdownBoth);
+        CloseSocket(m_tcpReceiver);
+        CloseSocket(m_udpRelay);
 
-        CloseSocket(m_udpData);
-
-        m_tcpControl = InvalidNativeSocket;
-        m_udpData = InvalidNativeSocket;
+        m_tcpReceiver = InvalidNativeSocket;
+        m_udpRelay = InvalidNativeSocket;
         m_connected = false;
 
         m_logger.LogInfo(std::format("[SOCKS5] Disconnected from {}:{}", m_address, m_port));
@@ -107,7 +106,7 @@ namespace Proxirae {
             addrLen = 1 + targetAddress.length();
         }
 
-        std::size_t headerSize = 3 + 1 + addrLen + 2;
+        std::size_t headerSize = addrLen + 6;
 
         auto sendBuffer = std::make_shared<std::vector<std::byte>>();
         sendBuffer->reserve(headerSize + buffer.size());
@@ -134,18 +133,12 @@ namespace Proxirae {
         std::uint16_t networkPort = htons(targetPort);
         const auto* portBytes = reinterpret_cast<const std::byte*>(&networkPort);
         sendBuffer->insert(sendBuffer->end(), portBytes, portBytes + 2);
-
         sendBuffer->insert(sendBuffer->end(), buffer.begin(), buffer.end());
 
-        struct sockaddr_in relayAddr {};
-        relayAddr.sin_family = AF_INET;
-        inet_pton(AF_INET, m_bindAddress.c_str(), &relayAddr.sin_addr.s_addr);
-        relayAddr.sin_port = htons(m_bindPort);
-
         m_adapter.AsyncSendTo(
-            m_udpData,
-            reinterpret_cast<const sockaddr*>(&relayAddr),
-            sizeof(relayAddr),
+            m_udpRelay,
+            reinterpret_cast<const sockaddr*>(&m_relaySockAddr),
+            m_relaySockAddrLen,
             *sendBuffer,
             [sendBuffer, callback = std::move(callback)](const IoDatagramResult& res) {
                 callback(res);
@@ -162,20 +155,13 @@ namespace Proxirae {
             return;
         }
 
-        auto recvBuffer = std::make_shared<std::vector<std::byte>>(65536);
-
-        m_adapter.AsyncRecvFrom(m_udpData, *recvBuffer, [this, buffer, recvBuffer, callback = std::move(callback)](const IoDatagramResult& res) {
-            if (!res.success || res.bytesTransferred < 10) {
+        m_adapter.AsyncRecvFrom(m_udpRelay, m_internalRecvBuffer, [this, buffer, callback = std::move(callback)](const IoDatagramResult& res) {
+            if (!res.success || res.bytesTransferred < 4) {
                 callback(res, "", 0);
                 return;
             }
 
-            const auto* data = recvBuffer->data();
-
-            if (res.bytesTransferred < 4) {
-                callback(IoResult{ false, 0, 0 }, "", 0);
-                return;
-            }
+            const auto* data = m_internalRecvBuffer.data();
 
             if (data[2] != std::byte{ 0x00 }) {
                 callback(IoResult{ false, 0, 0 }, "", 0);
@@ -250,13 +236,25 @@ namespace Proxirae {
 
     bool UdpSocks5Proxy::RequestUdpAssociate(NativeSocket sock)
     {
-        std::vector<char> req{
-            0x05, 0x03, 0x00,
-            0x01, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00
-        };
+        struct sockaddr_storage localAddr {};
+        NativeSocketLen addrLen = sizeof(localAddr);
 
-        if (!SendExact(sock, req)) return false;
+        if (getsockname(sock, reinterpret_cast<struct sockaddr*>(&localAddr), &addrLen) == SocketError) {
+            m_logger.LogError(std::format("[SOCKS5] Failed to get sock name: error {}", GetSocketError()));
+            return false;
+        }
+
+        std::vector<char> assReq;
+
+        if (localAddr.ss_family == AF_INET6) {
+            assReq = { 0x05, 0x03, 0x00, 0x04 };
+            assReq.insert(assReq.end(), 18, 0x00);
+        }
+        else {
+            assReq = { 0x05, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+        }
+
+        if (!SendExact(sock, assReq)) return false;
 
         char header[4]{};
         if (!RecvExact(sock, header)) return false;
@@ -301,46 +299,52 @@ namespace Proxirae {
 
     NativeSocket UdpSocks5Proxy::ConnectToRelay(NativeSocket sock)
     {
-        struct sockaddr_storage bindAddr {};
-        socklen_t addrLen = 0;
-        int domain = AF_INET;
+        struct addrinfo hints {};
+        std::memset(&hints, 0, sizeof(hints));
+        hints.ai_family = AF_UNSPEC;
+        hints.ai_socktype = SOCK_DGRAM; 
+        hints.ai_protocol = IPPROTO_UDP;
 
-        if (inet_pton(AF_INET, m_bindAddress.c_str(), &reinterpret_cast<struct sockaddr_in*>(&bindAddr)->sin_addr) == 1) {
-            domain = AF_INET;
-            auto* addr4 = reinterpret_cast<struct sockaddr_in*>(&bindAddr);
-            addr4->sin_family = AF_INET;
-            addr4->sin_port = htons(m_bindPort);
-            addrLen = sizeof(struct sockaddr_in);
-        }
-        else if (inet_pton(AF_INET6, m_bindAddress.c_str(), &reinterpret_cast<struct sockaddr_in6*>(&bindAddr)->sin6_addr) == 1) {
-            domain = AF_INET6;
-            auto* addr6 = reinterpret_cast<struct sockaddr_in6*>(&bindAddr);
-            addr6->sin6_family = AF_INET6;
-            addr6->sin6_port = htons(m_bindPort);
-            addrLen = sizeof(struct sockaddr_in6);
-        }
-        else {
-            m_logger.LogError(std::format("[SOCKS5] Invalid relay address: {}", m_bindAddress));
+        std::string portStr = std::to_string(m_bindPort);
+        struct addrinfo* result = nullptr;
+
+        int res = getaddrinfo(m_bindAddress.c_str(), portStr.c_str(), &hints, &result);
+        if (res != 0 || result == nullptr) {
+            m_logger.LogError(std::format("[SOCKS5] Failed to resolve relay address {}: error {}", m_bindAddress, res));
             CloseSocket(sock);
             return InvalidNativeSocket;
         }
 
-        NativeSocket relaySocket = socket(domain, SOCK_DGRAM, IPPROTO_UDP);
-        if (relaySocket == InvalidNativeSocket) {
-            CloseSocket(sock);
-            return InvalidNativeSocket;
-        }
+        NativeSocket relaySocket = InvalidNativeSocket;
+        std::memset(&m_relaySockAddr, 0, sizeof(m_relaySockAddr));
+        m_relaySockAddrLen = 0;
 
-        if (connect(relaySocket, reinterpret_cast<struct sockaddr*>(&bindAddr), addrLen) == SocketError) {
-            m_logger.LogError("[SOCKS5] Failed to connect local UDP socket to proxy bind address.");
-            CloseSocket(sock);
+        for (struct addrinfo* ptr = result; ptr != nullptr; ptr = ptr->ai_next) {
+            relaySocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
+            if (relaySocket == InvalidNativeSocket) {
+                continue;
+            }
+
+            if (connect(relaySocket, ptr->ai_addr, static_cast<NativeSocketLen>(ptr->ai_addrlen)) != SocketError) {
+                std::memcpy(&m_relaySockAddr, ptr->ai_addr, ptr->ai_addrlen);
+                m_relaySockAddrLen = static_cast<NativeSocketLen>(ptr->ai_addrlen);
+                break;
+            }
+
             CloseSocket(relaySocket);
+            relaySocket = InvalidNativeSocket;
+        }
+
+        freeaddrinfo(result);
+
+        if (relaySocket == InvalidNativeSocket) {
+            m_logger.LogError(std::format("[SOCKS5] Failed to connect local UDP socket to proxy bind address {}:{}", m_bindAddress, m_bindPort));
+            CloseSocket(sock);
             return InvalidNativeSocket;
         }
 
         if (!m_driver.Attach(relaySocket)) {
             m_logger.LogError("[SOCKS5] Failed to attach relay socket to driver.");
-            CloseSocket(sock);
             CloseSocket(relaySocket);
             return InvalidNativeSocket;
         }

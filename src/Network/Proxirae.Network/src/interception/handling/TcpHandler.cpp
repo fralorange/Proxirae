@@ -1,6 +1,5 @@
 #include <format>
 
-#include "environment/inet.h"
 #include "interception/handling/TcpHandler.h"
 #include "persistence/connections/ConnectionTable.h"
 
@@ -24,7 +23,7 @@ namespace Proxirae {
 			if (packetCtx.IsTcpSyn() && !packetCtx.IsTcpAck() && !packetCtx.IsLoopback()) {
 				HandleSynOnly(ctx);
 			}
-			else if (packetCtx.IsTcpSyn() && packetCtx.IsTcpAck() && WinDivertHelperHtons(packetCtx.GetSourcePort()) == m_redirectPort) {
+			else if (packetCtx.IsTcpSyn() && packetCtx.IsTcpAck() && packetCtx.GetSourcePort() == m_redirectPort) {
 				HandleSynAckOnly(packetCtx);
 			}
 			else if (!packetCtx.IsTcpSyn() && packetCtx.IsTcpAck()) {
@@ -43,8 +42,6 @@ namespace Proxirae {
 	{
 		auto& packetCtx = ctx.packetCtx;
 
-		std::string message;
-
 		FiveTuple key{
 			.srcAddress = packetCtx.GetSourceAddress(),
 			.srcPort = packetCtx.GetSourcePort(),
@@ -58,11 +55,9 @@ namespace Proxirae {
 			.processId = packetCtx.GetProcessId()
 		};
 
-		m_connections.AddConnection(key, entry);
+		m_connections.Add(key, entry);
 
-		m_logger.LogDebug(message);
-
-		packetCtx.SetDestination(packetCtx.GetSourceAddress(), WinDivertHelperHtons(m_redirectPort));
+		packetCtx.SetDestination(packetCtx.GetSourceAddress(), m_redirectPort);
 
 		m_logger.LogDebug(std::format(
 			"[TcpHandler] Redirected SYN outbound: {} -> {} (redirect port {})",
@@ -103,8 +98,8 @@ namespace Proxirae {
 			.protocol = ctx.GetProtocol()
 		};
 
-		if (m_connections.ConnectionExists(key)) {
-			ctx.SetDestination(ctx.GetSourceAddress(), WinDivertHelperHtons(m_redirectPort));
+		if (m_connections.Exists(key)) {
+			ctx.SetDestination(ctx.GetSourceAddress(), m_redirectPort);
 
 			m_logger.LogDebug(std::format(
 				"[TcpHandler] Redirected ACK outbound: {} -> {} (redirect port {})",

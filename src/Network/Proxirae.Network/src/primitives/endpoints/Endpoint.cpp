@@ -4,10 +4,9 @@
 #include "primitives/endpoints/Endpoint.h"
 
 namespace Proxirae {
-	// address and port must be in network byte order
-	Endpoint::Endpoint(std::uint32_t address, std::uint16_t port) : m_address(address), m_port(port) {}
+	Endpoint::Endpoint(const IpAddress& address, std::uint16_t port) : m_address(address), m_port(port) {}
 
-	std::uint32_t Endpoint::GetAddress() const {
+	IpAddress Endpoint::GetAddress() const {
 		return m_address;
 	}
 
@@ -17,9 +16,28 @@ namespace Proxirae {
 
 	std::string Endpoint::ToString() const
 	{
-		char addrStr[INET_ADDRSTRLEN];
-		inet_ntop(AF_INET, &m_address, addrStr, sizeof(addrStr));
+		if (!m_address.isIPv6) {
+			char addrStr[INET_ADDRSTRLEN];
 
-		return std::format("{}:{}", addrStr, ntohs(m_port));
+			std::uint32_t ipNbo = htonl(*reinterpret_cast<const std::uint32_t*>(m_address.data.data()));
+
+			inet_ntop(AF_INET, &ipNbo, addrStr, sizeof(addrStr));
+
+			return std::format("{}:{}", addrStr, m_port);
+		}
+		else {
+			char addrStr[INET6_ADDRSTRLEN];
+
+			std::uint32_t ipNbo[4]{};
+			const std::uint32_t* ipHbo = reinterpret_cast<const std::uint32_t*>(m_address.data.data());
+
+			for (int i = 0; i < 4; ++i) {
+				ipNbo[i] = htonl(ipHbo[i]);
+			}
+
+			inet_ntop(AF_INET6, ipNbo, addrStr, sizeof(addrStr));
+
+			return std::format("[{}]:{}", addrStr, m_port);
+		}
 	}
 }

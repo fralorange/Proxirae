@@ -36,8 +36,11 @@ namespace Proxirae {
         NativeSocket ConnectToRelay(NativeSocket sock);
 
     private:
-        NativeSocket m_tcpControl{ InvalidNativeSocket };
-        NativeSocket m_udpData{ InvalidNativeSocket };
+        NativeSocket m_tcpReceiver{ InvalidNativeSocket };
+        NativeSocket m_udpRelay{ InvalidNativeSocket };
+
+        struct sockaddr_storage m_relaySockAddr {};
+        NativeSocketLen m_relaySockAddrLen{ 0 };
 
         std::string m_bindAddress;
         std::uint16_t m_bindPort{ 0 };

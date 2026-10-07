@@ -23,23 +23,44 @@ namespace Proxirae.Infrastructure.Persistence.JSON
 
         protected async Task EnsureLoadedAsync(CancellationToken cancellationToken)
         {
-            if (_loaded) return;
-            await ReloadAsync(cancellationToken);
+            await _semaphore.WaitAsync(cancellationToken);
+            try
+            {
+                lock (_items)
+                {
+                    if (_loaded)
+                    {
+                        return;
+                    }
+                }
+
+                await ReloadCoreAsync(cancellationToken);
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public async Task SaveAsync(CancellationToken cancellationToken)
         {
+            await EnsureLoadedAsync(cancellationToken);
+
             await _semaphore.WaitAsync(cancellationToken);
             try
             {
-                var json = JsonSerializer.Serialize(_items, JsonOptions);
+                List<T> snapshot;
+                lock (_items)
+                {
+                    snapshot = _items.ToList();
+                }
 
+                var json = JsonSerializer.Serialize(snapshot, JsonOptions);
                 var tempFilePath = _filePath + ".tmp";
 
                 await File.WriteAllTextAsync(tempFilePath, json, cancellationToken);
-
                 File.Move(tempFilePath, _filePath, overwrite: true);
-            } 
+            }
             finally
             {
                 _semaphore.Release();
@@ -51,25 +72,32 @@ namespace Proxirae.Infrastructure.Persistence.JSON
             await _semaphore.WaitAsync(cancellationToken);
             try
             {
-                _items.Clear();
-                _loaded = false;
-
-                if (File.Exists(_filePath))
-                {
-                    var json = await File.ReadAllTextAsync(_filePath, cancellationToken);
-                    var items = JsonSerializer.Deserialize<List<T>>(json, JsonOptions);
-
-                    if (items is not null)
-                    {
-                        _items.AddRange(items);
-                    }
-                }
-
-                _loaded = true;
+                await ReloadCoreAsync(cancellationToken);
             }
             finally
             {
                 _semaphore.Release();
+            }
+        }
+
+        private async Task ReloadCoreAsync(CancellationToken cancellationToken)
+        {
+            List<T>? items = null;
+
+            if (File.Exists(_filePath))
+            {
+                var json = await File.ReadAllTextAsync(_filePath, cancellationToken);
+                items = JsonSerializer.Deserialize<List<T>>(json, JsonOptions);
+            }
+
+            lock (_items)
+            {
+                _items.Clear();
+                if (items is not null)
+                {
+                    _items.AddRange(items);
+                }
+                _loaded = true;
             }
         }
     }

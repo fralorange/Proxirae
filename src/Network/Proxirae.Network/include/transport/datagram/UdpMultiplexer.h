@@ -5,6 +5,7 @@
 #include "transport/IMultiplexer.h"
 #include "UdpBinder.h"
 #include "persistence/connections/ConnectionTable.h"
+#include "persistence/virtuals/VirtualTable.h"
 #include "monitoring/flow/IFlowMonitor.h"
 #include "proxification/IProxyFactory.h"
 #include "diagnostics/ILogger.h"
@@ -14,7 +15,7 @@
 namespace Proxirae {
 	class UdpMultiplexer : public IMultiplexer {
 	public:
-		UdpMultiplexer(UdpBinder& binder, IIoDatagramAdapter& adapter, ConnectionTable& connections, IFlowMonitor& monitor, IProxyFactory& factory, ILogger& logger);
+		UdpMultiplexer(UdpBinder& binder, IIoDatagramAdapter& adapter, ConnectionTable& connections, VirtualTable& virtuals, IFlowMonitor& monitor, IProxyFactory& factory, ILogger& logger);
 		~UdpMultiplexer();
 
 		bool Start() override;

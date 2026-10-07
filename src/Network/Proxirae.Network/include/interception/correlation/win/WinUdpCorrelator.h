@@ -12,7 +12,7 @@
 namespace Proxirae {
 	class WinUdpCorrelator : public IPacketCorrelator {
 	public:
-		WinUdpCorrelator(IProcessGuard& guard, AssociationTable& associations);
+		WinUdpCorrelator(IProcessGuard& guard, AssociationTable& associations, std::optional<WinUdpLookupTable> lookupTable, std::uint16_t redirectPort);
 		~WinUdpCorrelator() override;
 
 		bool CorrelateNetwork(const Packet& packet, const std::function<void(IPacketContext&)>& callback) override;
@@ -25,5 +25,7 @@ namespace Proxirae {
 		AssociationTable& m_associations;
 
 		std::optional<WinUdpLookupTable> m_lookupTable;
+
+		std::uint16_t m_redirectPort;
 	};
 }

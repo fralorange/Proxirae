@@ -1,9 +1,7 @@
+#include "proxification/ProxyBase.h"
+
 #include <format>
 #include <cstring>
-
-#include "proxification/ProxyBase.h"
-#include "environment/sock.h"
-#include "environment/inet.h"
 
 namespace Proxirae {
     ProxyBase::ProxyBase(std::string_view address, std::uint16_t port, IAsyncDriver& driver, ILogger& logger)
@@ -17,7 +15,12 @@ namespace Proxirae {
         m_password = password;
     }
 
-    NativeSocket ProxyBase::ConnectToProxy() {
+    bool ProxyBase::PerformHandshake(NativeSocket sock) {
+        return true;
+    }
+
+    NativeSocket ProxyBase::ConnectToProxy()
+    {
         struct sockaddr_storage proxyAddr {};
         NativeSocketLen addrLen = 0;
         int domain = AF_INET;
@@ -46,6 +49,7 @@ namespace Proxirae {
         }
 
         NativeSocket sock = socket(domain, SOCK_STREAM, IPPROTO_TCP);
+
         if (sock == InvalidNativeSocket) {
             m_logger.LogError(std::format("[Proxy] Socket creation failed: error {}", GetSocketError()));
             return InvalidNativeSocket;
@@ -62,38 +66,11 @@ namespace Proxirae {
         return sock;
     }
 
-    bool ProxyBase::SendExact(NativeSocket sock, std::span<const char> buffer) {
-        std::size_t totalSent = 0;
-        std::size_t length = buffer.size();
-
-        while (totalSent < length) {
-            int bytesSent = send(sock, buffer.data() + totalSent, static_cast<int>(length - totalSent), 0);
-            if (bytesSent == SocketError) {
-                return false;
-            }
-            totalSent += bytesSent;
-        }
-        return true;
-    }
-
-    bool ProxyBase::RecvExact(NativeSocket sock, std::span<char> buffer) {
-        std::size_t totalReceived = 0;
-        std::size_t length = buffer.size();
-
-        while (totalReceived < length) {
-            int bytesReceived = recv(sock, buffer.data() + totalReceived, static_cast<int>(length - totalReceived), 0);
-            if (bytesReceived <= 0) {
-                return false;
-            }
-            totalReceived += bytesReceived;
-        }
-        return true;
-    }
-
-    NativeSocket ProxyBase::ResolveDomain() {
+    NativeSocket ProxyBase::ResolveDomain()
+    {
         struct addrinfo hints {};
         std::memset(&hints, 0, sizeof(hints));
-        hints.ai_family = AF_UNSPEC;
+        hints.ai_family = AF_UNSPEC; 
         hints.ai_socktype = SOCK_STREAM;
         hints.ai_protocol = IPPROTO_TCP;
 
@@ -112,7 +89,9 @@ namespace Proxirae {
 
         for (struct addrinfo* ptr = result; ptr != nullptr && attempt < MaxConnectAttempts; ptr = ptr->ai_next) {
             sock = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-            if (sock == InvalidNativeSocket) continue;
+            if (sock == InvalidNativeSocket) {
+                continue;
+            }
 
             attempt++;
             m_logger.LogDebug(std::format("[Proxy] Connecting to domain {} ({}:{})...", m_address, ptr->ai_canonname ? ptr->ai_canonname : "", m_port));
@@ -132,5 +111,41 @@ namespace Proxirae {
         }
 
         return sock;
+    }
+
+    bool ProxyBase::SendExact(NativeSocket sock, std::span<const char> buffer)
+    {
+        std::size_t totalSent = 0;
+        std::size_t length = buffer.size();
+
+        while (totalSent < length) {
+            int bytesSent = send(sock, buffer.data() + totalSent, static_cast<int>(length - totalSent), 0);
+
+            if (bytesSent == SocketError) {
+                return false;
+            }
+
+            totalSent += bytesSent;
+        }
+
+        return true;
+    }
+
+    bool ProxyBase::RecvExact(NativeSocket sock, std::span<char> buffer)
+    {
+        std::size_t totalReceived = 0;
+        std::size_t length = buffer.size();
+
+        while (totalReceived < length) {
+            int bytesReceived = recv(sock, buffer.data() + totalReceived, static_cast<int>(length - totalReceived), 0);
+
+            if (bytesReceived <= 0) {
+                return false;
+            }
+
+            totalReceived += bytesReceived;
+        }
+
+        return true;
     }
 }
