@@ -550,7 +550,7 @@
     <value>Start Proxirae automatically</value>
   </data>
   <data name="GeneralAutostartDescription" xml:space="preserve">
-    <value>Automatically start Proxirae when you sign in to Windows.</value>
+    <value>Automatically start Proxirae when you sign in.</value>
   </data>
   <data name="GeneralGroupHeaderStartup" xml:space="preserve">
     <value>Startup</value>

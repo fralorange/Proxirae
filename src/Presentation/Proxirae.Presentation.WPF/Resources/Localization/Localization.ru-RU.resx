@@ -550,7 +550,7 @@
     <value>Автоматический запуск</value>
   </data>
   <data name="GeneralAutostartDescription" xml:space="preserve">
-    <value>Автоматически запускать Proxirae при входе в Windows.</value>
+    <value>Автоматически запускать Proxirae при входе в систему.</value>
   </data>
   <data name="GeneralGroupHeaderStartup" xml:space="preserve">
     <value>Запуск</value>
