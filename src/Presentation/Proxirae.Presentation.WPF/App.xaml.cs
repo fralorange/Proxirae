@@ -2,12 +2,13 @@
 using Microsoft.Extensions.Hosting;
 using Proxirae.Application.Services.Localization;
 using Proxirae.Application.Services.Preferences;
-using Proxirae.Application.Services.UI;
+using Proxirae.Application.Services.Styles;
 using Proxirae.Infrastructure;
 using Proxirae.Infrastructure.ProcessCommunication;
 using Proxirae.Infrastructure.TransactionControl;
 using Proxirae.Presentation.WPF.Models.Themes;
 using Proxirae.Presentation.WPF.Services.Themes;
+using Proxirae.Presentation.WPF.Services.Tray;
 using System.Windows;
 
 namespace Proxirae.Presentation.WPF
@@ -45,6 +46,8 @@ namespace Proxirae.Presentation.WPF
 
         protected override async void OnStartup(StartupEventArgs e)
         {
+            StartupOptions startupOptions = StartupOptions.Parse(e.Args);
+
             await _host.StartAsync();
 
             var preferencesService = _host.Services.GetRequiredService<IPreferencesService>();
@@ -58,12 +61,25 @@ namespace Proxirae.Presentation.WPF
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            var uiConfigurator = _host.Services.GetRequiredService<IUiService>();
-            uiConfigurator.ApplyGlobalTweaks();
+            var stylesConfigurator = _host.Services.GetRequiredService<IStylesService>();
+            stylesConfigurator.ApplyGlobalTweaks();
 
-            var mainView = _host.Services.GetRequiredService<MainView>();
-            Current.MainWindow = mainView;
-            mainView.Show();
+            var trayService = _host.Services.GetRequiredService<TrayService>();
+            trayService.Initialize();
+
+            if (!startupOptions.Silent)
+            {
+                var mainView = _host.Services.GetRequiredService<MainView>();
+
+                Current.MainWindow = mainView;
+
+                mainView.Show();
+
+                if (startupOptions.Minimized)
+                {
+                    mainView.WindowState = WindowState.Minimized;
+                }
+            }
 
             base.OnStartup(e);
         }

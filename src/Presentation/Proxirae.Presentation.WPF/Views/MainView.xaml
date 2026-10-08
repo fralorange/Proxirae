@@ -1,4 +1,4 @@
-﻿<controls:TitleBarWindow x:Class="Proxirae.Presentation.WPF.MainView"
+<controls:TitleBarWindow x:Class="Proxirae.Presentation.WPF.MainView"
                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                          xmlns:behaviors="clr-namespace:Proxirae.Presentation.WPF.Behaviors"
@@ -12,7 +12,6 @@
                          xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
                          xmlns:root="clr-namespace:Proxirae.Presentation.WPF"
                          xmlns:svg="https://github.com/dotnetprojects/SVGImage"
-                         xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
                          xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels"
                          Title="{x:Static root:ProgramInfo.AppName}"
                          MinWidth="750"
@@ -40,11 +39,6 @@
                           Header="{l:Localize {x:Static res:LocalizationKeys.MenuExportRoutes}}" />
                 <MenuItem Command="{Binding ExportLogsHistoryCommand}"
                           Header="{l:Localize {x:Static res:LocalizationKeys.MenuExportLogs}}" />
-                <Separator />
-                <MenuItem Command="{Binding UpdateAutostartCommand}"
-                          Header="{l:Localize {x:Static res:LocalizationKeys.MenuAutostart}}"
-                          IsCheckable="True"
-                          IsChecked="{Binding Autostart, Mode=TwoWay}" />
                 <Separator />
                 <MenuItem Command="{Binding ExitCommand}"
                           Header="{l:Localize {x:Static res:LocalizationKeys.MenuExit}}" />
@@ -89,22 +83,6 @@
                            MinHeight="100" />
         </Grid.RowDefinitions>
 
-        <tb:TaskbarIcon x:Name="TrayIcon"
-                        DoubleClickCommand="{Binding RestoreCommand}"
-                        IconSource="/Resources/Icons/icon.ico"
-                        ToolTipText="{x:Static root:ProgramInfo.AppName}">
-            <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
-                             Style="{StaticResource MainContextMenu}">
-                    <MenuItem Command="{Binding RestoreCommand}"
-                              Header="{l:Localize {x:Static res:LocalizationKeys.TrayOpen}}" />
-                    <Separator />
-                    <MenuItem Command="{Binding ExitCommand}"
-                              Header="{l:Localize {x:Static res:LocalizationKeys.TrayExit}}" />
-                </ContextMenu>
-            </tb:TaskbarIcon.ContextMenu>
-        </tb:TaskbarIcon>
-
         <DockPanel Grid.Row="0"
                    Style="{StaticResource ProcessPanel}">
             <StackPanel DockPanel.Dock="Left">
@@ -133,13 +111,19 @@
 
             <DataGrid x:Name="FlowsTable"
                       behaviors:ClearSelectionBehavior.IsEnabled="True"
+                      CanUserSortColumns="True"
                       DockPanel.Dock="Right"
+                      EnableColumnVirtualization="True"
+                      EnableRowVirtualization="True"
                       IsReadOnly="True"
                       ItemsSource="{Binding Flows}"
-                      Style="{StaticResource MainProcessTable}">
+                      Style="{StaticResource MainProcessTable}"
+                      VirtualizingPanel.ScrollUnit="Item"
+                      VirtualizingPanel.VirtualizationMode="Recycling">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Width="*"
-                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderApplication}}">
+                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderApplication}}"
+                                            SortMemberPath="ProcessName">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="4,0"
@@ -147,17 +131,18 @@
                                     <Image Width="16"
                                            Height="16"
                                            Margin="0,0,6,0"
-                                           Source="{Binding ProcessIcon, IsAsync=True}" />
+                                           Source="{Binding ProcessIcon}" />
 
                                     <TextBlock Style="{StaticResource MainDataGridText}"
-                                               Text="{Binding ProcessName, IsAsync=True}" />
+                                               Text="{Binding ProcessName}" />
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
                     <DataGridTemplateColumn Width="*"
-                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderTarget}}">
+                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderTarget}}"
+                                            SortMemberPath="Target.Address">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Style="{StaticResource MainDataGridText}">
@@ -173,17 +158,19 @@
                     </DataGridTemplateColumn>
 
                     <DataGridTemplateColumn Width="*"
-                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderTime}}">
+                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderTime}}"
+                                            SortMemberPath="SecondsPassed">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Style="{StaticResource MainDataGridText}"
-                                           Text="{Binding SecondsPassed, Converter={StaticResource SecondsToTimeConverters}, IsAsync=True}" />
+                                           Text="{Binding SecondsPassed, Converter={StaticResource SecondsToTimeConverters}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
                     <DataGridTemplateColumn Width="*"
-                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderAction}}">
+                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderAction}}"
+                                            SortMemberPath="ActionName">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Style="{StaticResource MainDataGridText}"
@@ -193,21 +180,23 @@
                     </DataGridTemplateColumn>
 
                     <DataGridTemplateColumn Width="*"
-                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderSent}}">
+                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderSent}}"
+                                            SortMemberPath="BytesSent">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Style="{StaticResource MainDataGridText}"
-                                           Text="{Binding BytesSent, Converter={StaticResource BytesToSizeConverter}, IsAsync=True}" />
+                                           Text="{Binding BytesSent, Converter={StaticResource BytesToSizeConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
                     <DataGridTemplateColumn Width="*"
-                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderReceived}}">
+                                            Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderReceived}}"
+                                            SortMemberPath="BytesReceived">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Style="{StaticResource MainDataGridText}"
-                                           Text="{Binding BytesReceived, Converter={StaticResource BytesToSizeConverter}, IsAsync=True}" />
+                                           Text="{Binding BytesReceived, Converter={StaticResource BytesToSizeConverter}}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

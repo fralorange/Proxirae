@@ -546,4 +546,28 @@
   <data name="ProxyCheckerProgressStarting" xml:space="preserve">
     <value>Начинаем тест...</value>
   </data>
+  <data name="GeneralAutostart" xml:space="preserve">
+    <value>Автоматический запуск</value>
+  </data>
+  <data name="GeneralAutostartDescription" xml:space="preserve">
+    <value>Автоматически запускать Proxirae при входе в Windows.</value>
+  </data>
+  <data name="GeneralGroupHeaderStartup" xml:space="preserve">
+    <value>Запуск</value>
+  </data>
+  <data name="GeneralSilentStart" xml:space="preserve">
+    <value>Запускать в фоне</value>
+  </data>
+  <data name="GeneralSilentStartDescription" xml:space="preserve">
+    <value>Запускать Proxirae в системном трее без открытия главного окна.</value>
+  </data>
+  <data name="GeneralStartMinimized" xml:space="preserve">
+    <value>Запускать свернутым</value>
+  </data>
+  <data name="GeneralStartMinimizedDescription" xml:space="preserve">
+    <value>Открывать главное окно свернутым при запуске Proxirae.</value>
+  </data>
+  <data name="ProxyRulesGridWatermarkText" xml:space="preserve">
+    <value>Все</value>
+  </data>
 </root>

@@ -7,7 +7,6 @@
                          xmlns:l="clr-namespace:RentADeveloper.ResXLocalization.WPF;assembly=ResXLocalization.WPF"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                          xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
-                         xmlns:svg="https://github.com/dotnetprojects/SVGImage"
                          xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels.Input"
                          Width="450"
                          d:DataContext="{d:DesignInstance Type=viewmodels:TextInputViewModel}"
@@ -39,40 +38,29 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0"
-                  Margin="0,0,0,30">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <svg:SVGImage Source="../Resources/Vectors/info.svg"
-                              Style="{StaticResource InfoMessageIcon}" />
-
-                <TextBlock Grid.Column="1"
-                           Margin="10,0,0,0"
-                           VerticalAlignment="Center"
-                           Foreground="{DynamicResource ForegroundBrush}"
-                           TextWrapping="Wrap">
-                    <TextBlock.Text>
-                        <MultiBinding Converter="{StaticResource NameToLocalizeConverter}"
-                                      ConverterParameter="TextInputMessage">
-                            <Binding Path="Message" />
-                            <Binding Path="CurrentCulture"
-                                     Source="{x:Static core:Localizer.Current}" />
-                        </MultiBinding>
-                    </TextBlock.Text>
-                </TextBlock>
-            </Grid>
+            <TextBlock Grid.Row="0"
+                       Margin="0,0,0,8"
+                       Foreground="{DynamicResource ForegroundBrush}"
+                       TextWrapping="Wrap">
+                <TextBlock.Text>
+                    <MultiBinding Converter="{StaticResource NameToLocalizeConverter}"
+                                  ConverterParameter="TextInputMessage">
+                        <Binding Path="Message" />
+                        <Binding Path="CurrentCulture"
+                                 Source="{x:Static core:Localizer.Current}" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
 
             <TextBox Grid.Row="1"
-                     Margin="0,0,0,18"
+                     Margin="0,0,0,16"
                      Style="{StaticResource NeutralInput}"
                      Text="{Binding Input, UpdateSourceTrigger=PropertyChanged}" />
 
             <StackPanel Grid.Row="2"
                         HorizontalAlignment="Right"
                         Orientation="Horizontal">
+
                 <Button Command="{Binding OkCommand}"
                         Content="{l:Localize {x:Static res:LocalizationKeys.SharedOK}}"
                         IsDefault="True"
@@ -92,6 +80,7 @@
                         <Style BasedOn="{StaticResource ControlButton}"
                                TargetType="Button">
                             <Setter Property="Visibility" Value="Collapsed" />
+
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ShowAlternativeButton}"
                                              Value="True">
@@ -106,6 +95,7 @@
                         Content="{l:Localize {x:Static res:LocalizationKeys.SharedCancel}}"
                         IsCancel="True"
                         Style="{StaticResource ControlButton}" />
+
             </StackPanel>
         </Grid>
     </Border>

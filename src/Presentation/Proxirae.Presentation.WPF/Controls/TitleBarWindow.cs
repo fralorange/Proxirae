@@ -1,4 +1,4 @@
-﻿using Proxirae.Presentation.WPF.Controls.Helpers;
+using Proxirae.Presentation.WPF.Controls.Helpers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -20,6 +20,8 @@ namespace Proxirae.Presentation.WPF.Controls
     [ContentProperty(nameof(WindowContent))]
     public class TitleBarWindow : Window
     {
+        private const double MaximizedContentMargin = 8;
+
         private static readonly Geometry MaximizeIconGeometry = Geometry.Parse("M 13.5,10.5 H 22.5 V 19.5 H 13.5 Z");
         private static readonly Geometry RestoreIconGeometry = Geometry.Parse("M 13.5,12.5 H 20.5 V 19.5 H 13.5 Z M 15.5,12.5 V 10.5 H 22.5 V 17.5 H 20.5");
 
@@ -638,22 +640,19 @@ namespace Proxirae.Presentation.WPF.Controls
 
         private void OnWindowStateChanged(object? sender, EventArgs e)
         {
-            var content = (WindowContent as FrameworkElement);
             maximizeRestoreIcon.Data = GetMaximizeRestoreIconGeometry();
 
             if (WindowState == WindowState.Maximized)
             {
                 windowBorder.BorderThickness = new Thickness(0);
+                windowBorder.Margin = new Thickness(MaximizedContentMargin);
                 windowBorder.Effect = null;
-                titleBar.Margin = new Thickness(6, 6, 6, 0);
-                content?.SetValue(FrameworkElement.MarginProperty, new Thickness(6, 0, 6, 6));
             }
             else
             {
                 windowBorder.BorderThickness = new Thickness(1);
+                windowBorder.Margin = new Thickness(0);
                 windowBorder.Effect = CreateWindowShadow();
-                titleBar.Margin = new Thickness(0);
-                content?.SetValue(FrameworkElement.MarginProperty, new Thickness(0));
             }
         }
 
