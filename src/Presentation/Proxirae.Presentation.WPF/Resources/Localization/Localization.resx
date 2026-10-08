@@ -567,4 +567,7 @@
   <data name="GeneralStartMinimizedDescription" xml:space="preserve">
     <value>Open the main window minimized when Proxirae starts.</value>
   </data>
+  <data name="ProxyRulesGridWatermarkText" xml:space="preserve">
+    <value>Any</value>
+  </data>
 </root>

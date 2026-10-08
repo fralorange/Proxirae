@@ -3,7 +3,8 @@ using System.Text.Json;
 
 namespace Proxirae.Infrastructure.Persistence.JSON
 {
-    public class JsonPersistence<T> : IPersistence<T> where T : class
+    public class JsonPersistence<T> : IPersistence<T>
+        where T : class
     {
         protected readonly List<T> _items = [];
         protected readonly string _filePath;
@@ -11,19 +12,21 @@ namespace Proxirae.Infrastructure.Persistence.JSON
 
         private readonly SemaphoreSlim _semaphore = new(1, 1);
 
-        public JsonPersistence(string filePath)
-        {
-            _filePath = filePath;
-        }
-
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
             WriteIndented = true,
         };
 
-        protected async Task EnsureLoadedAsync(CancellationToken cancellationToken)
+        public JsonPersistence(string filePath)
+        {
+            _filePath = filePath;
+        }
+
+        protected async Task EnsureLoadedAsync(
+            CancellationToken cancellationToken)
         {
             await _semaphore.WaitAsync(cancellationToken);
+
             try
             {
                 lock (_items)
@@ -34,7 +37,7 @@ namespace Proxirae.Infrastructure.Persistence.JSON
                     }
                 }
 
-                await ReloadCoreAsync(cancellationToken);
+                await UnsafeReloadAsync(cancellationToken);
             }
             finally
             {
@@ -42,24 +45,16 @@ namespace Proxirae.Infrastructure.Persistence.JSON
             }
         }
 
-        public async Task SaveAsync(CancellationToken cancellationToken)
+        public async Task SaveAsync(
+            CancellationToken cancellationToken)
         {
             await EnsureLoadedAsync(cancellationToken);
 
             await _semaphore.WaitAsync(cancellationToken);
+
             try
             {
-                List<T> snapshot;
-                lock (_items)
-                {
-                    snapshot = _items.ToList();
-                }
-
-                var json = JsonSerializer.Serialize(snapshot, JsonOptions);
-                var tempFilePath = _filePath + ".tmp";
-
-                await File.WriteAllTextAsync(tempFilePath, json, cancellationToken);
-                File.Move(tempFilePath, _filePath, overwrite: true);
+                await SaveUnsafeAsync(cancellationToken);
             }
             finally
             {
@@ -67,12 +62,14 @@ namespace Proxirae.Infrastructure.Persistence.JSON
             }
         }
 
-        public async Task ReloadAsync(CancellationToken cancellationToken)
+        public async Task ReloadAsync(
+            CancellationToken cancellationToken)
         {
             await _semaphore.WaitAsync(cancellationToken);
+
             try
             {
-                await ReloadCoreAsync(cancellationToken);
+                await UnsafeReloadAsync(cancellationToken);
             }
             finally
             {
@@ -80,24 +77,134 @@ namespace Proxirae.Infrastructure.Persistence.JSON
             }
         }
 
-        private async Task ReloadCoreAsync(CancellationToken cancellationToken)
+        private async Task UnsafeReloadAsync(
+            CancellationToken cancellationToken)
         {
-            List<T>? items = null;
+            List<T> items = [];
+            bool rewriteRequired = false;
 
-            if (File.Exists(_filePath))
+            if (!File.Exists(_filePath))
             {
-                var json = await File.ReadAllTextAsync(_filePath, cancellationToken);
-                items = JsonSerializer.Deserialize<List<T>>(json, JsonOptions);
+                rewriteRequired = true;
+            }
+            else
+            {
+                try
+                {
+                    var json = await File.ReadAllTextAsync(
+                        _filePath,
+                        cancellationToken);
+
+                    if (string.IsNullOrWhiteSpace(json))
+                    {
+                        rewriteRequired = true;
+                    }
+                    else
+                    {
+                        var deserialized = JsonSerializer.Deserialize<List<T>>(
+                            json,
+                            JsonOptions);
+
+                        if (deserialized is null)
+                        {
+                            rewriteRequired = true;
+                        }
+                        else
+                        {
+                            items = deserialized;
+
+                            if (items.Any(item => item is null))
+                            {
+                                items = items
+                                    .Where(item => item is not null)
+                                    .ToList();
+
+                                rewriteRequired = true;
+                            }
+                        }
+                    }
+                }
+                catch (JsonException)
+                {
+                    items = [];
+                    rewriteRequired = true;
+                }
+                catch (NotSupportedException)
+                {
+                    items = [];
+                    rewriteRequired = true;
+                }
             }
 
             lock (_items)
             {
                 _items.Clear();
-                if (items is not null)
-                {
-                    _items.AddRange(items);
-                }
+                _items.AddRange(items);
                 _loaded = true;
+            }
+
+            if (rewriteRequired)
+            {
+                try
+                {
+                    await SaveUnsafeAsync(cancellationToken);
+                }
+                catch (IOException)
+                {
+                }
+                catch (UnauthorizedAccessException)
+                {
+                }
+            }
+        }
+
+        private async Task SaveUnsafeAsync(
+            CancellationToken cancellationToken)
+        {
+            List<T> snapshot;
+
+            lock (_items)
+            {
+                snapshot = _items.ToList();
+            }
+
+            var json = JsonSerializer.Serialize(
+                snapshot,
+                JsonOptions);
+
+            var directory = Path.GetDirectoryName(_filePath);
+
+            if (!string.IsNullOrEmpty(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            var tempFilePath = _filePath + ".tmp";
+
+            try
+            {
+                await File.WriteAllTextAsync(
+                    tempFilePath,
+                    json,
+                    cancellationToken);
+
+                File.Move(
+                    tempFilePath,
+                    _filePath,
+                    overwrite: true);
+            }
+            finally
+            {
+                if (File.Exists(tempFilePath))
+                {
+                    try
+                    {
+                        File.Delete(tempFilePath);
+                    }
+                    catch
+                    {
+                    }
+                }
             }
         }
     }

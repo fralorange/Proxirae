@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Proxirae.Application.Services.Localization;
 using Proxirae.Application.Services.Preferences;
-using Proxirae.Application.Services.UI;
+using Proxirae.Application.Services.Styles;
 using Proxirae.Infrastructure;
 using Proxirae.Infrastructure.ProcessCommunication;
 using Proxirae.Infrastructure.TransactionControl;
@@ -61,8 +61,8 @@ namespace Proxirae.Presentation.WPF
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            var uiConfigurator = _host.Services.GetRequiredService<IUiService>();
-            uiConfigurator.ApplyGlobalTweaks();
+            var stylesConfigurator = _host.Services.GetRequiredService<IStylesService>();
+            stylesConfigurator.ApplyGlobalTweaks();
 
             var trayService = _host.Services.GetRequiredService<TrayService>();
             trayService.Initialize();

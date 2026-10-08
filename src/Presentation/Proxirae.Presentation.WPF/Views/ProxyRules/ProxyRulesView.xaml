@@ -39,6 +39,15 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
+        <Grid.Resources>
+            <Style x:Key="WatermarkWrapTextColumnStyle"
+                   BasedOn="{StaticResource WrapTextColumnStyle}"
+                   TargetType="TextBlock">
+                <Setter Property="behaviors:WatermarkBehavior.Watermark" Value="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridWatermarkText}}" />
+                <Setter Property="behaviors:WatermarkBehavior.WatermarkOpacity" Value="0.45" />
+            </Style>
+        </Grid.Resources>
+
         <DataGrid x:Name="ProxyRulesDataGrid"
                   Grid.Row="0"
                   Grid.Column="0"
@@ -85,15 +94,15 @@
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Width="*"
                                     Binding="{Binding Processes}"
-                                    ElementStyle="{StaticResource WrapTextColumnStyle}"
+                                    ElementStyle="{StaticResource WatermarkWrapTextColumnStyle}"
                                     Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderProcesses}}" />
                 <DataGridTextColumn Width="*"
                                     Binding="{Binding Hosts}"
-                                    ElementStyle="{StaticResource WrapTextColumnStyle}"
+                                    ElementStyle="{StaticResource WatermarkWrapTextColumnStyle}"
                                     Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderTargetHosts}}" />
                 <DataGridTextColumn Width="*"
                                     Binding="{Binding Ports}"
-                                    ElementStyle="{StaticResource WrapTextColumnStyle}"
+                                    ElementStyle="{StaticResource WatermarkWrapTextColumnStyle}"
                                     Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderTargetPorts}}" />
                 <DataGridTemplateColumn Width="*"
                                         Header="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesGridHeaderProtocol}}">

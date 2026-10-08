@@ -1,9 +1,9 @@
-﻿using Proxirae.Application.Services.UI;
+﻿using Proxirae.Application.Services.Styles;
 using System.Windows;
 
-namespace Proxirae.Presentation.WPF.Services.UI
+namespace Proxirae.Presentation.WPF.Services.Styles
 {
-    public class WpfUiService : IUiService
+    public class WpfStylesService : IStylesService
     {
         public void ApplyGlobalTweaks()
         {
