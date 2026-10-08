@@ -13,6 +13,18 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options.Sections
         [NotifyPropertyChangedFor(nameof(HasChanges))]
         private Language _selectedLanguage;
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasChanges))]
+        private bool _autostart;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasChanges))]
+        private bool _silentStart;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasChanges))]
+        private bool _startMinimized;
+
         public GeneralViewModel(IPreferencesService preferencesService)
         {
             Languages =
@@ -21,7 +33,16 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options.Sections
                 new Language { Code = "ru-RU", Name = "Russian" },
             ];
 
-            SelectedLanguage = Languages.First(l => l.Code == preferencesService.Current.System.LanguageCode);
+            var system = preferencesService.Current.System;
+
+            SelectedLanguage = Languages.First(
+                language => language.Code == system.LanguageCode);
+
+            Autostart = system.Autostart;
+            SilentStart = system.SilentStart;
+            StartMinimized = system.StartMinimized;
+
+            NormalizeStartupOptions();
 
             HasChanges = false;
         }
@@ -33,6 +54,9 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options.Sections
                 System = current.System with
                 {
                     LanguageCode = SelectedLanguage.Code,
+                    Autostart = Autostart,
+                    SilentStart = SilentStart,
+                    StartMinimized = StartMinimized,
                 }
             };
         }
@@ -40,6 +64,50 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options.Sections
         partial void OnSelectedLanguageChanged(Language value)
         {
             HasChanges = true;
+        }
+
+        partial void OnAutostartChanged(bool value)
+        {
+            if (!value)
+            {
+                SilentStart = false;
+                StartMinimized = false;
+            }
+
+            HasChanges = true;
+        }
+
+        partial void OnSilentStartChanged(bool value)
+        {
+            if (value)
+            {
+                StartMinimized = false;
+            }
+
+            HasChanges = true;
+        }
+
+        partial void OnStartMinimizedChanged(bool value)
+        {
+            if (value)
+            {
+                SilentStart = false;
+            }
+
+            HasChanges = true;
+        }
+
+        private void NormalizeStartupOptions()
+        {
+            if (!Autostart)
+            {
+                SilentStart = false;
+                StartMinimized = false;
+            }
+            else if (SilentStart)
+            {
+                StartMinimized = false;
+            }
         }
     }
 }

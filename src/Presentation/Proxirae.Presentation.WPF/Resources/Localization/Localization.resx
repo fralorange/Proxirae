@@ -546,4 +546,25 @@
   <data name="ProxyCheckerProgressStarting" xml:space="preserve">
     <value>Starting test...</value>
   </data>
+  <data name="GeneralAutostart" xml:space="preserve">
+    <value>Start Proxirae automatically</value>
+  </data>
+  <data name="GeneralAutostartDescription" xml:space="preserve">
+    <value>Automatically start Proxirae when you sign in to Windows.</value>
+  </data>
+  <data name="GeneralGroupHeaderStartup" xml:space="preserve">
+    <value>Startup</value>
+  </data>
+  <data name="GeneralSilentStart" xml:space="preserve">
+    <value>Start silently</value>
+  </data>
+  <data name="GeneralSilentStartDescription" xml:space="preserve">
+    <value>Start Proxirae in the system tray without opening the main window.</value>
+  </data>
+  <data name="GeneralStartMinimized" xml:space="preserve">
+    <value>Start minimized</value>
+  </data>
+  <data name="GeneralStartMinimizedDescription" xml:space="preserve">
+    <value>Open the main window minimized when Proxirae starts.</value>
+  </data>
 </root>

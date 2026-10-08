@@ -4,7 +4,6 @@
              xmlns:core="clr-namespace:RentADeveloper.ResXLocalization;assembly=ResXLocalization.Core"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:l="clr-namespace:RentADeveloper.ResXLocalization.WPF;assembly=ResXLocalization.WPF"
-             xmlns:local="clr-namespace:Proxirae.Presentation.WPF.Views.Options.Sections"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
              xmlns:sections="clr-namespace:Proxirae.Presentation.WPF.ViewModels.Options.Sections"
@@ -13,10 +12,18 @@
              mc:Ignorable="d">
 
     <Grid Margin="10">
-        <GroupBox Padding="10"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--#region Localization-->
+        <GroupBox Grid.Row="0"
+                  Padding="10"
                   VerticalAlignment="Top"
                   Header="{l:Localize {x:Static res:LocalizationKeys.GeneralGroupHeaderLocalization}}"
                   Style="{StaticResource SectionGroupBox}">
+
             <StackPanel>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -55,5 +62,57 @@
                            TextWrapping="Wrap" />
             </StackPanel>
         </GroupBox>
+        <!--#endregion-->
+
+        <!--#region Startup-->
+        <GroupBox Grid.Row="1"
+                  Margin="0,10,0,0"
+                  Padding="10"
+                  VerticalAlignment="Top"
+                  Header="{l:Localize {x:Static res:LocalizationKeys.GeneralGroupHeaderStartup}}"
+                  Style="{StaticResource SectionGroupBox}">
+
+            <StackPanel>
+
+                <!--  Autostart  -->
+                <StackPanel>
+                    <CheckBox Content="{l:Localize {x:Static res:LocalizationKeys.GeneralAutostart}}"
+                              IsChecked="{Binding Autostart, Mode=TwoWay}" />
+
+                    <TextBlock Margin="20,3,0,8"
+                               Style="{StaticResource SectionSecondaryText}"
+                               Text="{l:Localize {x:Static res:LocalizationKeys.GeneralAutostartDescription}}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+
+                <!--  Silent start  -->
+                <StackPanel IsEnabled="{Binding Autostart}">
+                    <CheckBox Margin="20,0,0,0"
+                              Content="{l:Localize {x:Static res:LocalizationKeys.GeneralSilentStart}}"
+                              IsChecked="{Binding SilentStart, Mode=TwoWay}"
+                              IsEnabled="{Binding Autostart}" />
+
+                    <TextBlock Margin="40,3,0,8"
+                               Style="{StaticResource SectionSecondaryText}"
+                               Text="{l:Localize {x:Static res:LocalizationKeys.GeneralSilentStartDescription}}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+
+                <!--  Start minimized  -->
+                <StackPanel IsEnabled="{Binding Autostart}">
+                    <CheckBox Margin="20,0,0,0"
+                              Content="{l:Localize {x:Static res:LocalizationKeys.GeneralStartMinimized}}"
+                              IsChecked="{Binding StartMinimized, Mode=TwoWay}"
+                              IsEnabled="{Binding Autostart}" />
+
+                    <TextBlock Margin="40,3,0,0"
+                               Style="{StaticResource SectionSecondaryText}"
+                               Text="{l:Localize {x:Static res:LocalizationKeys.GeneralStartMinimizedDescription}}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+
+            </StackPanel>
+        </GroupBox>
+        <!--#endregion-->
     </Grid>
 </UserControl>

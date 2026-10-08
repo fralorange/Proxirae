@@ -41,6 +41,7 @@ using Proxirae.Presentation.WPF.Services.Localization;
 using Proxirae.Presentation.WPF.Services.Preferences.Autostart;
 using Proxirae.Presentation.WPF.Services.Process;
 using Proxirae.Presentation.WPF.Services.Themes;
+using Proxirae.Presentation.WPF.Services.Tray;
 using Proxirae.Presentation.WPF.Services.UI;
 using Proxirae.Presentation.WPF.ViewModels;
 using Proxirae.Presentation.WPF.ViewModels.About;
@@ -88,6 +89,7 @@ namespace Proxirae.Presentation.WPF
             services.AddSingleton<IInputDialogService, InputDialogService>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IPackageService, PackageService>();
+            services.AddSingleton<TrayService>();
 
             return services;
         }

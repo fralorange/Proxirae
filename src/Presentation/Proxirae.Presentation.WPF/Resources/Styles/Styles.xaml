@@ -618,10 +618,8 @@
         <Style.Triggers>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}"
-                               Value="True" />
-                    <Condition Binding="{Binding CanUserSortColumns, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                               Value="True" />
+                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+                    <Condition Binding="{Binding CanUserSortColumns, RelativeSource={RelativeSource AncestorType=DataGrid}}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Background" Value="{DynamicResource MenuHighlightBrush}" />
             </MultiDataTrigger>

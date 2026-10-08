@@ -1,7 +1,7 @@
 [Setup]
 AppId={{6AE9A480-F547-485D-92C4-BEEFBB67616A}}
 AppName=Proxirae
-AppVersion=0.0.3
+AppVersion=0.5.0
 DefaultDirName={autopf}\Proxirae
 DefaultGroupName=Proxirae
 UninstallDisplayIcon={app}\Proxirae.exe
@@ -26,13 +26,12 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 Source: ".\build\Release\x64\*"; DestDir: "{app}"; Check: IsWin64; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: ".\build\Release\x86\*"; DestDir: "{app}"; Check: not IsWin64; Flags: ignoreversion recursesubdirs createallsubdirs
 
+[UninstallRun]
+Filename: "{sys}\schtasks.exe"; Parameters: "/Delete /TN ""Proxirae Autostart"" /F"; Flags: runhidden waituntilterminated
+
 [Icons]
 Name: "{group}\Proxirae"; Filename: "{app}\Proxirae.exe"
 Name: "{autodesktop}\Proxirae"; Filename: "{app}\Proxirae.exe"; Tasks: desktopicon
-
-[Registry]
-Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "Proxirae"; ValueData: """{app}\Proxirae.exe"" --autostart"; Flags: uninsdeletevalue
-Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run"; ValueName: "Proxirae"; Flags: dontcreatekey uninsdeletevalue
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"

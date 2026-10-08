@@ -2,7 +2,9 @@
 {
     public record SystemPreferences
     {
-        public bool IsAutostartEnabled { get; init; } = false;
+        public bool Autostart { get; init; } = false;
+        public bool SilentStart { get; init;} = false;
+        public bool StartMinimized { get; init; } = false;
         public string LanguageCode { get; init; } = "en-US";
     }
 }

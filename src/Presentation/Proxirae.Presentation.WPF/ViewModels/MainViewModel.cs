@@ -13,7 +13,6 @@ using Proxirae.Application.Services.Flows;
 using Proxirae.Application.Services.Logs;
 using Proxirae.Application.Services.Package;
 using Proxirae.Application.Services.Preferences;
-using Proxirae.Application.Services.Preferences.Autostart;
 using Proxirae.Application.Services.Routes;
 using Proxirae.Contracts.DTOs.Flows;
 using Proxirae.Contracts.DTOs.Logs;
@@ -55,7 +54,6 @@ namespace Proxirae.Presentation.WPF.ViewModels
         private readonly ILogService _logService;
         private readonly IRouteService _routeService;
         private readonly IPreferencesService _preferencesService;
-        private readonly IAutostartService _autostartService;
         private readonly IPackageService _packageService;
         private readonly ICsvExporter _csvExporter;
         private readonly IBrowserService _browserService;
@@ -87,9 +85,6 @@ namespace Proxirae.Presentation.WPF.ViewModels
         [ObservableProperty]
         private LogLevelDto _selectedLogLevel;
 
-        [ObservableProperty]
-        private bool _autostart;
-
         private CancellationTokenSource? _tabsHeightDebouceToken;
 
         private readonly Channel<LogDto> _logChannel =
@@ -116,7 +111,6 @@ namespace Proxirae.Presentation.WPF.ViewModels
             ILogService logService,
             IRouteService routeService,
             IPreferencesService preferencesService,
-            IAutostartService autostartService,
             IPackageService packageService,
             ICsvExporter csvExporter,
             IBrowserService browserService)
@@ -133,7 +127,6 @@ namespace Proxirae.Presentation.WPF.ViewModels
             _logService = logService;
             _routeService = routeService;
             _preferencesService = preferencesService;
-            _autostartService = autostartService;
             _packageService = packageService;
             _csvExporter = csvExporter;
             _browserService = browserService;
@@ -163,7 +156,6 @@ namespace Proxirae.Presentation.WPF.ViewModels
             _ = PumpRoutesAsync(_pumpCts.Token);
 
             _selectedLogLevel = Enum.Parse<LogLevelDto>(_preferencesService.Current.Engine.LogLevel);
-            _autostart = _preferencesService.Current.System.IsAutostartEnabled;
             _tabsHeight = _preferencesService.Current.Appearance.TabsHeight;
         }
 
@@ -497,15 +489,6 @@ namespace Proxirae.Presentation.WPF.ViewModels
         private bool CanExportLogs()
         {
             return _logsBuffer.Count > 0;
-        }
-
-        [RelayCommand]
-        private async Task UpdateAutostartAsync(CancellationToken cancellationToken)
-        {
-            var preferences = _preferencesService.Current.System with { IsAutostartEnabled = Autostart };
-
-            _autostartService.SetAutostart(Autostart);
-            await _preferencesService.UpdateAsync(preferences, cancellationToken);
         }
 
         [RelayCommand(CanExecute = nameof(CanDisconnect))]
