@@ -2,6 +2,9 @@
 {
     public interface IAutostartService
     {
-        void SetAutostart(bool enable);
+        void SetAutostart(
+            bool enabled,
+            bool silentStart,
+            bool startMinimized);
     }
 }

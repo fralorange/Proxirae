@@ -1,6 +1,6 @@
 ﻿using Proxirae.Application.Mappers.Rules;
+using Proxirae.Application.Persistence;
 using Proxirae.Application.Repositories;
-using Proxirae.Application.Stores;
 using Proxirae.Application.UnitsOfWork.Rules;
 using Proxirae.Contracts.Data.Rules;
 using Proxirae.Domain.Rules;

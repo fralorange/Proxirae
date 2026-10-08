@@ -160,6 +160,20 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
+License notice for System.Security.Cryptography.ProtectedData (v10.0.12)
+------------------------------------
+
+https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+
+https://dot.net/
+
+Copyright © Microsoft Corporation. All rights reserved.
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
 License notice for csFastFloat (v4.1.6)
 ------------------------------------
 
@@ -310,10 +324,6 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Sdl.MultiSelectComboBox (v1.0.103)
-------------------------------------
-
-
 License notice for System.Drawing.Common (v10.0.12)
 ------------------------------------
 
@@ -336,6 +346,18 @@ https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
 https://dot.net/
 
 Copyright © Microsoft Corporation. All rights reserved.
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
+License notice for TaskScheduler (v2.12.2)
+------------------------------------
+
+https://github.com/dahall/taskscheduler at 8f4803cf060b35f8299db26b45bfd6ff0f599c3c
+
+Copyright © 2002-2025
 
 Licensed under MIT
 

@@ -3,7 +3,7 @@
     public class FlowDto
     {
         public Guid Id { get; set; }
-        public uint TargetAddress { get; set; }
+        public string TargetAddress { get; set; } = null!;
         public ushort TargetPort { get; set; }
         public long ProcessId { get; set; }
         public ulong SecondsPassed { get; set; }

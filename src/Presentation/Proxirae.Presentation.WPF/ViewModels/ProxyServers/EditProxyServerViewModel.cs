@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Proxirae.Application.Factories.Proxy;
+using Proxirae.Application.Security.Protection;
 using Proxirae.Contracts.DTOs.Proxies;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
@@ -10,7 +11,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
 
         public ProxyEditDto? ProxyServer { get; private set; }
 
-        public EditProxyServerViewModel(ProxyDetailDto proxy)
+        public EditProxyServerViewModel(IProtector protector, ProxyDetailDto proxy) : base(protector)
         {
             _id = proxy.Id;
             Remarks = proxy.Remarks;
@@ -18,18 +19,24 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
             Port = proxy.Port;
             Protocol = proxy.Type;
             Username = proxy.Username;
-            Password = proxy.Password;
+
+            if (proxy.Password is not null && _protector.TryUnprotect(proxy.Password, out var unprotectedPassword))
+            {
+                Password = unprotectedPassword;
+            }
+            else
+            {
+                Password = proxy.Password;
+            }
         }
 
         [RelayCommand]
         private void Confirm()
         {
-            ValidateAllProperties();
-
-            if (HasErrors)
+            if (!TryPrepareCredentials(out var normalizedUsername, out var protectedPassword))
                 return;
 
-            ProxyServer = ProxyFactory.CreateEditDto(_id, Address, Port!.Value, Protocol, Username, Password, Remarks);
+            ProxyServer = ProxyFactory.CreateEditDto(_id, Address, Port!.Value, Protocol, normalizedUsername, protectedPassword, Remarks);
 
             DialogResult = true;
         }

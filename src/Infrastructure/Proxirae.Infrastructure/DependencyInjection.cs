@@ -1,16 +1,20 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Proxirae.Application.Exporters.Csv;
-using Proxirae.Application.Facades.Configuration;
+using Proxirae.Application.Persistence;
 using Proxirae.Application.Repositories;
-using Proxirae.Application.Stores;
+using Proxirae.Application.Security.Cryptography;
+using Proxirae.Application.Security.Protection;
+using Proxirae.Application.Services.Configuration;
 using Proxirae.Application.Stores.Preferences;
 using Proxirae.Contracts.Data.Rules;
 using Proxirae.Domain.Proxies;
 using Proxirae.Infrastructure.Exporters.Csv;
-using Proxirae.Infrastructure.Facades;
 using Proxirae.Infrastructure.Persistence;
 using Proxirae.Infrastructure.Repositories.Proxies;
 using Proxirae.Infrastructure.Repositories.Rules;
+using Proxirae.Infrastructure.Security.Cryptography;
+using Proxirae.Infrastructure.Security.Protection.Windows;
+using Proxirae.Infrastructure.Services.Configuration;
 using Proxirae.Infrastructure.Stores.Preferences;
 
 namespace Proxirae.Infrastructure
@@ -74,16 +78,21 @@ namespace Proxirae.Infrastructure
             return services;
         }
 
-        public static IServiceCollection AddConfigurationFacade(this IServiceCollection services)
+        public static IServiceCollection AddExporters(this IServiceCollection services)
         {
-            services.AddTransient<IConfigurationFacade, ConfigurationFacade>();
+            services.AddTransient<ICsvExporter, SepCsvExporter>();
 
             return services;
         }
 
-        public static IServiceCollection AddExporters(this IServiceCollection services)
+        public static IServiceCollection AddSecurity(this IServiceCollection services)
         {
-            services.AddTransient<ICsvExporter, SepCsvExporter>();
+            services.AddTransient<ICryptographer, AesCryptographer>();
+
+            if (OperatingSystem.IsWindows())
+            {
+                services.AddTransient<IProtector, WindowsProtector>();
+            }
 
             return services;
         }

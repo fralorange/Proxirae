@@ -3,7 +3,7 @@ from conan.tools.microsoft import MSBuildToolchain, MSBuildDeps, vs_layout
 
 class ProxiraeNetwork(ConanFile):
 	name = "Proxirae.Network"
-	version = "0.1.0"
+	version = "0.5.0"
 	settings = "os", "arch", "compiler", "build_type"
 
 	def requirements(self):

@@ -2,9 +2,9 @@
 
 #include <span>
 
-#include "environment/handle_types.h"
+#include "platform/environment/handle_types.h"
 #include "IoDatagramCallback.h"
-#include "environment/sock_types.h"
+#include "platform/environment/sock_types.h"
 
 namespace Proxirae {
 	class IIoDatagramAdapter {

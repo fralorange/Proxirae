@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using MvvmDialogs;
 using Proxirae.Application.Services.Localization;
 using Proxirae.Application.Services.Preferences;
+using Proxirae.Application.Services.Preferences.Autostart;
 using Proxirae.Presentation.WPF.Models.Sections;
 using Proxirae.Presentation.WPF.Services.Themes;
 using Proxirae.Presentation.WPF.ViewModels.Options.Sections;
@@ -13,7 +14,8 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options
     {
         private readonly IPreferencesService _preferencesService;
         private readonly ILocalizationService _localizationService;
-        private readonly IThemeService _themeService;  
+        private readonly IAutostartService _autostartService;
+        private readonly IThemeService _themeService;
 
         private bool? _dialogResult;
         public bool? DialogResult
@@ -27,11 +29,19 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options
         [ObservableProperty]
         private ISectionViewModel _selectedSection;
 
-        public OptionsViewModel(IPreferencesService preferencesService, GeneralViewModel generalViewModel, AppearanceViewModel appearanceViewModel, MetricsViewModel metricsViewModel, ILocalizationService localizationService, IThemeService themeService)
+        public OptionsViewModel(
+            IPreferencesService preferencesService,
+            ILocalizationService localizationService,
+            IThemeService themeService,
+            IAutostartService autostartService,
+            GeneralViewModel generalViewModel,
+            AppearanceViewModel appearanceViewModel,
+            MetricsViewModel metricsViewModel)
         {
             _preferencesService = preferencesService;
             _localizationService = localizationService;
             _themeService = themeService;
+            _autostartService = autostartService;
 
             Sections =
             [
@@ -44,21 +54,27 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options
             SubscribeSections();
         }
 
-        private bool CanApply() => Sections.Any(s => s.ViewModel is ISectionViewModel vm && vm.HasChanges);
+        private bool CanApply() =>
+            Sections.Any(s =>
+                s.ViewModel is ISectionViewModel vm &&
+                vm.HasChanges);
 
         [RelayCommand(CanExecute = nameof(CanApply))]
         private async Task<bool> ApplyAsync(CancellationToken cancellationToken)
         {
             foreach (var section in Sections)
             {
-                if (section.ViewModel is ISectionViewModel sectionViewModel && !sectionViewModel.Validate())
+                if (section.ViewModel is ISectionViewModel sectionViewModel &&
+                    !sectionViewModel.Validate())
                 {
                     SelectedSection = sectionViewModel;
                     return false;
                 }
             }
 
-            var newPreferences = _preferencesService.Current;
+            var currentPreferences = _preferencesService.Current;
+            var newPreferences = currentPreferences;
+
             foreach (var section in Sections)
             {
                 if (section.ViewModel is ISectionViewModel sectionViewModel)
@@ -67,23 +83,44 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options
                 }
             }
 
+            var currentSystem = currentPreferences.System;
+            var newSystem = newPreferences.System;
+
             var languageChanged =
-                _preferencesService.Current.System.LanguageCode != newPreferences.System.LanguageCode;
+                currentSystem.LanguageCode != newSystem.LanguageCode;
 
-            var themeChanged = 
-                _preferencesService.Current.Appearance.Theme != newPreferences.Appearance.Theme;
-            // if the number of options increases, this comparison will need to be refactored.
+            var themeChanged =
+                currentPreferences.Appearance.Theme !=
+                newPreferences.Appearance.Theme;
 
-            await _preferencesService.UpdateAsync(newPreferences, cancellationToken);
+            var autostartChanged =
+                currentSystem.Autostart != newSystem.Autostart ||
+                currentSystem.SilentStart != newSystem.SilentStart ||
+                currentSystem.StartMinimized != newSystem.StartMinimized;
+
+            await _preferencesService.UpdateAsync(
+                newPreferences,
+                cancellationToken);
+
+            if (autostartChanged)
+            {
+                _autostartService.SetAutostart(
+                    newSystem.Autostart,
+                    newSystem.SilentStart,
+                    newSystem.StartMinimized);
+            }
 
             if (languageChanged)
             {
-                _localizationService.SwitchTo(newPreferences.System.LanguageCode);
+                _localizationService.SwitchTo(
+                    newSystem.LanguageCode);
             }
 
             if (themeChanged)
             {
-                _themeService.Apply(Enum.Parse<Models.Themes.Theme>(newPreferences.Appearance.Theme));
+                _themeService.Apply(
+                    Enum.Parse<Models.Themes.Theme>(
+                        newPreferences.Appearance.Theme));
             }
 
             foreach (var section in Sections)
@@ -103,7 +140,11 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options
         private async Task ConfirmAsync(CancellationToken cancellationToken)
         {
             var success = await ApplyAsync(cancellationToken);
-            if (!success) return;
+
+            if (!success)
+            {
+                return;
+            }
 
             DialogResult = true;
         }
@@ -116,7 +157,8 @@ namespace Proxirae.Presentation.WPF.ViewModels.Options
                 {
                     vm.PropertyChanged += (s, e) =>
                     {
-                        if (e.PropertyName == nameof(BaseSectionViewModel.HasChanges))
+                        if (e.PropertyName ==
+                            nameof(BaseSectionViewModel.HasChanges))
                         {
                             ApplyCommand.NotifyCanExecuteChanged();
                         }

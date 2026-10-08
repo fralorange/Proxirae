@@ -498,4 +498,76 @@
   <data name="ProxyCheckerProgressFailed" xml:space="preserve">
     <value>Connection failed.</value>
   </data>
+  <data name="WarningMessageProxyDelete" xml:space="preserve">
+    <value>This proxy is used by one or more proxy rules. Deleting it will set the Action of those rules to Direct.</value>
+  </data>
+  <data name="WarningMessageProxyDeleteTitle" xml:space="preserve">
+    <value>Do you want to delete this proxy?</value>
+  </data>
+  <data name="ErrorMessageConfigDoesNotExist" xml:space="preserve">
+    <value>No configuration has been created yet. Create a proxy server or proxy rule before performing this action.</value>
+  </data>
+  <data name="ErrorMessageConfigDoesNotExistTitle" xml:space="preserve">
+    <value>No Configuration</value>
+  </data>
+  <data name="ConfirmationMessageYes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="ConfirmationMessageNo" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="WarningMessageEndProcessTitle" xml:space="preserve">
+    <value>End Process</value>
+  </data>
+  <data name="WarningMessageEndProcess" xml:space="preserve">
+    <value>Are you sure you want to end this process? Ending a process may cause unexpected behavior or data loss. Some applications may prevent the process from being terminated.</value>
+  </data>
+  <data name="ErrorMessageConfigCorruptedOrIncorrent" xml:space="preserve">
+    <value>The configuration file is corrupted, unreadable, or the entered master password is incorrect. Make sure the file is valid and try again.</value>
+  </data>
+  <data name="ErrorMessageConfigCorruptedOrIncorrentTitle" xml:space="preserve">
+    <value>Configuration Error</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordImportTitle" xml:space="preserve">
+    <value>Import Configuration</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordImport" xml:space="preserve">
+    <value>Enter the master password to decrypt proxy credentials from the archive. If the file was saved without protection or you want to skip password restoration, click "Without Password".</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordImportAlt" xml:space="preserve">
+    <value>Without Password</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordExportTitle" xml:space="preserve">
+    <value>Export Configuration</value>
+  </data>
+  <data name="TextInputMessageConfigMasterPasswordExport" xml:space="preserve">
+    <value>Enter a master password to encrypt proxy credentials in the output file. This password will be required when importing the configuration on another device.</value>
+  </data>
+  <data name="ProxyCheckerProgressStarting" xml:space="preserve">
+    <value>Starting test...</value>
+  </data>
+  <data name="GeneralAutostart" xml:space="preserve">
+    <value>Start Proxirae automatically</value>
+  </data>
+  <data name="GeneralAutostartDescription" xml:space="preserve">
+    <value>Automatically start Proxirae when you sign in.</value>
+  </data>
+  <data name="GeneralGroupHeaderStartup" xml:space="preserve">
+    <value>Startup</value>
+  </data>
+  <data name="GeneralSilentStart" xml:space="preserve">
+    <value>Start silently</value>
+  </data>
+  <data name="GeneralSilentStartDescription" xml:space="preserve">
+    <value>Start Proxirae in the system tray without opening the main window.</value>
+  </data>
+  <data name="GeneralStartMinimized" xml:space="preserve">
+    <value>Start minimized</value>
+  </data>
+  <data name="GeneralStartMinimizedDescription" xml:space="preserve">
+    <value>Open the main window minimized when Proxirae starts.</value>
+  </data>
+  <data name="ProxyRulesGridWatermarkText" xml:space="preserve">
+    <value>Any</value>
+  </data>
 </root>

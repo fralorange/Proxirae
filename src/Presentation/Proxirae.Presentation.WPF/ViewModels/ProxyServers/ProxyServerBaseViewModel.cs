@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MvvmDialogs;
+using Proxirae.Application.Security.Protection;
 using Proxirae.Contracts.DTOs.Proxies;
 using System.ComponentModel.DataAnnotations;
 
@@ -8,6 +9,8 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
 {
     public partial class ProxyServerBaseViewModel : ObservableValidator, IModalDialogViewModel
     {
+        protected readonly IProtector _protector;
+
         private bool? _dialogResult;
 
         public bool? DialogResult
@@ -41,13 +44,42 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         [ObservableProperty]
         private bool _isAuth;
 
+        public ProxyServerBaseViewModel(IProtector protector)
+        {
+            _protector = protector;
+        }
+
         [RelayCommand]
         private void Cancel()
         {
             DialogResult = false;
         }
 
-        partial void OnUsernameChanged(string? oldValue, string? newValue)
+        protected bool TryPrepareCredentials(
+            out string? normalizedUsername,
+            out string? protectedPassword)
+        {
+            ValidateAllProperties();
+
+            if (HasErrors)
+            {
+                normalizedUsername = null;
+                protectedPassword = null;
+                return false;
+            }
+
+            normalizedUsername = string.IsNullOrWhiteSpace(Username)
+                ? null
+                : Username.Trim();
+
+            protectedPassword = string.IsNullOrEmpty(Password)
+                ? null
+                : _protector.Protect(Password);
+
+            return true;
+        }
+
+        private void OnCredentialChanged(string? newValue)
         {
             if (newValue is not null)
             {
@@ -55,12 +87,14 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
             }
         }
 
+        partial void OnUsernameChanged(string? oldValue, string? newValue)
+        {
+            OnCredentialChanged(newValue);
+        }
+
         partial void OnPasswordChanged(string? oldValue, string? newValue)
         {
-            if (newValue is not null)
-            {
-                IsAuth = true;
-            }
+            OnCredentialChanged(newValue);
         }
 
         partial void OnIsAuthChanged(bool oldValue, bool newValue)

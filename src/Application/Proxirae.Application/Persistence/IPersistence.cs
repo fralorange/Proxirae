@@ -1,4 +1,4 @@
-﻿namespace Proxirae.Application.Stores
+﻿namespace Proxirae.Application.Persistence
 {
     public interface IPersistence<T> where T : class
     {

@@ -10,7 +10,8 @@ namespace Proxirae {
 	struct IocpDatagramContext : public IocpContext {
 		IoDatagramCallback callback;
 		sockaddr_storage remoteAddr{};
-		int remoteAddrLen{ sizeof(sockaddr_storage) };
+		int remoteAddrLen{ sizeof(remoteAddr) };
+		sockaddr_storage destAddr{};
 		WSABUF wsaBuf{};
 		DWORD flags{ 0 };
 		std::vector<std::byte> buffer;

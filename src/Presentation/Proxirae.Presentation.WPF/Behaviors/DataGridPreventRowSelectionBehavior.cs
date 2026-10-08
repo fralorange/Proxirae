@@ -8,7 +8,6 @@ namespace Proxirae.Presentation.WPF.Behaviors
 {
     public class DataGridPreventRowSelectionBehavior : Behavior<DataGrid>
     {
-        static int x = 0;
         protected override void OnAttached()
         {
             AssociatedObject.PreviewMouseLeftButtonDown += OnPreviewMouseDown;

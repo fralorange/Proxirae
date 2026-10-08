@@ -2,7 +2,8 @@
 {
     public interface IArchiveService
     {
-        void CreateArchive(string outputPath, params string[] filePaths);
-        bool ExtractArchive(string inputPath, string targetDirectory);
+       
+        bool CreateArchive(string outputPath, IReadOnlyDictionary<string, byte[]> entries);
+        IReadOnlyDictionary<string, byte[]>? ExtractArchive(string inputPath);
     }
 }

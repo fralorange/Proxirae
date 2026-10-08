@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 400 400">
+  <g stroke="#000000" fill="#000000">
+    <circle cx="200" cy="200" r="187" stroke-width="26" />
+    <line x1="116" y1="116" x2="284" y2="284" 
+          stroke-width="26" stroke-linecap="round" fill="none" />
+    <line x1="284" y1="116" x2="116" y2="284" 
+          stroke-width="26" stroke-linecap="round" fill="none" />       
+  </g>
+</svg>

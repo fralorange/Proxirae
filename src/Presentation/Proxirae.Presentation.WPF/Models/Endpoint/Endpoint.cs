@@ -1,5 +1,4 @@
 ﻿using System.Buffers.Binary;
-using System.Net;
 
 namespace Proxirae.Presentation.WPF.Models.Endpoint
 {
@@ -8,9 +7,9 @@ namespace Proxirae.Presentation.WPF.Models.Endpoint
         public string Address { get; }
         public ushort Port { get; }
 
-        public Endpoint(uint networkAddress, ushort networkPort) 
+        public Endpoint(string address, ushort networkPort)
         {
-            Address = new IPAddress(BitConverter.GetBytes(networkAddress)).ToString();
+            Address = address;
             Port = BinaryPrimitives.ReverseEndianness(networkPort);
         }
 

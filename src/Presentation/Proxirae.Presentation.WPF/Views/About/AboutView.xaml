@@ -1,67 +1,68 @@
 ﻿<controls:TitleBarWindow x:Class="Proxirae.Presentation.WPF.Views.About.AboutView"
                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                         xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
                          xmlns:about="clr-namespace:Proxirae.Presentation.WPF.ViewModels.About"
+                         xmlns:controls="clr-namespace:Proxirae.Presentation.WPF.Controls"
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                          xmlns:l="clr-namespace:RentADeveloper.ResXLocalization.WPF;assembly=ResXLocalization.WPF"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                          xmlns:res="clr-namespace:Proxirae.Presentation.WPF.Resources.Localization"
-                         d:DataContext="{d:DesignInstance Type=about:AboutViewModel}"
-                         mc:Ignorable="d"
                          Title="{l:Localize {x:Static res:LocalizationKeys.AboutTitle}}"
-                         WindowStartupLocation="CenterOwner"
-                         ShowInTaskbar="False"
-                         SizeToContent="Height"
-                         ResizeMode="NoResize"
                          Width="320"
+                         d:DataContext="{d:DesignInstance Type=about:AboutViewModel}"
+                         ResizeMode="NoResize"
+                         ShowInTaskbar="False"
                          ShowMaximizeButton="False"
                          ShowMinimizeButton="False"
-                         Style="{StaticResource Window}">
+                         SizeToContent="Height"
+                         Style="{StaticResource Window}"
+                         WindowStartupLocation="CenterOwner"
+                         mc:Ignorable="d">
 
     <Grid Style="{StaticResource AboutViewRoot}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0"
-                    HorizontalAlignment="Center"
-                    Margin="0 20 30 0">
+                    Margin="0,20,30,0"
+                    HorizontalAlignment="Center">
 
-            <StackPanel Orientation="Horizontal" Margin="0 0 0 20">
-                <Image Source="/Proxirae;component/Resources/Icons/icon.ico"
-                       Width="80"
+            <StackPanel Margin="0,0,0,20"
+                        Orientation="Horizontal">
+                <Image Width="80"
                        Height="80"
-                       Margin="0 0 15 0"
-                       VerticalAlignment="Center"/>
+                       Margin="0,0,15,0"
+                       VerticalAlignment="Center"
+                       Source="/Proxirae;component/Resources/Icons/icon.ico" />
 
-                <StackPanel VerticalAlignment="Center"
-                            HorizontalAlignment="Left">
+                <StackPanel HorizontalAlignment="Left"
+                            VerticalAlignment="Center">
 
-                    <TextBlock Text="{Binding AppName}"
+                    <TextBlock HorizontalAlignment="Left"
                                FontSize="22"
                                FontWeight="SemiBold"
-                               HorizontalAlignment="Left" />
+                               Text="{Binding AppName}" />
 
-                    <TextBlock Text="{Binding AppVersion}"
-                               Style="{StaticResource AboutVersionText}" />
+                    <TextBlock Style="{StaticResource AboutVersionText}"
+                               Text="{Binding AppVersion}" />
                 </StackPanel>
             </StackPanel>
 
             <StackPanel HorizontalAlignment="Left">
-                <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.AboutCopyright}}"
-                           HorizontalAlignment="Left"/>
+                <TextBlock HorizontalAlignment="Left"
+                           Text="{l:Localize {x:Static res:LocalizationKeys.AboutCopyright}}" />
 
-                <TextBlock Text="{l:Localize {x:Static res:LocalizationKeys.AboutLicense}}"
-                           Margin="0 8 0 0"
-                           HorizontalAlignment="Left"/>
+                <TextBlock Margin="0,8,0,0"
+                           HorizontalAlignment="Left"
+                           Text="{l:Localize {x:Static res:LocalizationKeys.AboutLicense}}" />
 
-                <TextBlock Margin="0 8 0 0"
+                <TextBlock Margin="0,8,0,0"
                            HorizontalAlignment="Left">
-                    <Hyperlink NavigateUri="https://github.com/fralorange/Proxirae"
-                               Command="{Binding OpenLinkCommand}"
-                               CommandParameter="https://github.com/fralorange/Proxirae">
+                    <Hyperlink Command="{Binding OpenLinkCommand}"
+                               CommandParameter="https://github.com/fralorange/Proxirae"
+                               NavigateUri="https://github.com/fralorange/Proxirae">
                         https://github.com/fralorange/Proxirae
                     </Hyperlink>
                 </TextBlock>
@@ -69,11 +70,11 @@
         </StackPanel>
 
         <Button Grid.Row="1"
-                Content="{l:Localize {x:Static res:LocalizationKeys.SharedOK}}"
-                Style="{StaticResource ControlButton}"
+                Margin="15,35,15,15"
                 HorizontalAlignment="Right"
-                IsDefault="True"
+                Content="{l:Localize {x:Static res:LocalizationKeys.SharedOK}}"
                 IsCancel="True"
-                Margin="15 35 15 15"/>
+                IsDefault="True"
+                Style="{StaticResource ControlButton}" />
     </Grid>
 </controls:TitleBarWindow>
