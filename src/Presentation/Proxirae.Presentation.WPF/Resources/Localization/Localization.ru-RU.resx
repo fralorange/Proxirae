@@ -570,4 +570,16 @@
   <data name="ProxyRulesGridWatermarkText" xml:space="preserve">
     <value>Все</value>
   </data>
+  <data name="ProxyRulesEditorHostsExample" xml:space="preserve">
+    <value>Пример: localhost; *.example.com; 192.168.1.0/24</value>
+  </data>
+  <data name="ProxyRulesEditorPortsExample" xml:space="preserve">
+    <value>Пример: 53; 80; 443; 8000-9000</value>
+  </data>
+  <data name="ProxyRulesEditorProcessesExample" xml:space="preserve">
+    <value>Пример: msedge.exe; "C:\Apps\*.exe"; "/opt/apps/*"</value>
+  </data>
+  <data name="ProxyRulesOrderHint" xml:space="preserve">
+    <value>Правила обрабатываются сверху вниз. Для изменения приоритета правил используйте кнопки "Вверх" и "Вниз".</value>
+  </data>
 </root>

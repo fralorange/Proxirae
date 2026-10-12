@@ -12,7 +12,6 @@
                          xmlns:viewmodels="clr-namespace:Proxirae.Presentation.WPF.ViewModels.ProxyRules"
                          Title="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorTitle}}"
                          Width="700"
-                         Height="500"
                          MinWidth="700"
                          MinHeight="500"
                          d:DataContext="{d:DesignInstance Type=viewmodels:AddProxyRuleViewModel}"
@@ -20,6 +19,7 @@
                          ShowInTaskbar="False"
                          ShowMaximizeButton="False"
                          ShowMinimizeButton="False"
+                         SizeToContent="Height"
                          Style="{StaticResource Window}"
                          WindowStartupLocation="CenterOwner"
                          mc:Ignorable="d">
@@ -90,6 +90,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <Label Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorProcesses}}"
@@ -105,14 +106,22 @@
                              Text="{Binding Processes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                              TextWrapping="Wrap" />
 
-                    <Label Grid.Row="1"
+                    <TextBlock Grid.Row="1"
+                               Grid.Column="1"
+                               Margin="0,3,0,5"
+                               FontSize="11"
+                               Opacity="0.7"
+                               Text="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorProcessesExample}}"
+                               TextWrapping="Wrap" />
+
+                    <Label Grid.Row="2"
                            Margin="0,8,0,0"
                            Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorHosts}}"
                            Style="{StaticResource ProxyRulesEditorLabel}"
                            Target="{Binding ElementName=HostsBox}" />
 
                     <TextBox x:Name="HostsBox"
-                             Grid.Row="1"
+                             Grid.Row="2"
                              Grid.Column="1"
                              MinHeight="60"
                              Margin="0,8,0,0"
@@ -122,19 +131,35 @@
                              Text="{Binding Hosts, UpdateSourceTrigger=PropertyChanged}"
                              TextWrapping="Wrap" />
 
-                    <Label Grid.Row="2"
+                    <TextBlock Grid.Row="3"
+                               Grid.Column="1"
+                               Margin="0,3,0,5"
+                               FontSize="11"
+                               Opacity="0.7"
+                               Text="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorHostsExample}}"
+                               TextWrapping="Wrap" />
+
+                    <Label Grid.Row="4"
                            Margin="0,8,0,0"
                            Content="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorPorts}}"
                            Style="{StaticResource ProxyRulesEditorLabel}"
                            Target="{Binding ElementName=PortsBox}" />
 
                     <TextBox x:Name="PortsBox"
-                             Grid.Row="2"
+                             Grid.Row="4"
                              Grid.Column="1"
                              Margin="0,8,0,0"
                              VerticalAlignment="Top"
                              Style="{StaticResource ProxyRulesEditorInput}"
                              Text="{Binding Ports, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock Grid.Row="5"
+                               Grid.Column="1"
+                               Margin="0,3,0,5"
+                               FontSize="11"
+                               Opacity="0.7"
+                               Text="{l:Localize {x:Static res:LocalizationKeys.ProxyRulesEditorPortsExample}}"
+                               TextWrapping="Wrap" />
                 </Grid>
             </GroupBox>
 
