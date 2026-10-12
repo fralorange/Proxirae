@@ -195,11 +195,13 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\asyncio\io\datagram\win\IocpDatagramContext.cpp" />
     <ClCompile Include="src\asyncio\io\stream\win\IocpStreamContext.cpp" />
     <ClCompile Include="src\asyncio\io\stream\win\IocpStreamAdapter.cpp" />
+    <ClCompile Include="src\features\interception\correlation\win\WinDnsCorrelator.cpp" />
     <ClCompile Include="src\features\interception\correlation\win\WinUdpCorrelator.cpp" />
     <ClCompile Include="src\features\interception\correlation\DispatcherCorrelator.cpp" />
     <ClCompile Include="src\features\interception\correlation\win\WinUdpLookupTable.cpp" />
     <ClCompile Include="src\features\interception\routing\PacketFilter.cpp" />
     <ClCompile Include="src\features\interception\handling\UdpHandler.cpp" />
+    <ClCompile Include="src\features\persistence\domains\DomainTable.cpp" />
     <ClCompile Include="src\features\persistence\virtuals\VirtualTable.cpp" />
     <ClCompile Include="src\core\primitives\ip\IpAddress.cpp" />
     <ClCompile Include="src\core\primitives\ip\IpAddressHash.cpp" />
@@ -287,6 +289,9 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\features\communication\controllers\test\TestController.h" />
     <ClInclude Include="include\features\communication\channels\handlers\preferences\PreferencesPipeHandler.h" />
     <ClInclude Include="include\features\communication\channels\handlers\test\TestPipeHandler.h" />
+    <ClInclude Include="include\features\interception\correlation\win\WinDnsCorrelator.h" />
+    <ClInclude Include="include\features\persistence\domains\DomainEntry.h" />
+    <ClInclude Include="include\features\persistence\domains\DomainTable.h" />
     <ClInclude Include="include\features\persistence\virtuals\VirtualEntry.h" />
     <ClInclude Include="include\features\persistence\virtuals\VirtualTable.h" />
     <ClInclude Include="include\core\primitives\ip\IpAddress.h" />

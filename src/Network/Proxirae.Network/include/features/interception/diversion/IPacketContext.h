@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <string_view>
 
 #include "core/primitives/endpoints/Endpoint.h"
 #include "core/primitives/ip/IpAddress.h"
@@ -50,11 +51,17 @@ namespace Proxirae {
 		virtual std::uint32_t GetRawDataLength() const = 0;
 		virtual PacketMetadata& GetMetadata() = 0;
 
+		virtual std::uint8_t* GetPayloadData() const = 0;
+		virtual std::uint32_t GetPayloadLength() const = 0;
+
 		// Must operate in Host Byte Order
 
 		virtual void SetSource(const IpAddress& addr, std::uint16_t port) = 0;
 		virtual void SetDestination(const IpAddress& addr, std::uint16_t port) = 0;
 
 		virtual void SetProcessId(std::uint32_t pid) = 0;
+
+		virtual std::optional<std::string> GetDestinationDomain() const = 0;
+		virtual void SetDestinationDomain(const std::string_view domain) = 0;
 	};
 }

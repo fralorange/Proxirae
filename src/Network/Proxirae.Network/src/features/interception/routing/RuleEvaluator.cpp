@@ -26,7 +26,7 @@ namespace Proxirae {
             return false;
         }
 
-        if (!m_hostCriteria.IsMatch(rule.hosts, ctx.GetDestinationAddress())) {
+        if (!m_hostCriteria.IsMatch(rule.hosts, ctx.GetDestinationAddress(), ctx.GetDestinationDomain())) {
             return false;
         }
 
