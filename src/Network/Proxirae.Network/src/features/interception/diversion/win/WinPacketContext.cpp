@@ -3,7 +3,7 @@
 #include "features/interception/diversion/win/WinPacketContext.h"
 
 namespace Proxirae {
-	WinPacketContext::WinPacketContext(std::uint8_t* rawData, std::uint32_t rawDataLen, PacketMetadata metadata, PWINDIVERT_IPHDR ipHdr, PWINDIVERT_IPV6HDR ipv6Hdr, UINT8 protocol, PWINDIVERT_TCPHDR tcpHdr, PWINDIVERT_UDPHDR udpHdr, std::uint32_t payloadLen)
+	WinPacketContext::WinPacketContext(std::uint8_t* rawData, std::uint32_t rawDataLen, PacketMetadata metadata, PWINDIVERT_IPHDR ipHdr, PWINDIVERT_IPV6HDR ipv6Hdr, UINT8 protocol, PWINDIVERT_TCPHDR tcpHdr, PWINDIVERT_UDPHDR udpHdr, std::uint8_t* payloadData, std::uint32_t payloadLen)
 		: m_rawData(rawData), 
 		  m_rawDataLen(rawDataLen), 
 		  m_metadata(metadata), 
@@ -11,7 +11,8 @@ namespace Proxirae {
 		  m_ipv6Hdr(ipv6Hdr),
 		  m_protocol(protocol), 
 		  m_tcpHdr(tcpHdr), 
-		  m_udpHdr(udpHdr), 
+		  m_udpHdr(udpHdr),
+		  m_payloadData(payloadData),
 		  m_payloadLen(payloadLen)
 	{}
 
@@ -22,6 +23,7 @@ namespace Proxirae {
 		std::uint8_t protocol;
 		PWINDIVERT_TCPHDR tcpHdr;
 		PWINDIVERT_UDPHDR udpHdr;
+		void* payloadData;
 		std::uint32_t payloadLen;
 
 		if (!WinDivertHelperParsePacket(
@@ -33,7 +35,7 @@ namespace Proxirae {
 			nullptr, nullptr,
 			&tcpHdr,
 			&udpHdr,
-			nullptr,
+			&payloadData,
 			&payloadLen,
 			nullptr,
 			nullptr
@@ -45,7 +47,7 @@ namespace Proxirae {
 			return std::nullopt;
 		}
 
-		return WinPacketContext(const_cast<std::uint8_t*>(buffer), len, metadata, ipHdr, ipv6Hdr, protocol, tcpHdr, udpHdr, payloadLen);
+		return WinPacketContext(const_cast<std::uint8_t*>(buffer), len, metadata, ipHdr, ipv6Hdr, protocol, tcpHdr, udpHdr, static_cast<std::uint8_t*>(payloadData), payloadLen);
 	}
 
 	bool WinPacketContext::IsIPv6() const
@@ -192,6 +194,16 @@ namespace Proxirae {
 		return m_metadata;
 	}
 
+	std::uint8_t* WinPacketContext::GetPayloadData() const
+	{
+		return m_payloadData;
+	}
+
+	std::uint32_t WinPacketContext::GetPayloadLength() const
+	{
+		return m_payloadLen;
+	}
+
 	void WinPacketContext::SetSource(const IpAddress& addr, std::uint16_t port)
 	{
 		if (m_ipv6Hdr && addr.isIPv6) {
@@ -237,5 +249,19 @@ namespace Proxirae {
 		}
 
 		m_processId = pid;
+	}
+
+	std::optional<std::string> WinPacketContext::GetDestinationDomain() const
+	{
+		return m_domain;
+	}
+
+	void WinPacketContext::SetDestinationDomain(const std::string_view domain)
+	{
+		if (m_domain.has_value()) {
+			return;
+		}
+
+		m_domain = domain;
 	}
 }

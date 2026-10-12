@@ -3,8 +3,8 @@
 #include "platform/environment/inet.h"
 
 namespace Proxirae {
-	WinUdpCorrelator::WinUdpCorrelator(IProcessGuard& monitor, AssociationTable& associations, std::optional<WinUdpLookupTable> lookupTable, std::uint16_t redirectPort)
-		: m_guard(monitor), m_associations(associations), m_lookupTable(std::move(lookupTable)), m_redirectPort(redirectPort) {
+	WinUdpCorrelator::WinUdpCorrelator(IProcessGuard& monitor, AssociationTable& associations, DomainTable& domains, std::optional<WinUdpLookupTable> lookupTable, std::uint16_t redirectPort)
+		: m_guard(monitor), m_associations(associations), m_domains(domains), m_lookupTable(std::move(lookupTable)), m_redirectPort(redirectPort) {
 	}
 
 	WinUdpCorrelator::~WinUdpCorrelator() = default;
@@ -18,6 +18,11 @@ namespace Proxirae {
 		}
 
 		auto& context = ctxOpt.value();
+
+		auto lookupIp = context.IsOutbound() ? context.GetDestinationAddress() : context.GetSourceAddress();
+		if (auto domain = m_domains.Get(lookupIp); domain.has_value()) {
+			context.SetDestinationDomain(*domain);
+		}
 
 		FiveTuple fullKey{
 			.srcAddress = context.IsOutbound() ? context.GetSourceAddress() : context.GetDestinationAddress(),

@@ -8,12 +8,13 @@
 #include "core/primitives/tuples/FiveTupleHash.h"
 #include "features/interception/diversion/IPacketContext.h"
 #include "features/interception/diversion/Packet.h"
+#include "features/persistence/domains/DomainTable.h"
 #include "platform/processes/resolver/IProcessGuard.h"
 
 namespace Proxirae {
 	class WinTcpCorrelator : public IPacketCorrelator {
 	public:
-		WinTcpCorrelator(IProcessGuard& guard, AssociationTable& associations);
+		WinTcpCorrelator(IProcessGuard& guard, AssociationTable& associations, DomainTable& domains);
 
 		bool CorrelateNetwork(const Packet& packet, const std::function<void(IPacketContext&)>& callback) override;
 		bool CorrelateSocket(const PacketMetadata& metadata, const std::function<void(IPacketContext&)>& callback) override;
@@ -23,5 +24,6 @@ namespace Proxirae {
 
 		IProcessGuard& m_guard;
 		AssociationTable& m_associations;
+		DomainTable& m_domains;
 	};
 }

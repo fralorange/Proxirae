@@ -43,24 +43,32 @@ namespace Proxirae {
 		std::uint32_t GetRawDataLength() const override;
 		PacketMetadata& GetMetadata() override;
 
+		std::uint8_t* GetPayloadData() const override;
+		std::uint32_t GetPayloadLength() const override;
+
 		void SetSource(const IpAddress& addr, std::uint16_t port) override;
 		void SetDestination(const IpAddress& addr, std::uint16_t port) override;
 
 		void SetProcessId(std::uint32_t pid) override;
+
+		std::optional<std::string> GetDestinationDomain() const override;
+		void SetDestinationDomain(const std::string_view domain) override;
 	private:
 		std::optional<std::uint32_t> m_processId;
 		std::uint8_t* m_rawData;
 		std::uint32_t m_rawDataLen;
 		PacketMetadata m_metadata;
+		std::optional<std::string> m_domain;	
 		PWINDIVERT_IPHDR m_ipHdr;
 		PWINDIVERT_IPV6HDR m_ipv6Hdr;
 		std::uint8_t m_protocol;
 		PWINDIVERT_TCPHDR m_tcpHdr;
 		PWINDIVERT_UDPHDR m_udpHdr;
+		std::uint8_t* m_payloadData;
 		std::uint32_t m_payloadLen;
 
 		bool m_isModified{ false };
 
-		WinPacketContext(std::uint8_t* rawData, std::uint32_t rawDataLen, PacketMetadata metadata, PWINDIVERT_IPHDR ipHdr, PWINDIVERT_IPV6HDR ipv6Hdr, std::uint8_t protocol, PWINDIVERT_TCPHDR tcpHdr, PWINDIVERT_UDPHDR udpHdr, std::uint32_t payloadLen);
+		WinPacketContext(std::uint8_t* rawData, std::uint32_t rawDataLen, PacketMetadata metadata, PWINDIVERT_IPHDR ipHdr, PWINDIVERT_IPV6HDR ipv6Hdr, std::uint8_t protocol, PWINDIVERT_TCPHDR tcpHdr, PWINDIVERT_UDPHDR udpHdr, std::uint8_t* payloadData, std::uint32_t payloadLen);
 	};
 }

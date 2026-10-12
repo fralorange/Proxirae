@@ -28,6 +28,7 @@
 #include "features/transport/datagram/UdpMultiplexer.h"
 #include "features/transport/datagram/UdpBinder.h"
 #include "features/transport/DispatcherMultiplexer.h"
+#include "features/persistence/domains/DomainTable.h"
 
 #ifdef _WIN32
 #include <WinSock2.h>
@@ -35,6 +36,7 @@
 
 #include "asyncio/async/win/IocpDriver.h"
 #include "features/interception/diversion/win/WinPacketDiverter.h"
+#include "features/interception/correlation/win/WinDnsCorrelator.h"
 #include "features/interception/correlation/win/WinTcpCorrelator.h"
 #include "features/interception/correlation/win/WinUdpCorrelator.h"
 #include "platform/processes/resolver/win/WinProcessResolver.h"
@@ -84,6 +86,7 @@ int main()
     prefsLoader.Load();
 
     AssociationTable associations;
+    DomainTable domains;
 
     DispatcherCorrelator correlator;
 
@@ -109,10 +112,9 @@ int main()
 
     WinTcpCorrelator tcpCorrelator(
         processResolver,
-        associations
+        associations,
+        domains
     );
-
-    correlator.Register(tcpCorrelator);
 #endif
 
     ConnectionTable connections;
@@ -180,11 +182,15 @@ int main()
     WinUdpCorrelator udpCorrelator(
         processResolver,
         associations,
+        domains,
         std::move(lookupTable),
         udpPort
     );
 
-    correlator.Register(udpCorrelator);
+    WinDnsCorrelator dnsCorrelator(
+        domains,
+        udpPort
+	);
 
     WinPacketDiverter diverter(
         correlator,
@@ -192,6 +198,10 @@ int main()
         logger
     );
 #endif
+
+	correlator.Register(dnsCorrelator);
+    correlator.Register(tcpCorrelator);
+    correlator.Register(udpCorrelator);
 
     TcpHandler tcpHandler(
         tcpPort,

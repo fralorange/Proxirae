@@ -6,8 +6,8 @@
 #include <iostream>
 
 namespace Proxirae {
-	WinTcpCorrelator::WinTcpCorrelator(IProcessGuard& monitor, AssociationTable& associations)
-		: m_guard(monitor), m_associations(associations) {
+	WinTcpCorrelator::WinTcpCorrelator(IProcessGuard& monitor, AssociationTable& associations, DomainTable& domains)
+		: m_guard(monitor), m_associations(associations), m_domains(domains) {
 	}
 
 	bool WinTcpCorrelator::CorrelateNetwork(const Packet& packet, const std::function<void(IPacketContext&)>& callback)
@@ -19,6 +19,11 @@ namespace Proxirae {
 		}
 
 		auto& context = ctxOpt.value();
+
+		auto lookupIp = context.IsOutbound() ? context.GetDestinationAddress() : context.GetSourceAddress();
+		if (auto domain = m_domains.Get(lookupIp); domain.has_value()) {
+			context.SetDestinationDomain(*domain);
+		}
 
 		FiveTuple key{
 			.srcAddress = context.IsOutbound() ? context.GetSourceAddress() : context.GetDestinationAddress(),
@@ -118,4 +123,6 @@ namespace Proxirae {
 
 		return false;
 	}
+
+
 }

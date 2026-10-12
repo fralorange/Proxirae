@@ -264,6 +264,12 @@
     <ClCompile Include="src\features\proxification\TestableProxyFactory.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\features\persistence\domains\DomainTable.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\features\interception\correlation\win\WinDnsCorrelator.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\features\interception\diversion\win\WinPacketContext.h">
@@ -675,6 +681,15 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\features\proxification\TestableProxyBase.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\features\interception\correlation\win\WinDnsCorrelator.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\features\persistence\domains\DomainTable.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\features\persistence\domains\DomainEntry.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
