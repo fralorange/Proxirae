@@ -570,4 +570,16 @@
   <data name="ProxyRulesGridWatermarkText" xml:space="preserve">
     <value>Any</value>
   </data>
+  <data name="ProxyRulesEditorHostsExample" xml:space="preserve">
+    <value>Example: 127.0.0.1; *.example.com; 192.168.1.0/24</value>
+  </data>
+  <data name="ProxyRulesEditorPortsExample" xml:space="preserve">
+    <value>Example: 53; 80; 443; 8000-9000</value>
+  </data>
+  <data name="ProxyRulesEditorProcessesExample" xml:space="preserve">
+    <value>Example: msedge.exe; "C:\Apps\*.exe"; "/opt/apps/*"</value>
+  </data>
+  <data name="ProxyRulesOrderHint" xml:space="preserve">
+    <value>Rules are evaluated from top to bottom. Use the Up/Down buttons to change rule priority.</value>
+  </data>
 </root>
