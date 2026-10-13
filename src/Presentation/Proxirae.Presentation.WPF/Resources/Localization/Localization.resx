@@ -571,7 +571,7 @@
     <value>Any</value>
   </data>
   <data name="ProxyRulesEditorHostsExample" xml:space="preserve">
-    <value>Example: localhost; *.example.com; 192.168.1.0/24</value>
+    <value>Example: 127.0.0.1; *.example.com; 192.168.1.0/24</value>
   </data>
   <data name="ProxyRulesEditorPortsExample" xml:space="preserve">
     <value>Example: 53; 80; 443; 8000-9000</value>

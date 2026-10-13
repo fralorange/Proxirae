@@ -1,10 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MvvmDialogs;
+using MvvmDialogs.FrameworkDialogs.FolderBrowser;
 using MvvmDialogs.FrameworkDialogs.OpenFile;
 using Proxirae.Contracts.DTOs.Rules;
 using Proxirae.Contracts.DTOs.Rules.Actions;
 using Proxirae.Presentation.WPF.Services.Dialog.File;
+using Proxirae.Presentation.WPF.Services.Dialog.Folder;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -14,6 +16,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
     public partial class ProxyRuleBaseViewModel : ObservableValidator, IModalDialogViewModel, IDisposable
     {
         private readonly IFileDialogService _fileDialogService;
+        private readonly IFolderDialogService _folderDialogService;
 
         private bool? _dialogResult;
 
@@ -57,9 +60,10 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         [ObservableProperty]
         private int _priority;
 
-        public ProxyRuleBaseViewModel(IFileDialogService fileDialogService, List<BaseActionDto> actions)
+        public ProxyRuleBaseViewModel(IFileDialogService fileDialogService, IFolderDialogService folderDialogService, List<BaseActionDto> actions)
         {
             _fileDialogService = fileDialogService;
+            _folderDialogService = folderDialogService;
 
             Actions = actions;
             SelectedProtocols.CollectionChanged += OnSelectedProtocolsCollectionChanged;
@@ -76,7 +80,6 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         {
             var settings = new OpenFileDialogSettings
             {
-                Title = "Open File",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                 Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*"
             };
@@ -94,14 +97,48 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
                 fileName = $"\"{fileName}\"";
             }
 
-            if (string.IsNullOrWhiteSpace(Processes))
+            AppendProcess(fileName);
+        }
+
+        [RelayCommand]
+        private void BrowseDirectories()
+        {
+            var settings = new FolderBrowserDialogSettings
             {
-                Processes = fileName;
-            }
-            else
+                RootFolder = Environment.SpecialFolder.MyDocuments
+            };
+
+            var selectedPath = _folderDialogService.ShowOpenFolderDialog(this, settings);
+            if (selectedPath is null)
             {
-                Processes += $"; {fileName}";
+                return;
             }
+
+            var directoryPath = selectedPath.TrimEnd(
+                Path.DirectorySeparatorChar,
+                Path.AltDirectorySeparatorChar);
+
+            var directoryPattern = $"\"{directoryPath}{Path.DirectorySeparatorChar}*\"";
+
+            AppendProcess(directoryPattern);
+        }
+
+        private void AppendProcess(string value)
+        {
+            var processes = Processes?.TrimEnd() ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(processes))
+            {
+                Processes = value;
+                return;
+            }
+
+            if (!processes.EndsWith(';'))
+            {
+                processes += ";";
+            }
+
+            Processes = $"{processes} {value}";
         }
 
         public static ValidationResult? ValidateSelectedProtocols(ObservableCollection<RuleProtocolDto> protocols, ValidationContext context)

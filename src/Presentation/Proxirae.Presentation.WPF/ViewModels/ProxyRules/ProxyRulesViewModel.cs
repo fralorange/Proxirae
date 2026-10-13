@@ -7,6 +7,7 @@ using Proxirae.Application.Services.Rules;
 using Proxirae.Contracts.DTOs.Rules;
 using Proxirae.Contracts.DTOs.Rules.Actions;
 using Proxirae.Presentation.WPF.Services.Dialog.File;
+using Proxirae.Presentation.WPF.Services.Dialog.Folder;
 using Proxirae.Presentation.WPF.Services.Dialog.Modal;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -18,6 +19,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
     {
         private readonly IModalDialogService _modalDialogService;
         private readonly IFileDialogService _fileDialogService;
+        private readonly IFolderDialogService _folderDialogService;
         private readonly IRuleService _ruleService;
         private readonly ActionFacade _actionFacade;
 
@@ -42,10 +44,11 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
         private bool _hasChanges;
 
-        public ProxyRulesViewModel(IModalDialogService modalDialogService, IFileDialogService fileDialogService, IRuleService ruleService, ActionFacade actionFacade)
+        public ProxyRulesViewModel(IModalDialogService modalDialogService, IFileDialogService fileDialogService, IFolderDialogService folderDialogService, IRuleService ruleService, ActionFacade actionFacade)
         {
             _modalDialogService = modalDialogService;
             _fileDialogService = fileDialogService;
+            _folderDialogService = folderDialogService;
             _ruleService = ruleService;
             _actionFacade = actionFacade;
 
@@ -83,7 +86,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
                 nextPriority = _proxyRules.Max(r => r.Priority) + 1;
             }
 
-            var viewModel = new AddProxyRuleViewModel(_fileDialogService, Actions, nextPriority);
+            var viewModel = new AddProxyRuleViewModel(_fileDialogService, _folderDialogService, Actions, nextPriority);
             _modalDialogService.ShowDialog(this, viewModel);
 
             if (viewModel.ProxyRule is { } addRule)
@@ -96,7 +99,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         [RelayCommand]
         private async Task EditProxyRuleAsync(RuleDto proxyRule, CancellationToken cancellationToken)
         {
-            var viewModel = new EditProxyRuleViewModel(_fileDialogService, Actions, proxyRule);
+            var viewModel = new EditProxyRuleViewModel(_fileDialogService, _folderDialogService, Actions, proxyRule);
             _modalDialogService.ShowDialog(this, viewModel);
 
             if (viewModel.ProxyRule is { } editRule)

@@ -97,15 +97,17 @@
                            Style="{StaticResource ProxyRulesEditorLabel}"
                            Target="{Binding ElementName=ProcessesBox}" />
 
-                    <TextBox x:Name="ProcessesBox"
-                             Grid.Column="1"
-                             MinHeight="60"
-                             VerticalAlignment="Top"
-                             AcceptsReturn="True"
-                             Style="{StaticResource FilePickerInput}"
-                             Text="{Binding Processes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                             TextWrapping="Wrap" />
-
+                    <controls:TextBoxWithActions x:Name="ProcessesBox"
+                                                 Grid.Column="1"
+                                                 MinHeight="60"
+                                                 VerticalAlignment="Top"
+                                                 AcceptsReturn="True"
+                                                 FileCommand="{Binding BrowseProcessesCommand}"
+                                                 FileIconPath="/Resources/Vectors/file.svg"
+                                                 FolderCommand="{Binding BrowseDirectoriesCommand}"
+                                                 FolderIconPath="/Resources/Vectors/folder.svg"
+                                                 Text="{Binding Processes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                                 TextWrapping="Wrap" />
                     <TextBlock Grid.Row="1"
                                Grid.Column="1"
                                Margin="0,3,0,5"
