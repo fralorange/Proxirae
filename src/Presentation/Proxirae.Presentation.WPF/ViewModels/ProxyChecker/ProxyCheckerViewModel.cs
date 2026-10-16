@@ -6,10 +6,11 @@ using Proxirae.Application.Services.Test;
 using Proxirae.Contracts.DTOs.Proxies;
 using Proxirae.Contracts.DTOs.Test;
 using Proxirae.Presentation.WPF.Services.Dialog.Modal;
+using System.ComponentModel.DataAnnotations;
 
 namespace Proxirae.Presentation.WPF.ViewModels.ProxyChecker
 {
-    public partial class ProxyCheckerViewModel : ObservableObject, IModalDialogViewModel, IDisposable
+    public partial class ProxyCheckerViewModel : ObservableValidator, IModalDialogViewModel, IDisposable
     {
         private readonly IModalDialogService _modalDialogService;
         private readonly ITestService _testService;
@@ -30,10 +31,13 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyChecker
         private ProxyTestDto? _proxyServer;
 
         [ObservableProperty]
+        [Required]
         private string _testAddress = "www.google.com";
 
         [ObservableProperty]
-        private ushort _testPort = 80;
+        [Required]
+        [Range(1, 65535)]
+        private ushort? _testPort = 80;
 
         [ObservableProperty]
         private int _progressValue;
@@ -120,7 +124,9 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyChecker
         [RelayCommand]
         private async Task Test(CancellationToken cancellationToken)
         {
-            if (ProxyServer is null)
+            ValidateAllProperties();
+
+            if (ProxyServer is null || HasErrors)
                 return;
 
             _totalLatency = 0;
@@ -138,7 +144,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyChecker
                 Id = _currentTestId,
                 Proxy = ProxyServer,
                 TestAddress = TestAddress,
-                TestPort = TestPort
+                TestPort = TestPort!.Value
             };
 
             try
