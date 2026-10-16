@@ -1,7 +1,7 @@
 [Setup]
 AppId={{6AE9A480-F547-485D-92C4-BEEFBB67616A}}
 AppName=Proxirae
-AppVersion=0.5.0
+AppVersion=1.0.0
 DefaultDirName={autopf}\Proxirae
 DefaultGroupName=Proxirae
 UninstallDisplayIcon={app}\Proxirae.exe
