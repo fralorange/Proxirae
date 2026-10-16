@@ -79,7 +79,7 @@ namespace Proxirae.Presentation.WPF
             services.AddSingleton<IAutostartService, WindowsAutostartService>();
             services.AddSingleton<IProcessInfoService, ProcessInfoService>();
             services.AddTransient<IBrowserService, BrowserService>();
-            services.AddTransient<IStylesService, WpfStylesService>();
+            services.AddTransient<IStyleService, WpfStylesService>();
             services.AddTransient<IArchiveService, ArchiveService>();
             services.AddSingleton<ILocalizationService, LocalizationService>();
             services.AddSingleton<IThemeService, WpfThemeService>();
