@@ -61,7 +61,7 @@ namespace Proxirae.Presentation.WPF
 
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            var stylesConfigurator = _host.Services.GetRequiredService<IStylesService>();
+            var stylesConfigurator = _host.Services.GetRequiredService<IStyleService>();
             stylesConfigurator.ApplyGlobalTweaks();
 
             var trayService = _host.Services.GetRequiredService<TrayService>();

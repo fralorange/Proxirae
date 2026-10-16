@@ -3,7 +3,7 @@
 namespace Proxirae {
 	void AssociationTable::Add(const FiveTuple& key, const AssociationEntry& entry)
 	{
-		m_associations[key] = entry;
+		m_associations.insert_or_assign(key, entry);
 	}
 
 	void AssociationTable::Remove(const FiveTuple& key)

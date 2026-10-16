@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace Proxirae.Infrastructure.ProcessCommunication.Pipes.Message.Handlers.Logs
 {
-    public class LogMessageHandler : IPipeMessageHandler
+    public class LogMessageHandler : SafePipeMessageHandler
     {
         private readonly ILogService _logService;
 
@@ -13,7 +13,7 @@ namespace Proxirae.Infrastructure.ProcessCommunication.Pipes.Message.Handlers.Lo
             _logService = logService;
         }
 
-        public Task HandleAsync(PipeMessage message, CancellationToken cancellationToken)
+        protected override Task HandleUnsafeAsync(PipeMessage message, CancellationToken cancellationToken)
         {
             var log = JsonSerializer.Deserialize<LogDto>(message.Payload);
 

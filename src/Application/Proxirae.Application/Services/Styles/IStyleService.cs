@@ -1,6 +1,6 @@
 ﻿namespace Proxirae.Application.Services.Styles
 {
-    public interface IStylesService
+    public interface IStyleService
     {
         void ApplyGlobalTweaks();
     }

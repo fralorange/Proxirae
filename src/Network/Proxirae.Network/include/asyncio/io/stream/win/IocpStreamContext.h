@@ -12,6 +12,7 @@ namespace Proxirae {
 
 		IocpStreamContext(IoOperation operation, IoCallback callback);
 
-		void Complete(const IoResult& result) override;
+	protected:
+		void OnComplete(const IoResult& result) override;
 	};
 }

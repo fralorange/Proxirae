@@ -9,7 +9,7 @@
 
 namespace Proxirae {
 
-	bool HostCriteria::IsMatch(const std::string& ruleHosts, const IpAddress& destinationIp) const
+	bool HostCriteria::IsMatch(const std::string& ruleHosts, const IpAddress& destinationIp, std::optional<std::string_view> domain) const
 	{
 		if (ruleHosts.empty()) {
 			return true;
@@ -83,6 +83,10 @@ namespace Proxirae {
 				}
 				continue;
 			}
+
+			if (domain.has_value() && MatchDomain(token, *domain)) {
+				return true;
+			}
 		}
 
 		return false;
@@ -101,11 +105,17 @@ namespace Proxirae {
 
 		if (inet_pton(AF_INET, buf, addr.data.data()) == 1) {
 			addr.isIPv6 = false;
+			addr.data[0] = ntohl(addr.data[0]);
 			return addr;
 		}
 
 		if (inet_pton(AF_INET6, buf, addr.data.data()) == 1) {
 			addr.isIPv6 = true;
+
+			for (auto& word : addr.data) {
+				word = ntohl(word);
+			}
+
 			return addr;
 		}
 
@@ -114,10 +124,45 @@ namespace Proxirae {
 
 	int HostCriteria::CompareIp(const IpAddress& a, const IpAddress& b) const
 	{
-		size_t len = a.isIPv6 ? 16 : 4;
-		const auto* ptrA = reinterpret_cast<const std::uint8_t*>(a.data.data());
-		const auto* ptrB = reinterpret_cast<const std::uint8_t*>(b.data.data());
-		return std::memcmp(ptrA, ptrB, len);
+		if (a.isIPv6 != b.isIPv6) {
+			return a.isIPv6 ? 1 : -1;
+		}
+
+		const std::size_t wordCount = a.isIPv6 ? 4 : 1;
+
+		for (std::size_t i = 0; i < wordCount; ++i) {
+			if (a.data[i] < b.data[i]) {
+				return -1;
+			}
+
+			if (a.data[i] > b.data[i]) {
+				return 1;
+			}
+		}
+
+		return 0;
+	}
+
+	bool HostCriteria::MatchDomain(std::string_view pattern, std::string_view domain) const
+	{
+		if (pattern == "*") {
+			return true;
+		}
+
+		if (pattern.starts_with("*.")) {
+			std::string_view suffix = pattern.substr(1);
+			return domain == suffix.substr(1) || domain.ends_with(suffix);
+		}
+
+		auto starPos = pattern.find('*');
+		if (starPos != std::string::npos) {
+			std::string_view prefix = pattern.substr(0, starPos);
+			std::string_view suffix = pattern.substr(starPos + 1);
+			return domain.starts_with(prefix) && domain.ends_with(suffix) &&
+				domain.size() >= prefix.size() + suffix.size();
+		}
+
+		return domain == pattern || domain.ends_with(std::string(1, '.') + std::string(pattern));
 	}
 
 	bool HostCriteria::MatchCidr(const IpAddress& dest, const IpAddress& net, int prefixLen) const
@@ -126,26 +171,32 @@ namespace Proxirae {
 			return false;
 		}
 
-		int totalBits = dest.isIPv6 ? 128 : 32;
+		const int totalBits = dest.isIPv6 ? 128 : 32;
+
 		if (prefixLen < 0 || prefixLen > totalBits) {
 			return false;
 		}
 
-		const auto* ptrDest = reinterpret_cast<const std::uint8_t*>(dest.data.data());
-		const auto* ptrNet = reinterpret_cast<const std::uint8_t*>(net.data.data());
+		const std::size_t wordCount = dest.isIPv6 ? 4 : 1;
+		int remainingBits = prefixLen;
 
-		int fullBytes = prefixLen / 8;
-		int remainingBits = prefixLen % 8;
+		for (std::size_t i = 0; i < wordCount; ++i) {
+			if (remainingBits == 0) {
+				return true;
+			}
 
-		if (fullBytes > 0 && std::memcmp(ptrDest, ptrNet, fullBytes) != 0) {
-			return false;
-		}
+			const int bits = (std::min)(remainingBits, 32);
 
-		if (remainingBits > 0) {
-			std::uint8_t mask = static_cast<std::uint8_t>(0xFF << (8 - remainingBits));
-			if ((ptrDest[fullBytes] & mask) != (ptrNet[fullBytes] & mask)) {
+			const std::uint32_t mask =
+				bits == 32
+				? 0xFFFFFFFFu
+				: (0xFFFFFFFFu << (32 - bits));
+
+			if ((dest.data[i] & mask) != (net.data[i] & mask)) {
 				return false;
 			}
+
+			remainingBits -= bits;
 		}
 
 		return true;

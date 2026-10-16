@@ -19,10 +19,9 @@ using Proxirae.Application.Services.Preferences.Autostart;
 using Proxirae.Application.Services.Proxies;
 using Proxirae.Application.Services.Routes;
 using Proxirae.Application.Services.Rules;
-using Proxirae.Application.Services.Test;
 using Proxirae.Application.Services.Styles;
+using Proxirae.Application.Services.Test;
 using Proxirae.Application.Validators.ProxyRule;
-using Proxirae.Infrastructure;
 using Proxirae.Infrastructure.Mappers.Rule;
 using Proxirae.Infrastructure.Mappers.Rule.Action;
 using Proxirae.Infrastructure.Services.Configuration;
@@ -34,6 +33,7 @@ using Proxirae.Presentation.WPF.Services.Archive;
 using Proxirae.Presentation.WPF.Services.Browser;
 using Proxirae.Presentation.WPF.Services.Clipboard;
 using Proxirae.Presentation.WPF.Services.Dialog.File;
+using Proxirae.Presentation.WPF.Services.Dialog.Folder;
 using Proxirae.Presentation.WPF.Services.Dialog.Input;
 using Proxirae.Presentation.WPF.Services.Dialog.Message;
 using Proxirae.Presentation.WPF.Services.Dialog.Modal;
@@ -79,7 +79,7 @@ namespace Proxirae.Presentation.WPF
             services.AddSingleton<IAutostartService, WindowsAutostartService>();
             services.AddSingleton<IProcessInfoService, ProcessInfoService>();
             services.AddTransient<IBrowserService, BrowserService>();
-            services.AddTransient<IStylesService, WpfStylesService>();
+            services.AddTransient<IStyleService, WpfStylesService>();
             services.AddTransient<IArchiveService, ArchiveService>();
             services.AddSingleton<ILocalizationService, LocalizationService>();
             services.AddSingleton<IThemeService, WpfThemeService>();
@@ -90,6 +90,7 @@ namespace Proxirae.Presentation.WPF
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IPackageService, PackageService>();
             services.AddSingleton<TrayService>();
+            services.AddTransient<IFolderDialogService, FolderDialogService>();
 
             return services;
         }

@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace Proxirae.Presentation.WPF.Services.Styles
 {
-    public class WpfStylesService : IStylesService
+    public class WpfStylesService : IStyleService
     {
         public void ApplyGlobalTweaks()
         {

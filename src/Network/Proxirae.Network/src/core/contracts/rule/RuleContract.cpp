@@ -3,6 +3,6 @@
 namespace Proxirae {
 	bool RuleContract::operator<(const RuleContract& other) const
 	{
-		return priority < other.priority;
+		return priority > other.priority;
 	}
 }

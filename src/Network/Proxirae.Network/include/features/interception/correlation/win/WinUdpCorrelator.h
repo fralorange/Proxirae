@@ -7,12 +7,13 @@
 #include "features/persistence/associations/AssociationTable.h"
 #include "features/interception/diversion/IPacketContext.h"
 #include "features/interception/diversion/Packet.h"
+#include "features/persistence/domains/DomainTable.h"
 #include "platform/processes/resolver/IProcessGuard.h"
 
 namespace Proxirae {
 	class WinUdpCorrelator : public IPacketCorrelator {
 	public:
-		WinUdpCorrelator(IProcessGuard& guard, AssociationTable& associations, std::optional<WinUdpLookupTable> lookupTable, std::uint16_t redirectPort);
+		WinUdpCorrelator(IProcessGuard& guard, AssociationTable& associations, DomainTable& domains, std::optional<WinUdpLookupTable> lookupTable, std::uint16_t redirectPort);
 		~WinUdpCorrelator() override;
 
 		bool CorrelateNetwork(const Packet& packet, const std::function<void(IPacketContext&)>& callback) override;
@@ -23,6 +24,7 @@ namespace Proxirae {
 
 		IProcessGuard& m_guard;
 		AssociationTable& m_associations;
+		DomainTable& m_domains;
 
 		std::optional<WinUdpLookupTable> m_lookupTable;
 

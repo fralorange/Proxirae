@@ -195,11 +195,15 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\asyncio\io\datagram\win\IocpDatagramContext.cpp" />
     <ClCompile Include="src\asyncio\io\stream\win\IocpStreamContext.cpp" />
     <ClCompile Include="src\asyncio\io\stream\win\IocpStreamAdapter.cpp" />
+    <ClCompile Include="src\features\communication\channels\messages\handlers\SafePipeMessageHandler.cpp" />
+    <ClCompile Include="src\features\diagnostics\dump\win\WinDumpLogger.cpp" />
+    <ClCompile Include="src\features\interception\correlation\win\WinDnsCorrelator.cpp" />
     <ClCompile Include="src\features\interception\correlation\win\WinUdpCorrelator.cpp" />
     <ClCompile Include="src\features\interception\correlation\DispatcherCorrelator.cpp" />
     <ClCompile Include="src\features\interception\correlation\win\WinUdpLookupTable.cpp" />
     <ClCompile Include="src\features\interception\routing\PacketFilter.cpp" />
     <ClCompile Include="src\features\interception\handling\UdpHandler.cpp" />
+    <ClCompile Include="src\features\persistence\domains\DomainTable.cpp" />
     <ClCompile Include="src\features\persistence\virtuals\VirtualTable.cpp" />
     <ClCompile Include="src\core\primitives\ip\IpAddress.cpp" />
     <ClCompile Include="src\core\primitives\ip\IpAddressHash.cpp" />
@@ -215,14 +219,14 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="src\orchestration\Host.cpp" />
     <ClCompile Include="src\features\communication\controllers\session\SessionController.cpp" />
     <ClCompile Include="src\features\communication\controllers\test\TestController.cpp" />
-    <ClCompile Include="src\features\communication\channels\handlers\flow\FlowPipeHandler.cpp" />
-    <ClCompile Include="src\features\communication\channels\handlers\preferences\PreferencesPipeHandler.cpp" />
-    <ClCompile Include="src\features\communication\channels\handlers\test\TestPipeHandler.cpp" />
+    <ClCompile Include="src\features\communication\channels\messages\handlers\flow\FlowPipeHandler.cpp" />
+    <ClCompile Include="src\features\communication\channels\messages\handlers\preferences\PreferencesPipeHandler.cpp" />
+    <ClCompile Include="src\features\communication\channels\messages\handlers\test\TestPipeHandler.cpp" />
     <ClCompile Include="src\features\communication\monitoring\Monitor.cpp" />
     <ClCompile Include="src\core\contracts\rule\RuleContract.cpp" />
     <ClCompile Include="src\features\diagnostics\journal\JournalLogger.cpp" />
     <ClCompile Include="src\asyncio\async\win\IocpContext.cpp" />
-    <ClCompile Include="src\features\communication\channels\handlers\configuration\ConfigurationPipeHandler.cpp" />
+    <ClCompile Include="src\features\communication\channels\messages\handlers\configuration\ConfigurationPipeHandler.cpp" />
     <ClCompile Include="src\features\communication\channels\IpcChannel.cpp" />
     <ClCompile Include="src\features\communication\channels\messages\PipeMessage.cpp" />
     <ClCompile Include="src\features\communication\channels\messengers\IpcMessenger.cpp" />
@@ -283,10 +287,15 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\core\contracts\proxy\ProxyTestContract.h" />
     <ClInclude Include="include\core\contracts\test\TestContract.h" />
     <ClInclude Include="include\core\contracts\test\TestProgressContract.h" />
+    <ClInclude Include="include\features\communication\channels\messages\handlers\SafePipeMessageHandler.h" />
     <ClInclude Include="include\features\communication\controllers\session\SessionController.h" />
     <ClInclude Include="include\features\communication\controllers\test\TestController.h" />
-    <ClInclude Include="include\features\communication\channels\handlers\preferences\PreferencesPipeHandler.h" />
-    <ClInclude Include="include\features\communication\channels\handlers\test\TestPipeHandler.h" />
+    <ClInclude Include="include\features\communication\channels\messages\handlers\preferences\PreferencesPipeHandler.h" />
+    <ClInclude Include="include\features\communication\channels\messages\handlers\test\TestPipeHandler.h" />
+    <ClInclude Include="include\features\diagnostics\dump\win\WinDumpLogger.h" />
+    <ClInclude Include="include\features\interception\correlation\win\WinDnsCorrelator.h" />
+    <ClInclude Include="include\features\persistence\domains\DomainEntry.h" />
+    <ClInclude Include="include\features\persistence\domains\DomainTable.h" />
     <ClInclude Include="include\features\persistence\virtuals\VirtualEntry.h" />
     <ClInclude Include="include\features\persistence\virtuals\VirtualTable.h" />
     <ClInclude Include="include\core\primitives\ip\IpAddress.h" />
@@ -329,10 +338,10 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClInclude Include="include\orchestration\Host.h" />
     <ClInclude Include="include\core\contracts\route\RouteContract.h" />
     <ClInclude Include="include\features\diagnostics\journal\JournalLogger.h" />
-    <ClInclude Include="include\features\communication\channels\handlers\configuration\ConfigurationPipeHandler.h" />
+    <ClInclude Include="include\features\communication\channels\messages\handlers\configuration\ConfigurationPipeHandler.h" />
     <ClInclude Include="include\features\communication\channels\IpcChannel.h" />
     <ClInclude Include="include\features\communication\channels\messengers\IpcMessenger.h" />
-    <ClInclude Include="include\features\communication\channels\handlers\IPipeMessageHandler.h" />
+    <ClInclude Include="include\features\communication\channels\messages\handlers\IPipeMessageHandler.h" />
     <ClInclude Include="include\features\communication\pipes\IPipeServer.h" />
     <ClInclude Include="include\features\communication\channels\IDispatchChannel.h" />
     <ClInclude Include="include\features\communication\channels\IReceiveChannel.h" />
@@ -412,7 +421,7 @@ xcopy /y /d "$(ConanwindivertRootFolder)\bin\*.sys" "$(OutDir)"</Command>
     <ClCompile Include="include\features\proxification\stream\TestStage.h" />
     <ClCompile Include="include\utils\UuidUtils.h" />
     <ClCompile Include="include\core\contracts\flow\FlowDisconnectContract.h" />
-    <ClCompile Include="include\features\communication\channels\handlers\flow\FlowPipeHandler.h" />
+    <ClCompile Include="include\features\communication\channels\messages\handlers\flow\FlowPipeHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="conanfile.py" />

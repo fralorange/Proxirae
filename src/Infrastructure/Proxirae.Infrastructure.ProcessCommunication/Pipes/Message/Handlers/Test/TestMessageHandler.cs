@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace Proxirae.Infrastructure.ProcessCommunication.Pipes.Message.Handlers.Test
 {
-    public class TestMessageHandler : IPipeMessageHandler
+    public class TestMessageHandler : SafePipeMessageHandler
     {
         private readonly ITestService _testService;
 
@@ -14,7 +14,7 @@ namespace Proxirae.Infrastructure.ProcessCommunication.Pipes.Message.Handlers.Te
             _testService = testService;
         }
 
-        public Task HandleAsync(PipeMessage message, CancellationToken cancellationToken)
+        protected override Task HandleUnsafeAsync(PipeMessage message, CancellationToken cancellationToken)
         {
             var progress = JsonSerializer.Deserialize<TestProgressDto>(message.Payload);
 

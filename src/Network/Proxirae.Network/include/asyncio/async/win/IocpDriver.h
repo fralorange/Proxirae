@@ -5,10 +5,12 @@
 #include <atomic>
 
 #include "asyncio/async/IAsyncDriver.h"
+#include "features/diagnostics/ILogger.h"
 
 namespace Proxirae {
 	class IocpDriver : public IAsyncDriver {
 	public:
+		explicit IocpDriver(ILogger& logger);
 		~IocpDriver() override;
 
 		bool Start(std::size_t threadCount) override;
@@ -18,6 +20,8 @@ namespace Proxirae {
 
 	private:
 		void Run();
+
+		ILogger& m_logger;
 
 		NativeHandle m_iocpHandle{ 0 };
 		std::vector<std::thread> m_workers;
