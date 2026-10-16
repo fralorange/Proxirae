@@ -16,10 +16,10 @@
 #include "features/proxification/ProxyFactory.h"
 #include "features/communication/channels/IpcChannel.h"
 #include "utils/PathUtils.h"
-#include "features/communication/channels/handlers/configuration/ConfigurationPipeHandler.h"
-#include "features/communication/channels/handlers/preferences/PreferencesPipeHandler.h"
-#include "features/communication/channels/handlers/flow/FlowPipeHandler.h"
-#include "features/communication/channels/handlers/test/TestPipeHandler.h"
+#include "features/communication/channels/messages/handlers/configuration/ConfigurationPipeHandler.h"
+#include "features/communication/channels/messages/handlers/preferences/PreferencesPipeHandler.h"
+#include "features/communication/channels/messages/handlers/flow/FlowPipeHandler.h"
+#include "features/communication/channels/messages/handlers/test/TestPipeHandler.h"
 #include "features/communication/channels/messages/PipeMessageType.h"
 #include "features/communication/monitoring/Monitor.h"
 #include "features/interception/correlation/DispatcherCorrelator.h"
@@ -46,6 +46,7 @@
 #include "asyncio/io/datagram/win/IocpDatagramAdapter.h"
 #include "platform/protection/win/WinProtector.h"
 #include "features/interception/correlation/win/WinUdpLookupTable.h"
+#include "features/diagnostics/dump/win/WinDumpLogger.h"
 #endif
 
 using namespace Proxirae;
@@ -65,7 +66,8 @@ int main()
     Store prefsStore(prefsPtr);
 
 #ifdef _WIN32
-    IocpDriver driver;
+    WinDumpLogger dumper;
+    IocpDriver driver(dumper);
     IocpStreamAdapter streamAdapter;
     IocpDatagramAdapter datagramAdapter;
     WinPipeServer pipe(driver, streamAdapter);
@@ -95,7 +97,7 @@ int main()
     WORD DLLVersion = MAKEWORD(2, 2);
 
     if (WSAStartup(DLLVersion, &wsaData) != 0) {
-        logger.LogCritical(
+        dumper.LogCritical(
             std::format(
                 "[Winsock] WSAStartup failed: error {}",
                 WSAGetLastError()
@@ -134,7 +136,7 @@ int main()
     );
 
     if (!driver.Start(6)) {
-        logger.LogCritical(
+        dumper.LogCritical(
             "[AsyncDriver] Failed to start IO Driver (6 worker threads)"
         );
 
@@ -159,7 +161,7 @@ int main()
     std::uint16_t tcpPort = tcpListener.Bind();
 
     if (tcpPort == 0) {
-        logger.LogCritical(
+        dumper.LogCritical(
             "[Main] Failed to bind redirect TCP listener port"
         );
 
@@ -171,7 +173,7 @@ int main()
     std::uint16_t udpPort = udpBinder.Bind();
 
     if (udpPort == 0) {
-        logger.LogCritical(
+        dumper.LogCritical(
             "[Main] Failed to bind redirect UDP binder port"
         );
 
@@ -275,20 +277,24 @@ int main()
 
     ConfigurationPipeHandler confHandler(
         configLoader,
-        diverter
+        diverter,
+        logger
     );
 
     PreferencesPipeHandler prefHandler(
-        prefsLoader
+        prefsLoader,
+        logger
     );
 
     FlowPipeHandler flowHandler(
-        sessionController
+        sessionController,
+        logger
     );
 
     TestPipeHandler testHandler(
         testController,
-        protector
+        protector,
+        logger
     );
 
     channel.RegisterHandler(
@@ -341,7 +347,7 @@ int main()
     );
 
     if (!listenFuture.get()) {
-        logger.LogError(
+        dumper.LogError(
             "[Main] Daemon failed to start background listener thread"
         );
 

@@ -4,7 +4,7 @@ namespace Proxirae {
 	IocpDatagramContext::IocpDatagramContext(IoOperation operation, IoDatagramCallback callback)
 		: IocpContext(operation), callback(std::move(callback)) { }
 
-	void IocpDatagramContext::Complete(const IoResult& baseRes)
+	void IocpDatagramContext::OnComplete(const IoResult& baseRes)
 	{
 		if (!callback) return;
 

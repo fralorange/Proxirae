@@ -1,13 +1,13 @@
 #include <nlohmann/json.hpp>
 
-#include "features/communication/channels/handlers/flow/FlowPipeHandler.h"
+#include "features/communication/channels/messages/handlers/flow/FlowPipeHandler.h"
 #include "utils/JsonUtils.h"
 
 namespace Proxirae {
-	FlowPipeHandler::FlowPipeHandler(SessionController& controller)
-		: m_controller(controller) {}
+	FlowPipeHandler::FlowPipeHandler(SessionController& controller, ILogger& logger)
+		: m_controller(controller), SafePipeMessageHandler(logger) {}
 
-	void FlowPipeHandler::Handle(const PipeMessage& msg)
+	void FlowPipeHandler::HandleUnsafe(const PipeMessage& msg)
 	{
 		nlohmann::json j = nlohmann::json::parse(msg.payload);
 		

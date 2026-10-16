@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace Proxirae.Infrastructure.ProcessCommunication.Pipes.Message.Handlers.Flows
 {
-    public class FlowMessageHandler : IPipeMessageHandler
+    public class FlowMessageHandler : SafePipeMessageHandler
     {
         private readonly IFlowService _flowService;
 
@@ -13,7 +13,7 @@ namespace Proxirae.Infrastructure.ProcessCommunication.Pipes.Message.Handlers.Fl
             _flowService = flowService;
         }
 
-        public Task HandleAsync(PipeMessage message, CancellationToken cancellationToken)
+        protected override Task HandleUnsafeAsync(PipeMessage message, CancellationToken cancellationToken)
         {
             var flows = JsonSerializer.Deserialize<List<FlowDto>>(message.Payload);
 

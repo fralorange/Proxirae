@@ -25,7 +25,12 @@ namespace Proxirae {
 			auto proxiesPath = m_configDir / "proxies.json";
 
 			auto tempProxies = ReadJson<ProxyContract>(proxiesPath);
-			for (auto& proxy : tempProxies) {
+
+			if (!tempProxies.has_value()) {
+				return;
+			}
+
+			for (auto& proxy : *tempProxies) {
 				if (!proxy.password.empty()) {
 					std::string unprotectedPassword;
 
@@ -50,7 +55,12 @@ namespace Proxirae {
 			auto rulesPath = m_configDir / "rules.json";
 
 			auto tempRules = ReadJson<RuleContract>(rulesPath);
-			for (auto& rule : tempRules) {
+
+			if (!tempRules.has_value()) {
+				return;
+			}
+
+			for (auto& rule : *tempRules) {
 				newConfig->rules.insert(std::move(rule));
 			}
 		}
@@ -59,7 +69,7 @@ namespace Proxirae {
 	}
 
 	template<typename T>
-	std::vector<T> ConfigurationLoader::ReadJson(const std::filesystem::path& path) const
+	std::optional<std::vector<T>> ConfigurationLoader::ReadJson(const std::filesystem::path& path) const
 	{
 		try {
 			if (!std::filesystem::exists(path) || std::filesystem::file_size(path) == 0) {
