@@ -129,7 +129,7 @@
     <ClCompile Include="src\utils\PathUtils.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\features\communication\channels\handlers\configuration\ConfigurationPipeHandler.cpp">
+    <ClCompile Include="src\features\communication\channels\messages\handlers\configuration\ConfigurationPipeHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\asyncio\async\win\IocpContext.cpp">
@@ -153,16 +153,16 @@
     <ClCompile Include="src\features\persistence\preferences\PreferencesLoader.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\features\communication\channels\handlers\preferences\PreferencesPipeHandler.cpp">
+    <ClCompile Include="src\features\communication\channels\messages\handlers\preferences\PreferencesPipeHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="include\core\contracts\flow\FlowDisconnectContract.h">
       <Filter>Файлы заголовков</Filter>
     </ClCompile>
-    <ClCompile Include="include\features\communication\channels\handlers\flow\FlowPipeHandler.h">
+    <ClCompile Include="include\features\communication\channels\messages\handlers\flow\FlowPipeHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClCompile>
-    <ClCompile Include="src\features\communication\channels\handlers\flow\FlowPipeHandler.cpp">
+    <ClCompile Include="src\features\communication\channels\messages\handlers\flow\FlowPipeHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\platform\processes\manager\win\WinProcessManager.cpp">
@@ -177,7 +177,7 @@
     <ClCompile Include="include\features\proxification\stream\TestStage.h">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="src\features\communication\channels\handlers\test\TestPipeHandler.cpp">
+    <ClCompile Include="src\features\communication\channels\messages\handlers\test\TestPipeHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\features\communication\controllers\test\TestController.cpp">
@@ -268,6 +268,12 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\features\interception\correlation\win\WinDnsCorrelator.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\features\diagnostics\dump\win\WinDumpLogger.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\features\communication\channels\messages\handlers\SafePipeMessageHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -464,7 +470,7 @@
     <ClInclude Include="include\features\communication\channels\IDispatchChannel.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\features\communication\channels\handlers\IPipeMessageHandler.h">
+    <ClInclude Include="include\features\communication\channels\messages\handlers\IPipeMessageHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\features\communication\channels\IpcChannel.h">
@@ -491,7 +497,7 @@
     <ClInclude Include="include\features\communication\channels\messages\PipeMessageType.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\features\communication\channels\handlers\configuration\ConfigurationPipeHandler.h">
+    <ClInclude Include="include\features\communication\channels\messages\handlers\configuration\ConfigurationPipeHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\core\contracts\flow\FlowContract.h">
@@ -524,7 +530,7 @@
     <ClInclude Include="include\features\communication\monitoring\route\IRoutingMonitor.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\features\communication\channels\handlers\preferences\PreferencesPipeHandler.h">
+    <ClInclude Include="include\features\communication\channels\messages\handlers\preferences\PreferencesPipeHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\features\persistence\preferences\Preferences.h">
@@ -551,7 +557,7 @@
     <ClInclude Include="include\features\communication\controllers\test\TestController.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\features\communication\channels\handlers\test\TestPipeHandler.h">
+    <ClInclude Include="include\features\communication\channels\messages\handlers\test\TestPipeHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\core\contracts\test\TestContract.h">
@@ -690,6 +696,12 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="include\features\persistence\domains\DomainEntry.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\features\diagnostics\dump\win\WinDumpLogger.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\features\communication\channels\messages\handlers\SafePipeMessageHandler.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

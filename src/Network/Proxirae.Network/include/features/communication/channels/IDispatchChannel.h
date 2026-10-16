@@ -1,5 +1,5 @@
 #pragma once
-#include "features/communication/channels/handlers/IPipeMessageHandler.h"
+#include "features/communication/channels/messages/handlers/IPipeMessageHandler.h"
 #include "features/communication/channels/messages/PipeMessageType.h"
 
 namespace Proxirae {

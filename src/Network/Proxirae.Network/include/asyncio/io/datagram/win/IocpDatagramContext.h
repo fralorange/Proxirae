@@ -18,6 +18,7 @@ namespace Proxirae {
 
 		IocpDatagramContext(IoOperation operation, IoDatagramCallback callback);
 
-		void Complete(const IoResult& baseRes) override;
+	protected:
+		void OnComplete(const IoResult& baseRes) override;
 	};
 }

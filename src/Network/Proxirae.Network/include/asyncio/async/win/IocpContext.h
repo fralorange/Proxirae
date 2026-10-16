@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Windows.h>
+#include <exception>
 
 #include "asyncio/io/IoOperation.h"
 #include "asyncio/io/IoResult.h"
@@ -13,6 +14,10 @@ namespace Proxirae {
 		explicit IocpContext(IoOperation operation);
 		virtual ~IocpContext() = default;
 
-		virtual void Complete(const IoResult& result) = 0;
+		[[nodiscard]]
+		std::exception_ptr Complete(const IoResult& result) noexcept;
+
+	protected:
+		virtual void OnComplete(const IoResult& result) = 0;
 	};
 }

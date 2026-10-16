@@ -1,13 +1,13 @@
 #include <nlohmann/json.hpp>
 
-#include "features/communication/channels/handlers/test/TestPipeHandler.h"
+#include "features/communication/channels/messages/handlers/test/TestPipeHandler.h"
 #include "utils/JsonUtils.h"
 
 namespace Proxirae {
-	TestPipeHandler::TestPipeHandler(TestController& controller, IProtector& protector)
-		: m_controller(controller), m_protector(protector) { }
+	TestPipeHandler::TestPipeHandler(TestController& controller, IProtector& protector, ILogger& logger)
+		: m_controller(controller), m_protector(protector), SafePipeMessageHandler(logger) { }
 
-	void TestPipeHandler::Handle(const PipeMessage& msg)
+	void TestPipeHandler::HandleUnsafe(const PipeMessage& msg)
 	{
 		nlohmann::json j = nlohmann::json::parse(msg.payload);
 		auto test = j.get<TestContract>();

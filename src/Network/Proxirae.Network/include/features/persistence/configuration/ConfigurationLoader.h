@@ -1,5 +1,6 @@
 #pragma once
 #include <filesystem>
+#include <optional>
 
 #include "features/persistence/Store.h"
 #include "Configuration.h"
@@ -20,6 +21,6 @@ namespace Proxirae {
 		IProtector& m_protector;
 
 		template<typename T>
-		std::vector<T> ReadJson(const std::filesystem::path& path) const;
+		std::optional<std::vector<T>> ReadJson(const std::filesystem::path& path) const;
 	};
 }

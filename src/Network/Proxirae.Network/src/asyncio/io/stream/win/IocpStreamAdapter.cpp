@@ -1,4 +1,5 @@
 #include "WinSock2.h"
+#include <memory>
 
 #include "asyncio/io/stream/win/IocpStreamAdapter.h"
 #include "asyncio/io/stream/win/IocpStreamContext.h"
@@ -6,7 +7,10 @@
 namespace Proxirae {
 	void IocpStreamAdapter::AsyncRead(NativeHandle handle, std::span<std::byte> buffer, IoCallback callback)
 	{
-		auto* ctx = new IocpStreamContext{ IoOperation::Read, std::move(callback) };
+		auto ctx = std::make_unique<IocpStreamContext>(
+			IoOperation::Read,
+			std::move(callback)
+		);
 
 		BOOL result = ReadFile(
 			reinterpret_cast<HANDLE>(handle),
@@ -21,14 +25,21 @@ namespace Proxirae {
 
 			if (err != ERROR_IO_PENDING) {
 				ctx->Complete(IoResult{ false, 0, static_cast<int>(err) });
-				delete ctx;
+
+				return;
 			}
 		}
+
+		ctx.release();
 	}
 
 	void IocpStreamAdapter::AsyncWrite(NativeHandle handle, std::span<const std::byte> buffer, IoCallback callback)
 	{
-		auto* ctx = new IocpStreamContext(IoOperation::Write, std::move(callback));
+		auto ctx = std::make_unique<IocpStreamContext>(
+			IoOperation::Write,
+			std::move(callback)
+		);
+
 		ctx->buffer.assign(buffer.begin(), buffer.end());
 
 		BOOL result = WriteFile(
@@ -44,8 +55,11 @@ namespace Proxirae {
 
 			if (err != ERROR_IO_PENDING) {
 				ctx->Complete(IoResult{ false, 0, static_cast<int>(err) });
-				delete ctx;
+
+				return;
 			}
 		}
+
+		ctx.release();
 	}
 }
