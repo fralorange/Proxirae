@@ -17,7 +17,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.Logs
 
         public override string ToString()
         {
-            return $"{Timestamp:HH::mm::ss} {Level} {Message}";
+            return $"{Timestamp:HH:mm:ss} {Level} {Message}";
         }
     }
 }
