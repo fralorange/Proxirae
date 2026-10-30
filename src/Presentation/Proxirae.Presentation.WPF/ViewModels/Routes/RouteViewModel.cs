@@ -19,5 +19,10 @@ namespace Proxirae.Presentation.WPF.ViewModels.Routes
             ProcessName = processName;
             ActionName = actionName;
         }
+
+        public override string ToString()
+        {
+            return $"{Timestamp:HH:mm:ss} {ProcessName} ({ProcessId}) - {Endpoint} - {ActionName}";
+        }
     }
 }
