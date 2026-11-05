@@ -60,8 +60,6 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
             {
                 ProxyServers.Add(proxyServer);
             }
-
-            ProxyServers.CollectionChanged += (_, _) => HasChanges = true;
         }
 
         [RelayCommand]
@@ -72,7 +70,9 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
             if (viewModel.ProxyServer is not null)
             {
                 var proxy = await _proxyService.AddAsync(viewModel.ProxyServer, cancellationToken);
+
                 ProxyServers.Add(proxy);
+                HasChanges = true;
             }
         }
 
@@ -95,10 +95,13 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
                 if (proxy is not null)
                 {
                     var index = ProxyServers.IndexOf(proxyServer);
+
                     if (index >= 0)
                     {
                         ProxyServers[index] = proxy;
                     }
+
+                    HasChanges = true;
                 }
             }
         }
@@ -107,15 +110,21 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         private async Task RemoveProxyServerAsync(ProxyListDto proxyServer, CancellationToken cancellationToken)
         {
             var affectedRules = await _proxyRuleValidator.GetAffectedRulesAsync(proxyServer.Id, cancellationToken);
+            
             if (affectedRules.Count > 0 && !_messageDialogService.ShowWarning(this, "ProxyDelete", "ProxyDeleteTitle"))
             {
                 return;
             }
 
-            await _proxyService.DeleteAsync(proxyServer.Id, cancellationToken);
-            await _proxyRuleValidator.UnbindProxyFromRulesAsync(proxyServer.Id, cancellationToken); 
+            var deleted = await _proxyService.DeleteAsync(proxyServer.Id, cancellationToken);
+
+            if (!deleted)
+                return;
+
+            await _proxyRuleValidator.UnbindProxyFromRulesAsync(proxyServer.Id, cancellationToken);
 
             ProxyServers.Remove(proxyServer);
+            HasChanges = true;
         }
 
         [RelayCommand]
@@ -145,11 +154,13 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyServers
         [RelayCommand(CanExecute = nameof(IsApplyExecutable))]
         private async Task ApplyAsync(CancellationToken cancellationToken)
         {
-            if (HasChanges)
-            {
-                await _proxyService.SaveChangesAsync(cancellationToken);
-                HasChanges = false;
-            }
+            if (!HasChanges)
+                return;
+
+            await _proxyService.SaveChangesAsync(cancellationToken);
+            await _proxyRuleValidator.SaveChangesAsync(cancellationToken);
+
+            HasChanges = false;
         }
     }
 }
