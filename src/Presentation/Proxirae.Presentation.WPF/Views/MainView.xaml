@@ -109,18 +109,17 @@
                 </Button>
             </StackPanel>
 
-            <DataGrid x:Name="FlowsTable"
-                      behaviors:ClearSelectionBehavior.IsEnabled="True"
-                      CanUserSortColumns="True"
-                      DockPanel.Dock="Right"
-                      EnableColumnVirtualization="True"
-                      EnableRowVirtualization="True"
-                      IsReadOnly="True"
-                      ItemsSource="{Binding Flows}"
-                      Style="{StaticResource MainProcessTable}"
-                      VirtualizingPanel.ScrollUnit="Item"
-                      VirtualizingPanel.VirtualizationMode="Recycling">
-                <DataGrid.Columns>
+            <controls:TreeGrid x:Name="FlowsTable"
+                               behaviors:ClearSelectionBehavior.IsEnabled="True"
+                               DataGridStyle="{StaticResource MainProcessTable}"
+                               DockPanel.Dock="Right"
+                               GroupBy="ProcessName"
+                               GroupCountStyle="{StaticResource TreeGridGroupCount}"
+                               GroupExpanderStyle="{StaticResource TreeGridGroupExpander}"
+                               GroupNameStyle="{StaticResource TreeGridGroupName}"
+                               GroupPlaceholderStyle="{StaticResource TreeGridGroupPlaceholder}"
+                               ItemsSource="{Binding Flows}">
+                <controls:TreeGrid.Columns>
                     <DataGridTemplateColumn Width="*"
                                             Header="{l:Localize {x:Static res:LocalizationKeys.FlowsHeaderApplication}}"
                                             SortMemberPath="ProcessName">
@@ -200,8 +199,8 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+                </controls:TreeGrid.Columns>
+            </controls:TreeGrid>
         </DockPanel>
 
         <TabControl Grid.Row="2"

@@ -1,0 +1,142 @@
+﻿<UserControl x:Class="Proxirae.Presentation.WPF.Controls.TreeGrid"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Proxirae.Presentation.WPF.Converters"
+             xmlns:local="clr-namespace:Proxirae.Presentation.WPF.Controls"
+             xmlns:primitives="clr-namespace:System.Windows.Controls.Primitives;assembly=PresentationFramework"
+             x:Name="Root">
+    <UserControl.Resources>
+        <converters:GroupCountDisplayConverter x:Key="GroupCountDisplayConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <DataGrid x:Name="PART_DataGrid"
+                  SelectedItem="{Binding SelectedItem, ElementName=Root, Mode=TwoWay}"
+                  Style="{Binding DataGridStyle, ElementName=Root}">
+            <DataGrid.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.Panel>
+                        <ItemsPanelTemplate>
+                            <primitives:DataGridRowsPresenter />
+                        </ItemsPanelTemplate>
+                    </GroupStyle.Panel>
+
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                                        <Expander IsExpanded="True"
+                                                  Style="{Binding GroupExpanderStyle, RelativeSource={RelativeSource AncestorType={x:Type local:TreeGrid}}}">
+                                            <Expander.Header>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Border Width="{Binding RowHeaderActualWidth, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                                            MinHeight="22"
+                                                            Background="{DynamicResource TransparentBrush}"
+                                                            BorderBrush="{DynamicResource GridLineBrush}"
+                                                            BorderThickness="0,0,1,0" />
+                                                    <ItemsControl ItemsSource="{Binding Columns, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}">
+
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <StackPanel Orientation="Horizontal" />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Border Width="{Binding ActualWidth}"
+                                                                        MinHeight="22"
+                                                                        Padding="5,0"
+                                                                        Background="{DynamicResource TransparentBrush}"
+                                                                        BorderBrush="{DynamicResource GridLineBrush}"
+                                                                        BorderThickness="0,0,1,0">
+                                                                    <Grid VerticalAlignment="Center">
+                                                                        <Grid x:Name="GroupHeaderContent"
+                                                                              Visibility="Collapsed">
+                                                                            <Grid.ColumnDefinitions>
+                                                                                <ColumnDefinition Width="Auto" />
+                                                                                <ColumnDefinition Width="Auto" />
+                                                                                <ColumnDefinition Width="*" />
+                                                                                <ColumnDefinition Width="Auto" />
+                                                                            </Grid.ColumnDefinitions>
+
+                                                                            <Path x:Name="GroupArrow"
+                                                                                  Grid.Column="0"
+                                                                                  Width="7"
+                                                                                  Height="10"
+                                                                                  Margin="0,0,7,0"
+                                                                                  Data="M 0,0 L 7,5 L 0,10 Z"
+                                                                                  Fill="{DynamicResource ForegroundBrush}"
+                                                                                  RenderTransformOrigin="0.5,0.5"
+                                                                                  Stretch="Fill">
+
+                                                                                <Path.RenderTransform>
+                                                                                    <RotateTransform Angle="0" />
+                                                                                </Path.RenderTransform>
+
+                                                                            </Path>
+
+                                                                            <Image Grid.Column="1"
+                                                                                   Width="16"
+                                                                                   Height="16"
+                                                                                   Margin="0,0,6,0"
+                                                                                   VerticalAlignment="Center"
+                                                                                   Source="{Binding DataContext.Items[0].ProcessIcon, RelativeSource={RelativeSource AncestorType={x:Type GroupItem}}}"
+                                                                                   Stretch="Uniform" />
+
+                                                                            <TextBlock Grid.Column="2"
+                                                                                       Style="{Binding GroupNameStyle, RelativeSource={RelativeSource AncestorType={x:Type local:TreeGrid}}}"
+                                                                                       Text="{Binding DataContext.Name, RelativeSource={RelativeSource AncestorType={x:Type GroupItem}}}" />
+
+                                                                            <StackPanel Grid.Column="3"
+                                                                                        Orientation="Horizontal">
+                                                                                <TextBlock Style="{Binding GroupCountStyle, RelativeSource={RelativeSource AncestorType={x:Type local:TreeGrid}}}"
+                                                                                           Text="(" />
+                                                                                <TextBlock Style="{Binding GroupCountStyle, RelativeSource={RelativeSource AncestorType={x:Type local:TreeGrid}}}"
+                                                                                           Text="{Binding DataContext.ItemCount, RelativeSource={RelativeSource AncestorType={x:Type GroupItem}}}" />
+                                                                                <TextBlock Style="{Binding GroupCountStyle, RelativeSource={RelativeSource AncestorType={x:Type local:TreeGrid}}}"
+                                                                                           Text=")" />
+                                                                            </StackPanel>
+                                                                        </Grid>
+
+                                                                        <TextBlock x:Name="Ellipsis"
+                                                                                   Style="{Binding GroupPlaceholderStyle, RelativeSource={RelativeSource AncestorType={x:Type local:TreeGrid}}}"
+                                                                                   Text="..." />
+                                                                    </Grid>
+                                                                </Border>
+
+                                                                <DataTemplate.Triggers>
+                                                                    <DataTrigger Binding="{Binding DisplayIndex}"
+                                                                                 Value="0">
+                                                                        <Setter TargetName="GroupHeaderContent" Property="Visibility" Value="Visible" />
+                                                                        <Setter TargetName="Ellipsis" Property="Visibility" Value="Collapsed" />
+                                                                    </DataTrigger>
+
+                                                                    <DataTrigger Binding="{Binding IsExpanded, RelativeSource={RelativeSource AncestorType={x:Type Expander}}}"
+                                                                                 Value="True">
+                                                                        <Setter TargetName="GroupArrow" Property="RenderTransform">
+                                                                            <Setter.Value>
+                                                                                <RotateTransform Angle="90" />
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </DataTrigger>
+                                                                </DataTemplate.Triggers>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                            </Expander.Header>
+                                            <ItemsPresenter />
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </DataGrid.GroupStyle>
+        </DataGrid>
+    </Grid>
+</UserControl>
