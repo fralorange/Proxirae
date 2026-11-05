@@ -73,8 +73,6 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
             {
                 _proxyRules.Add(proxyRule);
             }
-
-            _proxyRules.CollectionChanged += (_, _) => HasChanges = true;
         }
 
         [RelayCommand]
@@ -93,6 +91,8 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
             {
                 var rule = await _ruleService.AddAsync(addRule, cancellationToken);
                 _proxyRules.Add(rule);
+
+                HasChanges = true;
             }
         }
 
@@ -108,10 +108,13 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
                 if (rule is not null)
                 {
                     var index = _proxyRules.IndexOf(proxyRule);
+
                     if (index >= 0)
                     {
                         _proxyRules[index] = rule;
                     }
+
+                    HasChanges = true;
                 }
             }
         }
@@ -127,10 +130,13 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
                 if (rule is not null)
                 {
                     var index = _proxyRules.IndexOf(proxyRule);
+
                     if (index >= 0)
                     {
                         _proxyRules[index] = rule;
                     }
+
+                    HasChanges = true;
                 }
             }
         }
@@ -138,8 +144,13 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
         [RelayCommand]
         private async Task DeleteProxyRuleAsync(RuleDto proxyRule, CancellationToken cancellationToken)
         {
-            await _ruleService.DeleteAsync(proxyRule.Id, cancellationToken);
+            var deleted = await _ruleService.DeleteAsync(proxyRule.Id, cancellationToken);
+
+            if (!deleted)
+                return;
+
             _proxyRules.Remove(proxyRule);
+            HasChanges = true;
         }
 
         [RelayCommand]
@@ -152,11 +163,12 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
 
             if (nextRule is not null)
             {
+                await _ruleService.SwapPrioritiesAsync(proxyRule.Id, nextRule.Id, cancellationToken);
+
                 (proxyRule.Priority, nextRule.Priority) = (nextRule.Priority, proxyRule.Priority);
 
                 ProxyRules.Refresh();
-
-                await _ruleService.SwapPrioritiesAsync(proxyRule.Id, nextRule.Id, cancellationToken);
+                HasChanges = true;
             }
         }
 
@@ -170,11 +182,12 @@ namespace Proxirae.Presentation.WPF.ViewModels.ProxyRules
 
             if (previousRule is not null)
             {
+                await _ruleService.SwapPrioritiesAsync(proxyRule.Id, previousRule.Id, cancellationToken);
+
                 (proxyRule.Priority, previousRule.Priority) = (previousRule.Priority, proxyRule.Priority);
 
                 ProxyRules.Refresh();
-
-                await _ruleService.SwapPrioritiesAsync(proxyRule.Id, previousRule.Id, cancellationToken);
+                HasChanges = true;
             }
         }
 
