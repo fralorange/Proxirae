@@ -22,7 +22,7 @@ namespace Proxirae.Presentation.WPF.ViewModels.Routes
 
         public override string ToString()
         {
-            return $"{Timestamp:HH:mm:ss} {ProcessName} ({ProcessId}) - {Endpoint} - {ActionName}";
+            return $"{Timestamp.ToLocalTime():HH:mm:ss} {ProcessName} ({ProcessId}) - {Endpoint} - {ActionName}";
         }
     }
 }
